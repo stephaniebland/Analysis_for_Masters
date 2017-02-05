@@ -1,4 +1,4 @@
-# ---- Analysis ----
+# ---- Setup ----
 rm(list=ls())
 detach()
 setwd("/Users/JurassicPark/Google Drive/GIT/Analysis")
@@ -7,6 +7,8 @@ sim_data=readMat("Complete_1.mat")
 names(sim_data)
 attach(sim_data)
 
+
+# ---- Sample_Plots ----
 
 x11()
 B=log10(B)
@@ -41,6 +43,19 @@ for (i in xkcd){
   #matlines(t(day),rowSums(B[,type==i]),type='l',col=darkcols[color_i],lwd=2)
 }
 
+# ---- Analysis ----
 
-
+par(mfrow=c(1,1))
+x11()
+lag.plot(B[,3], lags=100, do.lines =FALSE)
+lag.plot(B, lags=2, do.lines =FALSE)
+acf(B[,3],lag=1000)
+acf(B,lag=1000)
+plot_para=ceiling(sqrt(nichewebsize))
+par(mfrow=c(plot_para,plot_para))
+par(mfrow=c(3,3))
+for (i in 1:9){#nichewebsize){
+  plot_title=paste('acf for node ',i)
+  acf(B[,i],lag=1000, main=paste('ACF for node ',i))
+}
 
