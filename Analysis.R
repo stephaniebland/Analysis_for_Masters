@@ -40,29 +40,7 @@ for (i in xkcd){
   }
   #matlines(t(day),rowSums(B[,type==i]),type='l',col=darkcols[color_i],lwd=2)
 }
-  
-t=sample(1:10, 10, replace=TRUE)
-x=matrix(sample(50:100, 100, replace=TRUE),nrow = 10)
-
-t==1
-x[t==1,]
-plot(matrix(rep(1:10,each=2),nrow=2),x[1:2,],type='l')
-matplot(matrix(rep(1:10,2),ncol=2),x[,1:2],type='l',col=1)
-matlines(matrix(rep(1:10,sum(t==1)),ncol=sum(t==1)),x[,t==1],type='l',col=2)
-
-ggplot(dd, aes(Year, Value,colour=School_ID)) + 
-  geom_line() + 
-  geom_point()
-A=as.data.frame(test)
-ggplot(A, aes())
 
 
-
-df <- data.frame(date = c("01-04-2001 00:00","01-04-2001 00:00","01-04-2001 00:00",
-                          "01-05-2001 00:00","01-05-2001 00:00","01-05-2001 00:00",
-                          "01-06-2001 00:00","01-06-2001 00:00","01-06-2001 00:00",
-                          "01-07-2001 00:00","01-07-2001 00:00","01-07-2001 00:00"), 
-                 id = c(1,2,3,1,2,3,1,2,3,1,2,3), a = c(1,2,3,4,5,6,7,8,9,10,11,12), 
-                 b = c(2,2.5,3,3.2,4,4.6,5,5.6,8,8.9,10,10.6))
 
 
