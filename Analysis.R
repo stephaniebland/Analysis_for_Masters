@@ -119,9 +119,9 @@ B_df=as.data.frame(B)
 colnames(B_df)=1:nichewebsize
 B_df=cbind(Year_df=as.integer(year.index),calen_df=rep.int(1:L.year,sum(unlist(num.years)) ),B_df)
 B_df_years=melt(B_df, id.vars=c("Year_df","calen_df"), measure.vars =(1:nichewebsize)+2)
-B_df_years=setNames(B_df_years[,c(3,1,2,4)], c('Nodes_df','Year_df', 'calen_df', 'Biomass'))
-B_df_years[,1]=as.integer(B_df_years[,1])
-B_df=cbind(B_df_years,B_df_days[,2])[,c(1:3,5,4)]
+B_df=cbind(B_df_years,B_df_days[,2])[,c(3,1,2,5,4)]
+B_df=setNames(B_df, c('Nodes_df','Year_df', 'calen_df','Days_df','Biomass'))
+B_df[,1]=as.integer(B_df[,1])
 B_df[1:5,]
 
 B_stability=community_stability(B_df_years,time.var="Year_df",abundance.var="Biomass")
