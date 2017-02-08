@@ -3,6 +3,10 @@ rm(list=ls())
 setwd("/Users/JurassicPark/Google Drive/GIT/Analysis")
 library(R.matlab)
 library(matrixStats)
+library(RColorBrewer)
+library(codyn)
+library(knitr)
+library(reshape2)
 sim_data=readMat("Complete_1.mat")
 names(sim_data)
 attach(sim_data)
@@ -29,7 +33,6 @@ ts.plot(rowSums(logB[,type==0]))#Plot all invertebrate biomass (summed)
 invert_no_fish=isfish
 invert_no_fish[basalsp]=1
 ts.plot(cbind(rowSums(logB[,invert_no_fish==0]),rowSums(logB[,basalsp])),col=1:2,lty=1)#Plot all invertebrate biomass (summed)
-library(RColorBrewer)
 darkcols <- brewer.pal(8, "Dark2")
 color_i=0
 xkcd=species[isfish==1]
@@ -83,9 +86,7 @@ ts.plot(trial)
 logB_diff=logB[101:30000,]-logB[1:29900,]
 ts.plot(logB_diff[(5000:9000)+10000,-42])
 
-# ---- lag_diff_plot ----
-library(codyn)
-library(knitr)
+# ---- Stabilty ----
 data(knz_001d)
 kable(head(knz_001d))
 KNZ_stability <- community_stability(knz_001d, 
@@ -94,70 +95,21 @@ KNZ_stability <- community_stability(knz_001d,
                                      replicate.var = "subplot")
 kable(head(KNZ_stability))
 #The input data frame needs to contain columns for time, species and abundance
-tot_yrs=sum(unlist(num.years))
-tot_day=L.year*tot_yrs
-Nodes_df=rep(1:nichewebsize,each=tot_day)
-Year_df=rep(rep(1:tot_yrs,each=L.year),nichewebsize)
-Day_df=rep.int(1:L.year,tot_yrs*nichewebsize)
-B_df_years=data.frame(Nodes_df,Year_df,Day_df,Biomass=as.vector(B))
-B_df_days=data.frame(Nodes_df,Day_df=rep.int(1:tot_day,nichewebsize),Biomass=as.vector(B))
-B
-B_df_years[1:5,]
-B_df_years[98:103,]
-B_df_years[(30000-3):(30000+3),]
-B_df_years[(30000+100-3):(30000+100+3),]
-dim(B_df_days)
-B_df_days[1:5,]
-B_df_days[98:103,]
-B_df_days[(30000-3):(30000+3),]
-B_df_days[(30000+100-3):(30000+100+3),]
+B_df_days=setNames(melt(B)[,c(2, 1, 3)], c('Nodes_df', 'Day_df', 'Biomass'))
+B_df=as.data.frame(B)
+colnames(B_df)=1:nichewebsize
+B_df=cbind(Year_df=as.integer(year.index),Day_df=rep.int(1:L.year,sum(unlist(num.years)) ),B_df)
+B_df_years=melt(B_df, id.vars=c("Year_df","Day_df"), measure.vars =(1:nichewebsize)+2)
+B_df_years=setNames(B_df_years[,c(3,1,2,4)], c('Nodes_df','Year_df', 'Day_df', 'Biomass'))
+#B_df_years[,1]=as.integer(B_df_years[,1])
+
+
+
 
 
 B_stability=community_stability(B_df_years,time.var="Year_df",abundance.var="Biomass",replicate.var="Day_df")
-
-
 kable(head(B_stability))
 
 
-# num.years=c(0,2,2)
-# L.year=3
-# nichewebsize=2
 
-tot_yrs=sum((num.years))
-tot_day=L.year*tot_yrs
-#B=matrix(sample.int(10,tot_day*nichewebsize,T),ncol=nichewebsize)
-Nodes_df=rep(1:nichewebsize,each=tot_day)
-Year_df=rep(rep(1:tot_yrs,each=L.year),nichewebsize)
-Day_df=rep.int(1:L.year,tot_yrs*nichewebsize)
-B_df_years=data.frame(Nodes_df,Year_df,Day_df,Biomass=as.vector(B))
-B_df_days=data.frame(Nodes_df,Day_df=rep.int(1:tot_day,nichewebsize),Biomass=as.vector(B))
-B
-B_df_years
-B_df_days
-
-
-#year.index=rep(1:tot_yrs,each=L.year)
-library(reshape2)
-xkcd=setNames(melt(B)[,c(2, 1, 3)], c('Nodes_df', 'Day_df', 'Biomass'))
-dim(xkcd)
-xkcd[1:5,]
-xkcd[98:103,]
-xkcd[(30000-3):(30000+3),]
-xkcd[(30000+100-3):(30000+100+3),]
-max(xkcd-B_df_days)
-min(xkcd-B_df_days)
-B_df=as.data.frame(B)
-colnames(B_df)=1:nichewebsize
-B_df=cbind(Year_df=as.integer(year.index),Day_df=rep.int(1:L.year,tot_yrs),B_df)
-calvin=melt(B_df, id.vars=c("Year_df","Day_df"), measure.vars =(1:nichewebsize)+2)
-
-calvin=setNames(calvin[,c(3,1,2,4)], c('Nodes_df','Year_df', 'Day_df', 'Biomass'))
-cbind(calvin,B_df_years)
-calvin[1:5,]
-calvin[98:103,]
-calvin[(30000-3):(30000+3),]
-calvin[(30000+100-3):(30000+100+3),]
-calvin[,1]=as.integer(calvin[,1])
-max(calvin-B_df_years)
-min(calvin-B_df_years)
 
