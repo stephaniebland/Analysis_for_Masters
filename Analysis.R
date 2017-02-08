@@ -117,29 +117,35 @@ kable(head(KNZ_variance_ratio_avgrep))
 B_df_days=setNames(melt(B)[,c(2, 1, 3)], c('Nodes_df', 'Day_df', 'Biomass'))
 B_df=as.data.frame(B)
 colnames(B_df)=1:nichewebsize
-B_df=cbind(Year_df=as.integer(year.index),calen_df=rep.int(1:L.year,sum(unlist(num.years)) ),B_df)
+tot_yrs=sum(unlist(num.years))
+tot_days=tot_yrs*L.year
+B_df=cbind(Year_df=as.integer(year.index),calen_df=rep.int(1:L.year,tot_yrs),B_df)
 B_df_years=melt(B_df, id.vars=c("Year_df","calen_df"), measure.vars =(1:nichewebsize)+2)[,c(3,1,2,4)]
 B_df=cbind(B_df_years,B_df_days[,2])[,c(1:3,5,4)]
 B_df=setNames(B_df, c('Nodes_df','Year_df', 'calen_df','Days_df','Biomass'))
 B_df[,1]=as.integer(B_df[,1])
 B_df[1:5,]
 
-B_stability=community_stability(B_df_years,time.var="Year_df",abundance.var="Biomass")
+B_stability=community_stability(B_df,time.var="Year_df",abundance.var="Biomass")
 B_stability
 
-xkcd=B_df_years
+B_stability=community_stability(B_df,time.var="Days_df",abundance.var="Biomass")
+B_stability
+
+xkcd=B_df
 #xkcd=xkcd[xkcd$Year_df<=100,]
-unique(subset(xkcd, xkcd$Biomass==0, select = c(Nodes_df)))
-extant=which(B[30000,]!=0)
-which(isfish==1)
+#unique(subset(xkcd, xkcd$Biomass==0, select = c(Nodes_df)))
+extant=which(B[tot_days,]!=0)
+extinct=which(B[tot_days,]==0)
+#which(isfish==1)
 intersect(which(isfish==0),unlist(unique(subset(xkcd, xkcd$Biomass==0, select = c(Nodes_df)))))
-xkcd=xkcd[xkcd$Year_df %in% ((50:100)+100),]
+xkcd=xkcd[xkcd$Year_df %in% ((50:100)+200),]
 xkcd=xkcd[xkcd$Nodes_df  %in% extant,]
 #xkcd=xkcd[,xkcd$Year_df==(1:300)]
 dim(xkcd)
 head(xkcd)
 
-B_stability=community_stability(xkcd,time.var="Year_df",abundance.var="Biomass")
+B_stability=community_stability(xkcd,time.var="Days_df",abundance.var="Biomass")
 B_stability
 
 
