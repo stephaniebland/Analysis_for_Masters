@@ -7,13 +7,14 @@ library(RColorBrewer)
 library(codyn)
 library(knitr)
 library(reshape2)
+library(dplyr)
 sim_data=readMat("Complete_1.mat")
 names(sim_data)
 attach(sim_data)
 #x11()
 logB=log10(B)
 logB.year.end=log10(B.year.end)
-B_old=B
+B_saved=B
 
 
 # ---- Sample_Plots ----
@@ -113,6 +114,15 @@ KNZ_variance_ratio_avgrep <- variance_ratio(knz_001d,
                                             average.replicates = FALSE)
 
 kable(head(KNZ_variance_ratio_avgrep))
+rank_shift(knz_001d,
+           time.var = "year",
+           species.var = "species",
+           abundance.var = "abundance",
+           replicate.var = "subplot")
+rank_shift(subset(knz_001d, subplot=="A_1"),
+           time.var = "year",
+           species.var = "species",
+           abundance.var = "abundance")
 #The input data frame needs to contain columns for time, species and abundance
 B_df_days=setNames(melt(B)[,c(2, 1, 3)], c('Nodes_df', 'Day_df', 'Biomass'))
 B_df=as.data.frame(B)
@@ -147,6 +157,25 @@ head(xkcd)
 
 B_stability=community_stability(xkcd,time.var="Days_df",abundance.var="Biomass")
 B_stability
+
+
+
+species
+calvin=data_frame(x=sample.int(10,20,T),y=1:20)
+group_by(calvin,x)
+
+
+# ---- Plot_Von_bert_Curve ----
+
+plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass')
+
+# ---- Fish_Size_Distribution ----
+fish_weights=Mass[which(lifestage==4)]
+fish_weights_scaled=fish_weights/W.scalar
+
+
+
+
 
 
 
