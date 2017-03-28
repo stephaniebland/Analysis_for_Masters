@@ -199,14 +199,31 @@ xkcd_2h=lag(xkcd,n=5)
 lines3D(xkcd,xkcd_h,xkcd_2h)
 
 par(mfrow=c(4,5),mar=c(0,0,0,0))
-for (lag_h in seq(5,95,5)){
+for (lag_h in seq(5,95,5)){#Plot for different lags
   xkcd_h=lag(xkcd,n=lag_h)
   xkcd_2h=lag(xkcd,n=lag_h*2)
-  lines3D(xkcd,xkcd_h,xkcd_2h,colkey=(add=F))
+  lines3D(xkcd,xkcd_h,xkcd_2h,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
   mtext(side = 3, text = paste0("lag=",lag_h), line = -2.5)
 }
 
 
+par(mfrow=c(4,5),mar=c(0,0,0,0))
+for (lag_h in seq(5,95,5)){#Another visualization of different lags
+  xkcd_h=lag(xkcd,n=lag_h)
+  xkcd_2h=lag(xkcd,n=lag_h*2)
+  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 4,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
+  mtext(side = 3, text = paste0("lag=",lag_h), line = -2.5)
+}
+
+par(mfrow=c(2,2))
+lag_h=55
+for (i in 1:4){# Plot for different species
+  xkcd=logB[1000:3000,i]
+  xkcd_h=lag(xkcd,n=lag_h)
+  xkcd_2h=lag(xkcd,n=lag_h*2)
+  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 4,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
+  mtext(side = 3, text = paste0("Node #",i), line = -2.5)
+}
 
 
 
