@@ -173,7 +173,38 @@ plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass')
 fish_weights=Mass[which(lifestage==4)]
 fish_weights_scaled=fish_weights/W.scalar
 
+# ---- Phase_diagrams ----
+par(mfrow=c(1,1))
+xkcd=logB[200:3000,1]
+xkcd=logB[1000:3000,1]
+xkcd1=lag(xkcd,n=L.year/2)
+xkcd2=lag(xkcd,n=L.year)
+plot(xkcd,xkcd2,type="l")
 
+lag_h=0.21#0.21 is nice
+xkcd_h=lag(xkcd,n=L.year*lag_h)
+plot(xkcd,xkcd_h,type="l")
+
+
+library(plot3D)
+lag_h=0.21#0.21 is nice
+xkcd_h=lag(xkcd,n=L.year*lag_h)
+xkcd_2h=lag(xkcd,n=L.year*lag_h*2)
+lines3D(xkcd,xkcd_h,xkcd_2h)
+
+
+
+xkcd_h=lag(xkcd,n=21)
+xkcd_2h=lag(xkcd,n=5)
+lines3D(xkcd,xkcd_h,xkcd_2h)
+
+par(mfrow=c(4,5),mar=c(0,0,0,0))
+for (lag_h in seq(5,95,5)){
+  xkcd_h=lag(xkcd,n=lag_h)
+  xkcd_2h=lag(xkcd,n=lag_h*2)
+  lines3D(xkcd,xkcd_h,xkcd_2h,colkey=(add=F))
+  mtext(side = 3, text = paste0("lag=",lag_h), line = -2.5)
+}
 
 
 
