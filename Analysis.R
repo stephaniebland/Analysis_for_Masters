@@ -211,21 +211,137 @@ par(mfrow=c(4,5),mar=c(0,0,0,0))
 for (lag_h in seq(5,95,5)){#Another visualization of different lags
   xkcd_h=lag(xkcd,n=lag_h)
   xkcd_2h=lag(xkcd,n=lag_h*2)
-  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 4,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
+  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 2,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
   mtext(side = 3, text = paste0("lag=",lag_h), line = -2.5)
 }
 
 par(mfrow=c(2,2))
 lag_h=55
 for (i in 1:4){# Plot for different species
-  xkcd=logB[1000:3000,i]
+  xkcd=logB[100:3000,i]
   xkcd_h=lag(xkcd,n=lag_h)
   xkcd_2h=lag(xkcd,n=lag_h*2)
-  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 4,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
+  scatter3D(xkcd,xkcd_h,xkcd_2h, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass",ylab=paste0("Lag of ",lag_h),zlab=paste0("Lag of ",lag_h*2))
   mtext(side = 3, text = paste0("Node #",i), line = -2.5)
+}
+
+
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+lag_h=55
+for (i in 1){# Plot Species agains each other
+  t_0=1000
+  t_f=dim(logB)[1]
+  xkcd1=logB[t_0:t_f,1]
+  xkcd2=logB[t_0:t_f,40]
+  xkcd3=logB[t_0:t_f,2]
+  all_fish=logB[t_0:t_f,]
+  scatter3D(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of Species A",ylab="Biomass of Species B",zlab="Biomass of Species C")
+}
+
+
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+lag_h=55
+for (i in 1){# Plot for different lifestages of one species
+  t_0=1000
+  t_f=dim(logB)[1]
+  plot_fish=23
+  xkcd1=logB[t_0:t_f,plot_fish]
+  xkcd2=logB[t_0:t_f,plot_fish+1]
+  xkcd3=logB[t_0:t_f,plot_fish+2]
+  all_fish=logB[t_0:t_f,]
+  scatter3D(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Youngest",ylab="Older",zlab="Oldest",main="Lifestages of 1 species")
 }
 
 
 
 
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+lag_h=55
+for (i in 1){# DONT CHANGE THIS PLOT
+  t_0=401
+  t_f=dim(logB)[1]
+  xkcd1=logB[t_0:t_f,10]
+  xkcd2=logB[t_0:t_f,22]
+  xkcd3=logB[t_0:t_f,39]
+  scatter3D(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 3,colkey=(add=F),xlab="Biomass of Node A",ylab="Biomass of Node B",zlab="Biomass of Node C")
+  mtext(side = 3, text = "Node #10 is interesting because it goes to 0, and then recovers from other lifestages", line = -2.5)
+}
+
+
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+lag_h=55
+for (i in 1){# Plot for different fish species
+  t_0=500
+  t_f=dim(logB)[1]
+  xkcd1=log10(rowSums(B[t_0:t_f,7:10]))
+  xkcd2=log10(rowSums(B[t_0:t_f,19:22]))
+  xkcd3=log10(rowSums(B[t_0:t_f,37:40]))
+  scatter3D(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of Species A",ylab="Biomass of Species B",zlab="Biomass of Species C")
+  mtext(side = 3, text = "Sum all lifestages", line = -2.5)
+}
+
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+lag_h=55
+for (i in 1){# DONT CHANGE THIS PLOT (Plot for different types of species)- so this is interesting because it shows how phase plots causality can still be misinterpreted. Here we show the invertebrates seem to cause the fish collapse, but really it's the fish collapse that causes the invertebrate boom.  
+  t_0=1000
+  t_f=dim(logB)[1]
+  xkcd1=log10(rowSums(B[t_0:t_f,basalsp]))
+  xkcd2=log10(rowSums(B[t_0:t_f,which(isfish==1)]))
+  xkcd3=log10(rowSums(B[t_0:t_f,setdiff(which(isfish==0),basalsp)]))
+  scatter3D(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Basal Species",ylab="Fish",zlab="Invertebrates")
+  mtext(side = 3, text = "", line = -2.5)
+}
+
+par(mfrow=c(1,1),mar=c(4,4,1,1))
+colored = rainbow(length(xkcd2))
+plot(xkcd2,xkcd3,type="l",xlab="Fish",ylab="Basal Species",col=0)
+for (i in 2:length(xkcd2)){
+  lines(xkcd2[(i-1):i],xkcd3[(i-1):i],type="l",xlab="Fish",ylab="Basal Species",col=colored[i])
+}
+
+
+
+
+par(mfrow=c(1,1),mar=c(4,4,1,1))
+t_0=1
+t_f=dim(logB)[1]
+xkcd1=log10(rowSums(B[t_0:t_f,basalsp]))
+xkcd2=log10(rowSums(B[t_0:t_f,which(isfish==1)]))
+xkcd3=log10(rowSums(B[t_0:t_f,setdiff(which(isfish==0),basalsp)]))
+t_0=500
+plot(xkcd2[t_0:t_f],xkcd3[t_0:t_f],type="l",xlab="Fish",ylab="Basal Species",col=0)
+for (i in 1:3){
+  t_f=c(1000,2000,3000)[i]
+  lines(xkcd2[t_0:t_f],xkcd3[t_0:t_f],type="l",xlab="Fish",ylab="Invertebrates",col=i,lwd=i)
+  print(paste(t_0,t_f))
+  t_0=t_f
+}
+
+
+
+par(mfrow=c(1,1),mar=c(4,4,1,1))
+t_0=500
+t_f=dim(logB)[1]
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple")
+for (i in 1:3){
+  t_f=c(10000,20000,30000)[i]
+  lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=c("darkgreen","red","blue")[i],add=TRUE,lwd=2)
+  t_0=t_f
+}
+legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
+
+
+par(mfrow=c(1,1),mar=c(2,2,1,1))
+t_0=1000
+t_f=dim(logB)[1]
+xkcd1=logB[,1]
+xkcd2=logB[,40]
+xkcd3=logB[,2]
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of Species A",ylab="Biomass of Species B",zlab="Biomass of Species C")
+for (i in 1:3){
+  t_f=c(10000,20000,30000)[i]
+  lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=c("darkgreen","red","blue")[i],add=TRUE,lwd=2)
+  t_0=t_f
+}
+legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
 
