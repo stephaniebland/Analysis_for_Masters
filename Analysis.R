@@ -353,21 +353,91 @@ scatter3Drgl(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", t
 
 
 
-par(mfrow=c(1,1),mar=c(4,4,8,8))
+par(mfrow=c(1,1),mar=c(4,4,0,0))
 t_0=500
 t_f=dim(logB)[1]
-scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple")
-t_scale=0.0001
+t_scale=0.000005
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple",zlim=c(min(xkcd3[t_0:t_f]),day[t_F]*t_scale+max(xkcd3[t_S:t_F])),xlim=c(min(xkcd1[t_0:t_f]),day[t_F]*t_scale+max(xkcd1[t_S:t_F])),perspbox=FALSE)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
 t_S=t_0; t_F=t_f
 for (i in 1:3){
   t_f=c(10000,20000,30000)[i]
   phase_col=c("darkgreen","red","blue")[i]
   lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
-  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
+  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2,xlim=0:50)
   
-  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2)
+  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
   
-  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2)
+  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
   t_0=t_f
 }
 legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
+
+
+
+
+
+
+
+par(mfrow=c(1,1),mar=c(4,4,2,2))
+t_0=500
+t_f=dim(logB)[1]
+t_scale=0.0001
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0,bty="g", type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple")
+t_S=t_0; t_F=t_f
+for (i in 1:3){
+  t_f=c(10000,20000,30000)[i]
+  phase_col=c("darkgreen","red","blue")[i]
+  lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
+  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2,xlim=0:50)
+  
+  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
+  
+  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
+  t_0=t_f
+}
+legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
+
+
+# ---- ACFs ----
+par(mar=c(4,4,4,2))
+hobbes1=acf(xkcd1,lag.max=400,main="Basal Species")
+hobbes2=acf(xkcd2,lag.max=400,main="Fish")
+hobbes3=acf(xkcd3,lag.max=400,main="Invertebrates")
+hobbes4=acf(rnorm(400),lag.max = 400)
+
+hobbes1=as.numeric(as.vector(unlist(hobbes1))[1:400])
+hobbes2=as.numeric(as.vector(unlist(hobbes2))[1:400])
+hobbes3=as.numeric(as.vector(unlist(hobbes3))[1:400])
+hobbes4=as.numeric(as.vector(unlist(hobbes4))[1:400])
+
+sum(abs(hobbes1))
+sum(abs(hobbes2))
+sum(abs(hobbes3))
+sum(abs(hobbes4))
+
+plot(c(min(hobbes1,hobbes2),1),c(min(hobbes1,hobbes2),1),type="l",xlab="Basal Species",ylab="Fish")
+lines(hobbes1,hobbes2,type="l",add=T)
+plot(c(min(hobbes1,hobbes3),1),c(min(hobbes1,hobbes3),1),type="l",xlab="Basal Species",ylab="Invertebrates")
+lines(hobbes1,hobbes3,type="l",add=T)
+plot(c(min(hobbes2,hobbes3),1),c(min(hobbes2,hobbes3),1),type="l",xlab="Fish",ylab="Invertebrates")
+lines(hobbes2,hobbes3,type="l",add=T)
+plot(hobbes2,hobbes3,type="l",add=T)
+
+
+scatter3Drgl(hobbes1,hobbes2,hobbes3, type="l",xlab="Basal Species",ylab="Fish",zlab="Invertebrates")
+
+
+
+
+
