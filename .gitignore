@@ -15,9 +15,7 @@ cache
 
 .Rhistory
 
-# Example Data Files #
-######################
-*.csv
+
 
 
 
