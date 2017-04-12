@@ -14,3 +14,10 @@ cache
 *.mat
 
 .Rhistory
+
+# Example Data Files #
+######################
+*.csv
+
+
+
