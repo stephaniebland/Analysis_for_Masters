@@ -1,4 +1,23 @@
+# LaTeX Residual Files #
+########################
+**.ttt
+**.lot
+**.log
+**.pdf
+**.gz
+**.lof
+**.fff
+**.aux
+**.tex
+cache
 
 *.mat
 
 .Rhistory
+
+# Example Data Files #
+######################
+*.csv
+
+
+
