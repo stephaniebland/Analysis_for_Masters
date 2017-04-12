@@ -8,7 +8,7 @@ library(knitr)
 library(reshape2)
 library(dplyr)
 
-exp_type_all=c("complete","unlinked","extended_unlinked")
+exp_type_all=c("complete","extended_unlinked","origweb")
 exp_type=exp_type_all[1]
 N=20
 meta_data=c()
@@ -102,11 +102,19 @@ write.csv(meta_data,file = paste0("meta_data_",exp_type,".csv"))
 meta_data=read.csv(paste0("meta_data_",exp_type,".csv"))[,-1]
 #Reload all the data and plot
 meta_data1=read.csv(paste0("meta_data_",exp_type_all[1],".csv"))[,-1]
-meta_data1=cbind(1,meta_data1)
+meta_data1=cbind("Exp"=1,meta_data1)
 meta_data2=read.csv(paste0("meta_data_",exp_type_all[2],".csv"))[,-1]
+meta_data2=cbind("Exp"=2,meta_data2)
 meta_data3=read.csv(paste0("meta_data_",exp_type_all[3],".csv"))[,-1]
+meta_data3=cbind("Exp"=3,meta_data3)
 all_data=rbind(meta_data1,meta_data2,meta_data3)
 head(all_data)
+
+
+bar_surv_m=tapply(all_data$Survive_Fish,all_data$Exp,mean)
+bar_surv_sd=tapply(all_data$Survive_Fish,all_data$Exp,sd)
+tapply(all_data$Survive_Fish,all_data$Exp,summary)
+
 xk=meta_data1[,13:15]
 xk_means=colMeans(xk)
 xk_vars=colVars(xk)
@@ -122,6 +130,11 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 
 barx=barplot(xk_means, ylim = c(0,max(xk_means+1.96*y.sd/10)),xlab="Phases",ylab="Mean Biomass",main="Fish")
 error.bar(barx,xk_means,1.96*y.sd/10)
+
+
+barx=barplot(bar_surv_m, ylim = c(0,max(bar_surv_m+1.96*bar_surv_sd/10)),xlab="Experiment",ylab="Number of Surviving Fish",main="Survival")
+error.bar(barx,bar_surv_m,1.96*bar_surv_sd/10)
+
 
 
 all_data[,13:15]
