@@ -25,26 +25,30 @@ ts.plot(logB.year.end)#Plot year ends
 
 #Plot Invertebrates first
 type=t(species)*isfish
-matplot(matrix(rep(day,sum(type==0)),ncol=sum(type==0)),logB[,type==0],type='l',col=1,lty=1)#Plot each invertebrate and autotroph separately
+matplot(matrix(rep(day,sum(type==0)),ncol=sum(type==0)),logB[,type==0],type='l',col=1,lty=1,ylab="log Biomass", main="Invertebrates and Autotrophs, individual nodes",xlab="Time (days)")#Plot each invertebrate and autotroph separately
 
 matlines(matrix(rep(day,length(basalsp)),ncol=length(basalsp)),logB[,basalsp],type='l',col=2,lty=1)#Plot each autotroph separately
+legend("bottomleft",c("Invertebrates","Autotrophs"),col=1:2,lty=1)
 
-ts.plot(rowSums(logB[,type==0]))#Plot all invertebrate biomass (summed)
+ts.plot(log10(rowSums(B[,type==0])),xlab="Time (days)",ylab="log Biomass",main="Sum of all Non-Fish Biomass")#Plot all invertebrate biomass (summed)
 
 invert_no_fish=isfish
 invert_no_fish[basalsp]=1
-ts.plot(cbind(rowSums(logB[,invert_no_fish==0]),rowSums(logB[,basalsp])),col=1:2,lty=1)#Plot all invertebrate biomass (summed)
+ts.plot(cbind(log10(rowSums(B[,invert_no_fish==0])),log10(rowSums(B[,basalsp]))),col=1:2,lty=1,xlab="Time (days)",ylab="log Biomass",main="Summed Biomass for non-fish and autotrophs")#Plot all invertebrate biomass (summed)
+legend("bottomleft",c("Not Fish","Autotrophs"),col=1:2,lty=1)
+
 darkcols <- brewer.pal(8, "Dark2")
 color_i=0
 xkcd=species[isfish==1]
 xkcd=unique(xkcd)
+ts.plot(cbind(log10(rowSums(B[,invert_no_fish==0])),log10(rowSums(B[,basalsp]))),col=1:2,lty=1,xlab="Time (days)",ylab="log Biomass",main="with Fish",ylim=c(min(log10(rowSums(B[,xkcd]))),max(log10(rowSums(B[,invert_no_fish==0])))))#Plot all invertebrate biomass (summed)
 for (i in xkcd){
   color_i=color_i+1
   for (j in 1:max(lifestage)){
     single_lifestage=(t(type==i)*lifestage==j)
-    #matlines(t(day),logB[,single_lifestage],type='l',col=darkcols[color_i],lty=1+j,lwd=2)
+    matlines(t(day),logB[,single_lifestage],type='l',col=darkcols[color_i],lty=1+j,lwd=2)
   }
-  #matlines(t(day),rowSums(logB[,type==i]),type='l',col=darkcols[color_i],lwd=2)
+  #matlines(t(day),log10(rowSums(B[,type==i])),type='l',col=darkcols[color_i],lwd=2)
 }
 
 # ---- Analysis ----
@@ -77,15 +81,15 @@ hist(logB[30000,])
 
 
 #Try plotting the variance over time for heteroscedasticity
-plot(B[phase_start:phase_end,1],type='l')
+plot(B[phase_start:phase_end,1],type='l',xlab="Time (days)",ylab="Biomass",main="Biomass of one species in one phase, after stable")
 testing=matrix(B[phase_start:phase_end,1],100)
 trial=colVars(testing)
-ts.plot(trial)
+ts.plot(trial,xlab="Time (days)",ylab="Variance of Biomass",main="Variance of Biomass of one species in one phase, after stable")
 
 # ---- lag_diff_plot ----
 #Try differencing by lag 100
 logB_diff=logB[101:30000,]-logB[1:29900,]
-ts.plot(logB_diff[(5000:9000)+10000,-42])
+ts.plot(logB_diff[(5000:9000)+10000,-42],xlab="Time (days)",ylab="log of Biomass",main="Difference of log(Biomass) by 1 year")
 
 # ---- Stabilty ----
 data(knz_001d)
@@ -167,7 +171,7 @@ group_by(calvin,x)
 
 # ---- Plot_Von_bert_Curve ----
 
-plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass')
+plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass',type="l",main="Von Bertalanffy curve")
 
 # ---- Fish_Size_Distribution ----
 fish_weights=Mass[which(lifestage==4)]
