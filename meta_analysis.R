@@ -8,8 +8,8 @@ library(knitr)
 library(reshape2)
 library(dplyr)
 
-exp_type=c("complete","unlinked")
-exp_type=exp_type[1]
+exp_type_all=c("complete","unlinked","extended_unlinked")
+exp_type=exp_type_all[1]
 N=20
 meta_data=c()
 
@@ -101,12 +101,13 @@ write.csv(meta_data,file = paste0("meta_data_",exp_type,".csv"))
 ################################################
 meta_data=read.csv(paste0("meta_data_",exp_type,".csv"))[,-1]
 #Reload all the data and plot
-exp_type=c("complete","unlinked")
-meta_data1=read.csv(paste0("meta_data_",exp_type[1],".csv"))[,-1]
-meta_data2=read.csv(paste0("meta_data_",exp_type[2],".csv"))[,-1]
-all_data=rbind(meta_data1,meta_data2)
+meta_data1=read.csv(paste0("meta_data_",exp_type_all[1],".csv"))[,-1]
+meta_data1=cbind(1,meta_data1)
+meta_data2=read.csv(paste0("meta_data_",exp_type_all[2],".csv"))[,-1]
+meta_data3=read.csv(paste0("meta_data_",exp_type_all[3],".csv"))[,-1]
+all_data=rbind(meta_data1,meta_data2,meta_data3)
 head(all_data)
-xk=meta_data1[,12:14]
+xk=meta_data1[,13:15]
 xk_means=colMeans(xk)
 xk_vars=colVars(xk)
 y.sd <- apply(xk,2,sd)
@@ -123,9 +124,9 @@ barx=barplot(xk_means, ylim = c(0,max(xk_means+1.96*y.sd/10)),xlab="Phases",ylab
 error.bar(barx,xk_means,1.96*y.sd/10)
 
 
-all_data[,12:14]
+all_data[,13:15]
 
 
-plot(meta_data1[,12],meta_data2[,12])
+plot(meta_data1[,13],meta_data2[,12])
 plot(meta_data1[,13],meta_data2[,13])
 plot(meta_data1[,14],meta_data2[,14])
