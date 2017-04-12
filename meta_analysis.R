@@ -114,6 +114,13 @@ head(all_data)
 bar_surv_m=tapply(all_data$Survive_Fish,all_data$Exp,mean)
 bar_surv_sd=tapply(all_data$Survive_Fish,all_data$Exp,sd)
 tapply(all_data$Survive_Fish,all_data$Exp,summary)
+min_reqd_surv=all_data[all_data$Survive_Fish>1,"SimNum"]
+thingy=factor(min_reqd_surv$SimNum)
+good_exp=sum(summary(thingy)>1)#Number of simulations that have one "surv.sp" in all 3 experiments. careful bc i think surv.sp has a weird calculation
+good_exp
+paste0(good_exp*100/length(unique(all_data$SimNum)),"%")#Percentage of sims that have one "surv.sp" in all three experiments
+
+
 
 xk=meta_data1[,13:15]
 xk_means=colMeans(xk)
