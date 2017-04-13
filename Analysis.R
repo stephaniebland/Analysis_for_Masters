@@ -25,26 +25,30 @@ ts.plot(logB.year.end)#Plot year ends
 
 #Plot Invertebrates first
 type=t(species)*isfish
-matplot(matrix(rep(day,sum(type==0)),ncol=sum(type==0)),logB[,type==0],type='l',col=1,lty=1)#Plot each invertebrate and autotroph separately
+matplot(matrix(rep(day,sum(type==0)),ncol=sum(type==0)),logB[,type==0],type='l',col=1,lty=1,ylab="log Biomass", main="Invertebrates and Autotrophs, individual nodes",xlab="Time (days)")#Plot each invertebrate and autotroph separately
 
 matlines(matrix(rep(day,length(basalsp)),ncol=length(basalsp)),logB[,basalsp],type='l',col=2,lty=1)#Plot each autotroph separately
+legend("bottomleft",c("Invertebrates","Autotrophs"),col=1:2,lty=1)
 
-ts.plot(rowSums(logB[,type==0]))#Plot all invertebrate biomass (summed)
+ts.plot(log10(rowSums(B[,type==0])),xlab="Time (days)",ylab="log Biomass",main="Sum of all Non-Fish Biomass")#Plot all invertebrate biomass (summed)
 
 invert_no_fish=isfish
 invert_no_fish[basalsp]=1
-ts.plot(cbind(rowSums(logB[,invert_no_fish==0]),rowSums(logB[,basalsp])),col=1:2,lty=1)#Plot all invertebrate biomass (summed)
+ts.plot(cbind(log10(rowSums(B[,invert_no_fish==0])),log10(rowSums(B[,basalsp]))),col=1:2,lty=1,xlab="Time (days)",ylab="log Biomass",main="Summed Biomass for non-fish and autotrophs")#Plot all invertebrate biomass (summed)
+legend("bottomleft",c("Not Fish","Autotrophs"),col=1:2,lty=1)
+
 darkcols <- brewer.pal(8, "Dark2")
 color_i=0
 xkcd=species[isfish==1]
 xkcd=unique(xkcd)
+ts.plot(cbind(log10(rowSums(B[,invert_no_fish==0])),log10(rowSums(B[,basalsp]))),col=1:2,lty=1,xlab="Time (days)",ylab="log Biomass",main="with Fish",ylim=c(min(log10(rowSums(B[,xkcd]))),max(log10(rowSums(B[,invert_no_fish==0])))))#Plot all invertebrate biomass (summed)
 for (i in xkcd){
   color_i=color_i+1
   for (j in 1:max(lifestage)){
     single_lifestage=(t(type==i)*lifestage==j)
-    #matlines(t(day),logB[,single_lifestage],type='l',col=darkcols[color_i],lty=1+j,lwd=2)
+    matlines(t(day),logB[,single_lifestage],type='l',col=darkcols[color_i],lty=1+j,lwd=2)
   }
-  #matlines(t(day),rowSums(logB[,type==i]),type='l',col=darkcols[color_i],lwd=2)
+  #matlines(t(day),log10(rowSums(B[,type==i])),type='l',col=darkcols[color_i],lwd=2)
 }
 
 # ---- Analysis ----
@@ -77,15 +81,15 @@ hist(logB[30000,])
 
 
 #Try plotting the variance over time for heteroscedasticity
-plot(B[phase_start:phase_end,1],type='l')
+plot(B[phase_start:phase_end,1],type='l',xlab="Time (days)",ylab="Biomass",main="Biomass of one species in one phase, after stable")
 testing=matrix(B[phase_start:phase_end,1],100)
 trial=colVars(testing)
-ts.plot(trial)
+ts.plot(trial,xlab="Time (days)",ylab="Variance of Biomass",main="Variance of Biomass of one species in one phase, after stable")
 
 # ---- lag_diff_plot ----
 #Try differencing by lag 100
 logB_diff=logB[101:30000,]-logB[1:29900,]
-ts.plot(logB_diff[(5000:9000)+10000,-42])
+ts.plot(logB_diff[(5000:9000)+10000,-42],xlab="Time (days)",ylab="log of Biomass",main="Difference of log(Biomass) by 1 year")
 
 # ---- Stabilty ----
 data(knz_001d)
@@ -167,7 +171,7 @@ group_by(calvin,x)
 
 # ---- Plot_Von_bert_Curve ----
 
-plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass')
+plot(1:4,Mass[which(type==25),],xlab='Age',ylab='Mass',type="l",main="Von Bertalanffy curve")
 
 # ---- Fish_Size_Distribution ----
 fish_weights=Mass[which(lifestage==4)]
@@ -353,21 +357,91 @@ scatter3Drgl(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", t
 
 
 
-par(mfrow=c(1,1),mar=c(4,4,8,8))
+par(mfrow=c(1,1),mar=c(4,4,0,0))
 t_0=500
 t_f=dim(logB)[1]
-scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, bty = "g", type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple")
-t_scale=0.0001
+t_scale=0.000005
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0, type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple",zlim=c(min(xkcd3[t_0:t_f]),day[t_F]*t_scale+max(xkcd3[t_S:t_F])),xlim=c(min(xkcd1[t_0:t_f]),day[t_F]*t_scale+max(xkcd1[t_S:t_F])),perspbox=FALSE)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(max(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),min(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(min(xkcd2[t_S:t_F]),min(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(max(xkcd1[t_S:t_F]),max(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
+lines3D(c(min(xkcd1[t_S:t_F]),min(xkcd1[t_S:t_F])),c(max(xkcd2[t_S:t_F]),max(xkcd2[t_S:t_F])),c(min(xkcd3[t_S:t_F]),max(xkcd3[t_S:t_F])),col=1,add=TRUE,lwd=2,xlim=0:50)
 t_S=t_0; t_F=t_f
 for (i in 1:3){
   t_f=c(10000,20000,30000)[i]
   phase_col=c("darkgreen","red","blue")[i]
   lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
-  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
+  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2,xlim=0:50)
   
-  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2)
+  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
   
-  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2)
+  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
   t_0=t_f
 }
 legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
+
+
+
+
+
+
+
+par(mfrow=c(1,1),mar=c(4,4,2,2))
+t_0=500
+t_f=dim(logB)[1]
+t_scale=0.0001
+scatter3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f], phi = 0,bty="g", type = "l", ticktype = "detailed",xlab="Basal Species",ylab="Fish",zlab="Invertebrates",col="purple")
+t_S=t_0; t_F=t_f
+for (i in 1:3){
+  t_f=c(10000,20000,30000)[i]
+  phase_col=c("darkgreen","red","blue")[i]
+  lines3D(xkcd1[t_0:t_f],xkcd2[t_0:t_f],xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2)
+  lines3D(day[t_0:t_f-t_S+1]*t_scale+max(xkcd1[t_S:t_F]),rep(max(xkcd2[t_S:t_F]),t_f-t_0+1),xkcd3[t_0:t_f],col=phase_col,add=TRUE,lwd=2,xlim=0:50)
+  
+  lines3D(xkcd1[t_0:t_f],rep(min(xkcd2[t_S:t_F]),t_f-t_0+1),day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
+  
+  lines3D(rep(max(xkcd1[t_S:t_F]),t_f-t_0+1),xkcd2[t_0:t_f],day[t_0:t_f-t_S+1]*t_scale+max(xkcd3[t_S:t_F]),col=phase_col,add=TRUE,lwd=2,ylim=0:50)
+  t_0=t_f
+}
+legend(-0.35,0.2,legend=c("Pre-fishing","Fishing","Recovery"),col=c("darkgreen","red","blue"),lwd=2)
+
+
+# ---- ACFs ----
+par(mar=c(4,4,4,2))
+hobbes1=acf(xkcd1,lag.max=400,main="Basal Species")
+hobbes2=acf(xkcd2,lag.max=400,main="Fish")
+hobbes3=acf(xkcd3,lag.max=400,main="Invertebrates")
+hobbes4=acf(rnorm(400),lag.max = 400)
+
+hobbes1=as.numeric(as.vector(unlist(hobbes1))[1:400])
+hobbes2=as.numeric(as.vector(unlist(hobbes2))[1:400])
+hobbes3=as.numeric(as.vector(unlist(hobbes3))[1:400])
+hobbes4=as.numeric(as.vector(unlist(hobbes4))[1:400])
+
+sum(abs(hobbes1))
+sum(abs(hobbes2))
+sum(abs(hobbes3))
+sum(abs(hobbes4))
+
+plot(c(min(hobbes1,hobbes2),1),c(min(hobbes1,hobbes2),1),type="l",xlab="Basal Species",ylab="Fish")
+lines(hobbes1,hobbes2,type="l",add=T)
+plot(c(min(hobbes1,hobbes3),1),c(min(hobbes1,hobbes3),1),type="l",xlab="Basal Species",ylab="Invertebrates")
+lines(hobbes1,hobbes3,type="l",add=T)
+plot(c(min(hobbes2,hobbes3),1),c(min(hobbes2,hobbes3),1),type="l",xlab="Fish",ylab="Invertebrates")
+lines(hobbes2,hobbes3,type="l",add=T)
+plot(hobbes2,hobbes3,type="l",add=T)
+
+
+scatter3Drgl(hobbes1,hobbes2,hobbes3, type="l",xlab="Basal Species",ylab="Fish",zlab="Invertebrates")
+
+
+
+
+
