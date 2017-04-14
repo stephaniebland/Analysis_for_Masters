@@ -42,6 +42,8 @@ colnames(B)=paste0('Node_',1:nichewebsize)
 inverts_only=setdiff(which(isfish==0),basalsp) #Find invertebrates (not fish or autotrophs)
 fish_names=unique(species[isfish==1]) #The species number for fish
 yr_ls=cumsum(unlist(num.years)) # Cumulative sums of years for phases
+
+# ---- DATA_FOR_TAPPLY ----
 # 1 - add in columns for sum of nodes so we have biomass of groups of species (like all fish)
 #Fish total per species
 Fish_tot_per_sp_df=c()
@@ -68,12 +70,9 @@ inverts_tot_df=rowSums(B[,inverts_only])#Total Biomass of invertebrates only
 #Bind them to regular Data frame
 B_df=cbind(B,Fish_tot_per_sp_df,Fish_tot_per_ls_df,Tot_df,Fish_tot_df,non_fish_df,basal_tot_df,inverts_tot_df)
 
-
-B_df[seq(1,1000,by=100),]
-B_df[1:5,]
-# 2 melt data so [i j B] = [day, node (or sum of nodes), Biomass]
+# 2 Melt data so [i j B] = [day, node (or sum of nodes), Biomass]
 first_melt=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
-head(first_melt)
+# 3 Add columns into melt for each category:
 first_melt$Calen_df=(first_melt$Day_df-1)%%(L.year)+1
 first_melt$Year_df=(first_melt$Day_df-1)%/%L.year+1
 for (item in length(num.years):1){
@@ -83,20 +82,6 @@ first_melt$yr_in_phase=first_melt$Year_df-c(0,yr_ls)[first_melt$Phase_df]
 first_melt[,"Seed"]=c(seed_0)
 first_melt[,"Simnum"]=c(simnum)
 first_melt[,"Exper"]=c(Exper)
-
-
-
-ts.plot(first_melt[first_melt$Nodes_df=="Node_1",7])
-
-first_melt[997:1005,]
-first_melt[1:105,]
-first_melt[9990:10005,]
-# 3 melt data again, but this time they're categorized according to new columns for year, phase, and what not. 
-B_df_ncol=dim(B_df)[2]
-B_df=cbind(B_df)
-B_df_other=melt(B_df, id.vars=c("Year_df","calen_df"), measure.vars =(1:nichewebsize)+2)[,c(3,1,2,4)]
-# 4 Extract data - pull out means and vars for each node(or sum of nodes), and 
-# We can do this in the second analysis file!
 
 
 
