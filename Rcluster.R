@@ -93,6 +93,21 @@ melt_B.yr.end$Day_df=melt_B.yr.end$Day_df*100
 melt_B=melt_new_col(melt_B)
 melt_B.yr.end=melt_new_col(melt_B.yr.end)
 
+# ---- SURVIVING_SPECIES ----
+
+B.year.end[yr_ls,]>c(ext.thresh)
+B.year.end[yr_ls,]>0
+
+extant=which(B[tot_days,]>0)
+extinct=which(B[tot_days,]==0)
+
+################################################
+############### Sample Plots ###################
+################################################
+samp_plot=1:10
+if (simnum %in% samp_plot){
+  matplot(matrix(log10(Mass[species %in% fish_names]),max(lifestage),length(fish_names)),type="l",lwd=3,xlab="Lifestage",ylab="Individual Body Mass (log10)",main="Von Bertalanffy curve")
+}
 ################################################
 ################## Save Data ###################
 ################################################
