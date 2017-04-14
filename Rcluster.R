@@ -10,7 +10,7 @@
 ############### Temp Testing ###################
 ################################################
 rm(list=ls())
-k=1
+k_val=1
 setwd("/Users/JurassicPark/Google Drive/GIT/Analysis")
 library(R.matlab)
 library(matrixStats)
@@ -83,6 +83,7 @@ melt_new_col=function(melted_df){
   melted_df[,"Seed"]=c(seed_0)
   melted_df[,"Simnum"]=c(simnum)
   melted_df[,"Exper"]=c(Exper)
+  melted_df[,"k_val"]=c(k_val)
   result=melted_df
 }
 
@@ -102,6 +103,11 @@ melt_B
 melt_B.yr.end
 
 
+################################################
+############# May be of interest ###############
+################################################
+matplot(log10(t(tail(tapply(melt_B.yr.end$Biomass,list(melt_B.yr.end$Nodes_df,melt_B.yr.end$Phase_df),mean)))),type="l",lwd=3, xlab="Phase",ylab="Mean of Biomass (log)")
+legend("bottomleft",c("fish adults","Tot_B","fish","nonfish","Basal","inverts"),col=1:6,lty=1:6,lwd=3)
 
-
-
+matplot((t(tail(tapply(melt_B.yr.end$Biomass,list(melt_B.yr.end$Nodes_df,melt_B.yr.end$Phase_df),mean)))),type="l",lwd=3, xlab="Phase",ylab="Mean of Biomass")
+legend("bottomleft",c("fish adults","Tot_B","fish","nonfish","Basal","inverts"),col=1:6,lty=1:6,lwd=3)
