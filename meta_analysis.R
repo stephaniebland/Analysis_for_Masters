@@ -17,31 +17,81 @@ for (j in 158){#1:N){
   sim_data=readMat(paste0(exp_type,"_",j,".mat"))
   #names(sim_data)
   attach(sim_data)
-  
+  B_test=B
   ################################################
   ################ RESHAPE DATA ##################
   ################################################
   #I THINK THIS PART IS BROKEN IF YEARS CHANGE FROM PHASE TO PHASE
+  B=B_test
+  
+  
+  #First step - add in columns for sum of nodes so 'fish'= whatnot
+  cbind(B, newcolumnweadd)
+  # 2 melt data so [i j B] = [day, node (or sum of nodes), Biomass]
+  # 3 melt data again, but this time they're categorized according to new columns for year, phase, and what not. 
+  # 4 Extract data - pull out means and vars for each node(or sum of nodes), and 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   #First step:  Find the biomass by day (days_df type, so complete) and node:
   B_df_days=setNames(melt(B)[,c(2, 1, 3)], c('Nodes_df', 'Day_df', 'Biomass'))# Melt the data frame of B=b_ij into [j, i, biomass]=[nodes,day, biomass]
   
+  #Second step: 
+  #colnames(B)=1:nichewebsize# Rename columns to those of the nodes
+  
+  
+  
+  
+  
   #Second step:  
   B_df=as.data.frame(B)# Convert biomass B to data frame
   colnames(B_df)=1:nichewebsize# Rename columns to those of the nodes
-  
-  
+  B_df[1:5,]  
   
   tot_yrs=sum(unlist(num.years)) # Find total number of years
   tot_days=tot_yrs*L.year
   B_df=cbind(Year_df=as.integer(year.index),calen_df=rep.int(1:L.year,tot_yrs),B_df)
   B_df_years=melt(B_df, id.vars=c("Year_df","calen_df"), measure.vars =(1:nichewebsize)+2)[,c(3,1,2,4)]
   
+  B_df_years[1:5,]
+  
   #Compile data, reorder, and rename:
   B_df=cbind(B_df_years,B_df_days[,2])[,c(1:3,5,4)]
   B_df=setNames(B_df, c('Nodes_df','Year_df', 'calen_df','Days_df','Biomass'))
   #B_df[,1]=as.integer(B_df[,1])#get rid of levels
   B_df[1:5,]#Double check
+  B_df_days[1:5,]
+  head(B)
+  typeof(B_df_days[1,1])
+  typeof(B[1,1])
+  
+  ################################################
+  # Check if I can pull out one node
+  tryB=B_df
+  tryB[1:5,]#Double check
+  species2use=1:4
+  tryB=tryB[tryB$Nodes_df==species2use,]#Pull out the species you want
+  factor(tryB$Nodes_df)#Check
+  tryB=cbind(tryB,'Phase'=rep(1:4,length=dim(tryB)[1]/4))
+  tryB[1:5,]
+  
+  tapply(tryB$Biomass,list(tryB$Phase),mean)
+  tapply(tryB$Biomass,list(tryB$Nodes_df,tryB$Phase),mean)[species2use,]
+  
+  #Sure, but it's probably better just to enter separate nodes for groups of species - and prob easiest to just enter that in the original B file (save back up) - so a new column for row sums across species.
+  
   
   ################################################
   ################ DATA SUBSETS ##################
