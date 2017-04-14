@@ -98,7 +98,8 @@ melt_B.yr.end=melt_new_col(melt_B.yr.end)
 # Last line is Data entry into matrix, because line should only be entered if all data was collected
 # It loads it into line k for the data matrix. 
 c(seed_0,simnum,Exper)
-first_melt
+melt_B
+melt_B.yr.end
 
 
 
