@@ -69,8 +69,6 @@ lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have bio
   #Bind them to regular Data frame
   B_df=cbind(B_mat,Fish_tot_per_sp_df,Fish_tot_per_ls_df,Tot_df,Fish_tot_df,non_fish_df,basal_tot_df,inverts_tot_df)
   B_df=as.matrix(B_df)
-  # 2 Melt data so [i j B] = [day, node (or sum of nodes), Biomass]
-  first_melt=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
 }
 
 melt_new_col=function(melted_df){
@@ -88,8 +86,12 @@ melt_new_col=function(melted_df){
   result=melted_df
 }
 
-melt_B=lump_Bio_sums(B)
-melt_B.yr.end=lump_Bio_sums(B_year_end)
+B_df=lump_Bio_sums(B)
+B_df_yr_ends=lump_Bio_sums(B_year_end)
+# 2 Melt data so [i j B] = [day, node (or sum of nodes), Biomass]
+melt_B=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
+melt_B.yr.end=setNames(melt(B_df_yr_ends), c('Day_df','Nodes_df','Biomass'))
+
 melt_B.yr.end$Day_df=melt_B.yr.end$Day_df*100
 melt_B=melt_new_col(melt_B)
 melt_B.yr.end=melt_new_col(melt_B.yr.end)
