@@ -11,23 +11,6 @@
 ################################################
 rm(list=ls())
 k_val=1
-setwd("/Users/JurassicPark/Google Drive/GIT/Analysis")
-library(R.matlab)
-library(matrixStats)
-library(RColorBrewer)
-library(codyn)
-library(knitr)
-library(reshape2)
-library(dplyr)
-
-exp_type_all=c("complete","extended_unlinked","origweb")
-exp_type=exp_type_all[1]
-sim_data=readMat(paste0(exp_type,"_",k_val,".mat"))
-#names(sim_data)
-attach(sim_data)
-
-
-################################################
 seed_0=0
 simnum=1
 lifestages_linked=1
