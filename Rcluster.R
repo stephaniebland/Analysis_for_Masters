@@ -107,7 +107,15 @@ extinct=which(B[tot_days,]==0)
 ################################################
 samp_plot=1:10
 if (simnum %in% samp_plot){
+  # Von Bertalanffy curve
   matplot(matrix(log10(Mass[species %in% fish_names]),max(lifestage),length(fish_names)),type="l",lwd=3,xlab="Lifestage",ylab="Individual Body Mass (log10)",main="Von Bertalanffy curve")
+  # Phase Diagrams
+  library(plot3D)
+  xkcd=log10(B[,1])
+  lag_h=0.21#0.21 is nice
+  xkcd_h=lag(xkcd,n=L_year*lag_h)
+  xkcd_2h=lag(xkcd,n=L_year*lag_h*2)
+  lines3D(xkcd,xkcd_h,xkcd_2h)
 }
 ################################################
 ################## Save Data ###################
