@@ -22,7 +22,7 @@ library(dplyr)
 
 exp_type_all=c("complete","extended_unlinked","origweb")
 exp_type=exp_type_all[1]
-sim_data=readMat(paste0(exp_type,"_",k,".mat"))
+sim_data=readMat(paste0(exp_type,"_",k_val,".mat"))
 #names(sim_data)
 attach(sim_data)
 
@@ -42,14 +42,13 @@ setwd("/Users/JurassicPark/Google Drive/GIT/Analysis/trash2")
 name=paste0("BLANDseed",seed_0,"_sim",simnum,"_link",lifestages_linked,"_AdultOnly",Adults_only,"_Exper",Exper)
 
 import_vars_sim=c('B','B_year_end','B_stable_phase')
-import_vars_web=c('isfish','basalsp','species','numyears','nichewebsize','ext_thresh','N_stages')
+import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass')
 import_vars=c(import_vars_sim,import_vars_web)
 for (item in 1:length(import_vars)){
   trial=paste0(name,"_",import_vars[item],".txt")
-  trial=read.csv(trial,header=F)
+  trial=as.matrix(read.csv(trial,header=F))
   do.call("<-",list(import_vars[item], trial))
 }
-nichewebsize=as.integer(nichewebsize)
 
 ################################################
 ############### Extract Data ###################
@@ -71,11 +70,11 @@ lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have bio
   
   #Fish total per lifestage
   Fish_tot_per_ls_df=c()
-  for (item in 1:max(N.stages)){
+  for (item in 1:max(N_stages)){
     fish_stages=(lifestage==item & t(isfish)==1)
     Fish_tot_per_ls_df=cbind(Fish_tot_per_ls_df,rowSums(B_mat[,fish_stages]))
   }
-  colnames(Fish_tot_per_ls_df)=paste0('Fish_ls_',1:max(N.stages))
+  colnames(Fish_tot_per_ls_df)=paste0('Fish_ls_',1:max(N_stages))
   
   #Find sum of basic categories
   Tot_df=rowSums(B_mat)
@@ -86,14 +85,15 @@ lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have bio
   
   #Bind them to regular Data frame
   B_df=cbind(B_mat,Fish_tot_per_sp_df,Fish_tot_per_ls_df,Tot_df,Fish_tot_df,non_fish_df,basal_tot_df,inverts_tot_df)
+  B_df=as.matrix(B_df)
   # 2 Melt data so [i j B] = [day, node (or sum of nodes), Biomass]
   first_melt=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
 }
 
 melt_new_col=function(melted_df){
   # 3 Add columns into melt for each category:
-  melted_df$Calen_df=(melted_df$Day_df-1)%%(L.year)+1
-  melted_df$Year_df=(melted_df$Day_df-1)%/%L.year+1
+  melted_df$Calen_df=(melted_df$Day_df-1)%%(L_year)+1
+  melted_df$Year_df=(melted_df$Day_df-1)%/%L_year+1
   for (item in length(numyears):1){
     melted_df$Phase_df[melted_df$Year_df <=yr_ls[item]]=item
   }
@@ -106,15 +106,15 @@ melt_new_col=function(melted_df){
 }
 
 melt_B=lump_Bio_sums(B)
-melt_B.yr.end=lump_Bio_sums(B.year.end)
+melt_B.yr.end=lump_Bio_sums(B_year_end)
 melt_B.yr.end$Day_df=melt_B.yr.end$Day_df*100
 melt_B=melt_new_col(melt_B)
 melt_B.yr.end=melt_new_col(melt_B.yr.end)
 
 # ---- SURVIVING_SPECIES ----
 
-B.year.end[yr_ls,]>c(ext_thresh)
-B.year.end[yr_ls,]>0
+B_year_end[yr_ls,]>c(ext_thresh)
+B_year_end[yr_ls,]>0
 
 extant=which(B[tot_days,]>0)
 extinct=which(B[tot_days,]==0)
