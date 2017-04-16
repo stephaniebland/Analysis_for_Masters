@@ -26,12 +26,30 @@ sim_data=readMat(paste0(exp_type,"_",k,".mat"))
 #names(sim_data)
 attach(sim_data)
 
+
+################################################
+seed_0=0
+simnum=1
+lifestages_linked=1
+Adults_only=0
+Exper=1
+
+
 ################################################
 ############### Read in Data ###################
 ################################################
-B
-isfish
+setwd("/Users/JurassicPark/Google Drive/GIT/Analysis/trash2")
+name=paste0("BLANDseed",seed_0,"_sim",simnum,"_link",lifestages_linked,"_AdultOnly",Adults_only,"_Exper",Exper)
 
+import_vars_sim=c('B','B_year_end','B_stable_phase')
+import_vars_web=c('isfish','basalsp','species','numyears','nichewebsize','ext_thresh','N_stages')
+import_vars=c(import_vars_sim,import_vars_web)
+for (item in 1:length(import_vars)){
+  trial=paste0(name,"_",import_vars[item],".txt")
+  trial=read.csv(trial,header=F)
+  do.call("<-",list(import_vars[item], trial))
+}
+nichewebsize=as.integer(nichewebsize)
 
 ################################################
 ############### Extract Data ###################
@@ -39,7 +57,7 @@ isfish
 # Set up - helpful data reformatting:
 inverts_only=setdiff(which(isfish==0),basalsp) #Find invertebrates (not fish or autotrophs)
 fish_names=unique(species[isfish==1]) #The species number for fish
-yr_ls=cumsum(unlist(num.years)) # Cumulative sums of years for phases
+yr_ls=cumsum(unlist(numyears)) # Cumulative sums of years for phases
 
 # ---- DATA_FOR_TAPPLY ----
 lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have biomass of groups of species (ex. all fish)
@@ -76,7 +94,7 @@ melt_new_col=function(melted_df){
   # 3 Add columns into melt for each category:
   melted_df$Calen_df=(melted_df$Day_df-1)%%(L.year)+1
   melted_df$Year_df=(melted_df$Day_df-1)%/%L.year+1
-  for (item in length(num.years):1){
+  for (item in length(numyears):1){
     melted_df$Phase_df[melted_df$Year_df <=yr_ls[item]]=item
   }
   melted_df$yr_in_phase=melted_df$Year_df-c(0,yr_ls)[melted_df$Phase_df]
@@ -95,7 +113,7 @@ melt_B.yr.end=melt_new_col(melt_B.yr.end)
 
 # ---- SURVIVING_SPECIES ----
 
-B.year.end[yr_ls,]>c(ext.thresh)
+B.year.end[yr_ls,]>c(ext_thresh)
 B.year.end[yr_ls,]>0
 
 extant=which(B[tot_days,]>0)
