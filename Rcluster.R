@@ -10,12 +10,13 @@
 ############### Temp Testing ###################
 ################################################
 rm(list=ls())
+library(reshape2)
 k_val=1
 seed_0=0
 simnum=1
+Exper=1
 lifestages_linked=1
 Adults_only=0
-Exper=1
 
 
 ################################################
@@ -40,6 +41,10 @@ for (item in 1:length(import_vars)){
 inverts_only=setdiff(which(isfish==0),basalsp) #Find invertebrates (not fish or autotrophs)
 fish_names=unique(species[isfish==1]) #The species number for fish
 yr_ls=cumsum(unlist(numyears)) # Cumulative sums of years for phases
+yr_ls_start=yr_ls-numyears
+Timegroups=cbind(yr_ls_start,yr_ls,numyears)
+Timegroups=cbind(Timegroups,Timegroups*c(L_year))
+colnames(Timegroups)=c("Year_start","Year_end","Year_length","Day_start","Day_end","Days_length")
 
 # ---- DATA_FOR_TAPPLY ----
 lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have biomass of groups of species (ex. all fish)
@@ -111,13 +116,33 @@ samp_plot=1:10
 if (simnum %in% samp_plot){
   # Von Bertalanffy curve
   matplot(matrix(log10(Mass[species %in% fish_names]),max(lifestage),length(fish_names)),type="l",lwd=3,xlab="Lifestage",ylab="Individual Body Mass (log10)",main="Von Bertalanffy curve")
+  #dev.print()
   # Phase Diagrams
   library(plot3D)
-  xkcd=log10(B[,1])
+  library(plot3Drgl)
+  xkcd=log10(B_df[,5])
   lag_h=0.21#0.21 is nice
   xkcd_h=lag(xkcd,n=L_year*lag_h)
   xkcd_2h=lag(xkcd,n=L_year*lag_h*2)
   lines3D(xkcd,xkcd_h,xkcd_2h)
+  # Species plot against each other
+  t_0=500
+  t_f=dim(B)[1]
+  
+  plot_time=Timegroups[2,"Day_start"]:Timegroups[2,"Day_end"]
+  xkcd1=log10(B_df[plot_time,"Fish_tot_df"])
+  xkcd2=log10(B_df[plot_time,"basal_tot_df"])
+  xkcd3=log10(B_df[plot_time,"inverts_tot_df"])
+  scatter3Drgl(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of All Fish (log)",ylab="Biomass of All Autotrophs (log)",zlab="Biomass of All Invertebrates (log)")
+  mtext(side = 3, text = "Sum all lifestages", line = -2.5)
+  
+  
+  plot_time=Timegroups[2,"Year_start"]:Timegroups[2,"Year_end"]
+  xkcd1=log10(B_df_yr_ends[plot_time,"Fish_tot_df"])
+  xkcd2=log10(B_df_yr_ends[plot_time,"basal_tot_df"])
+  xkcd3=log10(B_df_yr_ends[plot_time,"inverts_tot_df"])
+  scatter3Drgl(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of All Fish (log)",ylab="Biomass of All Autotrophs (log)",zlab="Biomass of All Invertebrates (log)")
+  mtext(side = 3, text = "Sum all lifestages", line = -2.5)
 }
 ################################################
 ################## Save Data ###################

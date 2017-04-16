@@ -276,7 +276,7 @@ par(mfrow=c(1,1),mar=c(2,2,1,1))
 lag_h=55
 for (i in 1){# Plot for different fish species
   t_0=500
-  t_f=dim(logB)[1]
+  t_f=dim(B)[1]
   xkcd1=log10(rowSums(B[t_0:t_f,7:10]))
   xkcd2=log10(rowSums(B[t_0:t_f,19:22]))
   xkcd3=log10(rowSums(B[t_0:t_f,37:40]))
