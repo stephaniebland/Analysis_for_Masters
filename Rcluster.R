@@ -31,6 +31,7 @@ import_vars=c(import_vars_sim,import_vars_web)
 for (item in 1:length(import_vars)){
   trial=paste0(name,"_",import_vars[item],".txt")
   trial=as.matrix(read.csv(trial,header=F))
+  #if (sum(dim(trial))==2) {trial=as.integer(trial)}
   do.call("<-",list(import_vars[item], trial))
 }
 
