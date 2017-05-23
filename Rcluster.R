@@ -16,7 +16,6 @@ lifestages_linked=1
 Adults_only=0
 DATE="2017May22"
 Version="0"
-#k_val=1
 #simnum=1
 #Exper=1
 for (simnum in 1:5){
@@ -91,7 +90,6 @@ for (simnum in 1:5){
       melted_df[,"Seed"]=c(seed_0)
       melted_df[,"Simnum"]=c(simnum)
       melted_df[,"Exper"]=c(Exper)
-      #melted_df[,"k_val"]=c(k_val)
       result=melted_df
     }
     
@@ -156,9 +154,15 @@ for (simnum in 1:5){
     c(seed_0,simnum,Exper)
     #melt_B
     melt_B.yr.end
-    write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F)
+    write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F,row.names = F)
   }
 }
+alldata=read.table("melted.txt",header=F)
+colnames(alldata)=colnames(melt_B.yr.end)
+subdat=alldata
+subdat=subdat[subdat$Year_df>3,]
+subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
+tapply(subdat$Biomass,subdat$Exper,mean)
 
 
 ################################################
