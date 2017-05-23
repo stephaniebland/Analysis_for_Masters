@@ -18,11 +18,11 @@ DATE="2017May22"
 Version="0"
 #simnum=1
 #Exper=1
-for (simnum in 1:5){
 location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
+for (simnum in 1:5){
   for (Exper in 1:3){
     ################################################
     ############### Read in Data ###################
