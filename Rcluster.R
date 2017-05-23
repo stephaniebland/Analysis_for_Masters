@@ -162,9 +162,11 @@ setwd(paste0("~/",location,"/",run_name))
 alldata=read.table("Melted.txt",header=F)
 colnames(alldata)=colnames(melt_B.yr.end)
 subdat=alldata
-subdat=subdat[subdat$Year_df>3,]
 subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
-tapply(subdat$Biomass,subdat$Exper,mean)
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),mean)
+subdat=alldata
+subdat=subdat[subdat$Phase_df==2,]
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),mean)
 
 
 ################################################
