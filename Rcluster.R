@@ -11,21 +11,24 @@
 ################################################
 rm(list=ls())
 library(reshape2)
-k_val=1
 seed_0=0
-simnum=1
-Exper=1
 lifestages_linked=1
 Adults_only=0
-
-
+DATE="2017May22"
+Version="0"
+#k_val=1
+#simnum=1
+#Exper=1
+for (simnum in 1:5){
+  for (Exper in 1:3){
 ################################################
 ############### Read in Data ###################
 ################################################
-setwd("/Users/JurassicPark/Google Drive/GIT/Analysis/trash2")
-name=paste0("BLANDseed",seed_0,"_sim",simnum,"_link",lifestages_linked,"_AdultOnly",Adults_only,"_Exper",Exper)
+run_name=paste0(DATE,"_",Version)
+setwd(paste0("~/GIT/Analysis/",run_name))
+name=paste0(run_name,"_seed",seed_0,"_sim",simnum,"_Exper",Exper)
 
-import_vars_sim=c('B','B_year_end','B_stable_phase')
+import_vars_sim='B_year_end'#c('B','B_year_end','B_stable_phase')
 import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass')
 import_vars=c(import_vars_sim,import_vars_web)
 for (item in 1:length(import_vars)){
@@ -88,18 +91,18 @@ melt_new_col=function(melted_df){
   melted_df[,"Seed"]=c(seed_0)
   melted_df[,"Simnum"]=c(simnum)
   melted_df[,"Exper"]=c(Exper)
-  melted_df[,"k_val"]=c(k_val)
+  #melted_df[,"k_val"]=c(k_val)
   result=melted_df
 }
 
-B_df=lump_Bio_sums(B)
+#B_df=lump_Bio_sums(B)
 B_df_yr_ends=lump_Bio_sums(B_year_end)
 # 2 Melt data so [i j B] = [day, node (or sum of nodes), Biomass]
-melt_B=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
+#melt_B=setNames(melt(B_df), c('Day_df','Nodes_df','Biomass'))
 melt_B.yr.end=setNames(melt(B_df_yr_ends), c('Day_df','Nodes_df','Biomass'))
 
 melt_B.yr.end$Day_df=melt_B.yr.end$Day_df*100
-melt_B=melt_new_col(melt_B)
+#melt_B=melt_new_col(melt_B)
 melt_B.yr.end=melt_new_col(melt_B.yr.end)
 
 # ---- SURVIVING_SPECIES ----
@@ -107,8 +110,8 @@ melt_B.yr.end=melt_new_col(melt_B.yr.end)
 B_year_end[yr_ls,]>c(ext_thresh)
 B_year_end[yr_ls,]>0
 
-extant=which(B[tot_days,]>0)
-extinct=which(B[tot_days,]==0)
+#extant=which(B[tot_days,]>0)
+#extinct=which(B[tot_days,]==0)
 
 ################################################
 ############### Sample Plots ###################
@@ -151,8 +154,11 @@ if (simnum %in% samp_plot){
 # Last line is Data entry into matrix, because line should only be entered if all data was collected
 # It loads it into line k for the data matrix. 
 c(seed_0,simnum,Exper)
-melt_B
+#melt_B
 melt_B.yr.end
+write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F)
+  }
+}
 
 
 ################################################
