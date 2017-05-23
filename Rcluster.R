@@ -19,12 +19,14 @@ Version="0"
 #simnum=1
 #Exper=1
 for (simnum in 1:5){
+location="/GIT/Analysis"#For Running on my Mac
+#location=""#For Clusters
+run_name=paste0(DATE,"_",Version)
+setwd(paste0("~/",location,"/",run_name))
   for (Exper in 1:3){
     ################################################
     ############### Read in Data ###################
     ################################################
-    run_name=paste0(DATE,"_",Version)
-    setwd(paste0("~/GIT/Analysis/",run_name))
     name=paste0(run_name,"_seed",seed_0,"_sim",simnum,"_Exper",Exper)
     
     import_vars_sim='B_year_end'#c('B','B_year_end','B_stable_phase')
@@ -157,7 +159,7 @@ for (simnum in 1:5){
     write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F,row.names = F)
   }
 }
-alldata=read.table("melted.txt",header=F)
+alldata=read.table("Melted.txt",header=F)
 colnames(alldata)=colnames(melt_B.yr.end)
 subdat=alldata
 subdat=subdat[subdat$Year_df>3,]
