@@ -14,7 +14,7 @@ library(reshape2)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
-DATE="2017May22"
+DATE="2017May23"
 Version="0"
 #simnum=1
 #Exper=1
@@ -22,7 +22,7 @@ location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
-for (simnum in 1:5){
+for (simnum in 1:100){
   for (Exper in 1:3){
     ################################################
     ############### Read in Data ###################
@@ -157,6 +157,7 @@ for (simnum in 1:5){
     #melt_B
     melt_B.yr.end
     write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F,row.names = F)
+    print(simnum)
   }
 }
 alldata=read.table("Melted.txt",header=F)
@@ -164,10 +165,57 @@ colnames(alldata)=colnames(melt_B.yr.end)
 subdat=alldata
 subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
 tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),mean)
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),var)
 subdat=alldata
 subdat=subdat[subdat$Phase_df==2,]
 tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),mean)
-
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),var)
+# Now try Repeated Measures ANOVA
+# https://datascienceplus.com/two-way-anova-with-repeated-measures/
+subdat=alldata
+subdat=subdat[subdat$Phase_df==2,]
+subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
+myData.mean <- aggregate(subdat$Biomass,by=list(subdat$Simnum,subdat$Exper), FUN = 'mean')
+colnames(myData.mean) <- c("Simnum_a","Exper_a","Biomass_a")
+myData.mean <- myData.mean[order(myData.mean$Simnum_a), ]
+head(myData.mean)
+stress.aov <- with(myData.mean,aov(Biomass_a~Exper_a +Error(Simnum_a / (Exper_a))))
+summary(stress.aov)
+# Ok so no differences yet. Let's look at extinctions instead.
+subdat=alldata
+subdat=subdat[subdat$Year_df==max(subdat$Year_df),] # Only use data once it's stable; assume all plots reach stability (no multi-year cycles)
+subdat=subdat[grep("Node_",subdat$Nodes_df),] # Only look at individual nodes
+subdat=subdat[subdat$Biomass!=0,] # Find all non-extinct species
+head(subdat)
+dim(subdat)
+extant_counts=tapply(subdat$Nodes_df, list(subdat$Simnum,subdat$Exper), function(x) length(unique(x))) 
+extant_counts[is.na(extant_counts)]=0
+colMeans(extant_counts)
+diag(var(extant_counts))
+melt_counts=melt(extant_counts); colnames(melt_counts)=c("Simnum_b","Exper_b","Count_extant")
+head(melt_counts)
+stress.aov <- with(melt_counts,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
+#Now try the same thing, but just with fish species
+subdat=alldata
+subdat=subdat[subdat$Year_df==max(subdat$Year_df),] # Only use data once it's stable; assume all plots reach stability (no multi-year cycles)
+subdat=subdat[grep("Fish_sp_",subdat$Nodes_df),] # Only look at individual nodes
+subdat=subdat[subdat$Biomass!=0,] # Find all non-extinct species
+head(subdat)
+dim(subdat)
+extant_counts=tapply(subdat$Nodes_df, list(subdat$Simnum,subdat$Exper), function(x) length(unique(x))) 
+extant_counts[is.na(extant_counts)]=0
+colMeans(extant_counts)
+diag(var(extant_counts))
+melt_counts=melt(extant_counts); colnames(melt_counts)=c("Simnum_b","Exper_b","Count_extant")
+head(melt_counts)
+stress.aov <- with(melt_counts,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
+# Now try between the first two experiments
+first_two_Exper=melt_counts
+first_two_Exper=first_two_Exper[first_two_Exper$Exper_b<3,]
+stress.aov <- with(first_two_Exper,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
 
 ################################################
 ############# May be of interest ###############
