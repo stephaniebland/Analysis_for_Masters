@@ -247,7 +247,7 @@ pcastuff=pcastuff[c("Fish_tot_df","inverts_tot_df","basal_tot_df"),,]
 library(plot3Drgl)
 library(plot3D)
 #scatter3Drgl(pcastuff[1,,],pcastuff[2,,],pcastuff[3,,])
-scatter3D(pcastuff[1,,],pcastuff[2,,],pcastuff[3,,],xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass for each group",colkey=F,col=0)
+scatter3D(pcastuff[1,,],pcastuff[2,,],pcastuff[3,,],xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,col=0)
 legend(0.1,.45,1:3,col=1:3,pch=1,title="Experiment")
 for (i in 1:3){
   #plot(pcastuff[1,,i],pcastuff[2,,i],col=i,add=T)
