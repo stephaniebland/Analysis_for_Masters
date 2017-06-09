@@ -97,16 +97,14 @@ Everything in this section should be accurate regardless of the data set.
 Run a PCA with each experiment as a different colour.
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
-		pca_groups=tapply(alldata$Biomass,list(alldata$Nodes_df,alldata$Simnum,alldata$Exper),mean)
-		pca_groups=pca_groups[c("Fish_tot_df","inverts_tot_df","basal_tot_df"),,]
-		scatter3D(pca_groups[1,,], pca_groups[2,,], pca_groups[3,,],xlab="Fish", ylab="Invertebrates", zlab="Autotrophs", main="Total Biomass For Each Group", colkey=F, col=0)
+		pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+		pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
+		scatter3D(pca_groups[,1,],pca_groups[,2,],pca_groups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_groups)[1]))
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
-		for (i in 1:N_Exper){
-			scatter3D(pca_groups[1,,i],pca_groups[2,,i],pca_groups[3,,i],col=i,add=T)
-		}
 	@
-	\caption{A PCA plot where the dimensions represent different groups (fish, invertebrates, autotrophs).}
+	\caption{A PCA plot where the dimensions represent the total biomass of different groups (fish, invertebrates, autotrophs).}
 \end{figure}
+So that didn't work out too well, because the data is too extreme. Let's try logging it first
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
 		pca_lstages=tapply(alldata$Biomass,list(alldata$Nodes_df,alldata$Simnum,alldata$Exper),mean)
