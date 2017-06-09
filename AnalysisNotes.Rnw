@@ -1,0 +1,79 @@
+\documentclass{article}
+\newcommand{\CustomPackage}{"/Users/Velociraptor/GIT/LaTeX_Packages/"}
+\usepackage{\CustomPackage wrapRcode}
+\usepackage{\CustomPackage nicequotes}
+\usepackage{\CustomPackage easybrackets}
+\usepackage{listings}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+<<wrapRcode,echo=FALSE,warning=FALSE>>=
+  	library(knitr)
+ 	options(width=60)
+	listing=function(x,options){paste("\\begin{lstlisting}[style=printcode]\n",x,"\\end{lstlisting}\n",sep="")}
+ 	knit_hooks$set(source=listing,output=listing)
+@
+
+<<external-code,echo=F>>=
+	read_chunk('Rcluster.R')
+@
+<<Hidden,echo=FALSE,results='hide',cache=T>>=
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Analysis Notes for Data Set \Sexpr{DATE}\_\Sexpr{Version}}
+\author{Stephanie Bland}
+\usepackage{\CustomPackage author_header}
+\begin{document}
+\maketitle
+{\bf Description:}
+<<echo=FALSE,results='hide',cache=T,>>=
+ 	setwd(paste0("~/",location,"/",run_name))
+ 	alldata=read.table("Melted.txt",header=F)
+  colnames(alldata)=as.matrix(read.table("colnames.txt",header=F))
+@
+
+This description \& discussion is correct if the data set matches the title: 2017Jun08\_1 
+
+We are writing a methods paper describing the effect of including lifehistory in the model. 
+
+This compares three different experiments:
+\begin{enumerate}
+	\item No new lifestages
+	\item New lifestages (as in nodes), but they aren't linked with lifehistory.
+	\\There's no leslie matrix and lifestages behave as individual species. 
+	\item New lifestages that are linked.
+	\\Lifestages are linked with a leslie matrix and grow from one stage to the next once per year. The rest of the year they behave as individual nodes.
+\end{enumerate}
+{\bf Discussion:} 
+
+Are the results realistic? Does including lifehistory make it seem more realistic?
+
+Can we compare the inclusion of life histories to a real world scenario? For instance, ecosystems with apparently strong life histories versus weak ones (e.g. fish with high adult:offspring body size ratios versus fish with lower ratios. Or fish that drammatically change diet over lifespan versus ones that don't).
+
+Anna found some interesting results with Lake Constance. If our results are consistent with hers, we can generalize them to other ecosystems. If they aren't consistent, we can ask why? Is Lake Constance an exception to the norm? Why?
+
+We can also expand this work in other directions:
+\begin{itemize}
+	\item Life history evolution:
+	\begin{itemize}
+		\item Dietary shifts
+		\item Increased predation on younger lifestages, less predation on larger
+		\item Metabolic rate
+	\end{itemize}
+	\item Cannibalism - What happens when fish prey on younger lifestages?
+	\item 
+\end{itemize}
+
+\section{Analysis} % (fold)
+\label{sec:analysis}
+Everything in this section should be accurate regardless of the data set. 
+
+% section analysis (end)
+
+
+
+
+
+
+\end{document}
+
