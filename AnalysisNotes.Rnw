@@ -107,13 +107,10 @@ Run a PCA with each experiment as a different colour.
 So that didn't work out too well, because the data is too extreme. Let's try logging it first
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
-		pca_lstages=tapply(alldata$Biomass,list(alldata$Nodes_df,alldata$Simnum,alldata$Exper),mean)
-		pca_lstages=pca_lstages[c("Fish_ls_1","Fish_ls_2","Fish_ls_4"),,]
-		scatter3D(pca_lstages[1,,], pca_lstages[2,,], pca_lstages[3,,], xlab="Offspring", ylab="Juveniles", zlab="Adults", main="Total Biomass For Each Lifestage", colkey=F, col=0)
+		pca_lstages=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+		pca_lstages=pca_lstages[,c("Fish_ls_1","Fish_ls_2","Fish_ls_4"),]
+		scatter3D(pca_lstages[,1,],pca_lstages[,2,],pca_lstages[,3,], xlab="Offspring", ylab="Juveniles", zlab="Adults", main="Total Biomass For Each Lifestage",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_lstages)[1]))
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
-		for (i in 1:N_Exper){
-			scatter3D(pca_lstages[1,,i],pca_lstages[2,,i],pca_lstages[3,,i],col=i,add=T)
-		}
 	@
 	\caption{A PCA plot where the dimensions represent different fish lifestages. Of course, since we can't make a 4D plot, we're only using lifestages 1,2, and 4.}
 \end{figure}
