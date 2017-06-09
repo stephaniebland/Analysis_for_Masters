@@ -9,6 +9,7 @@
 ################################################
 ############### Temp Testing ###################
 ################################################
+#---- Hidden ----
 rm(list=ls())
 library(reshape2)
 seed_0=0
@@ -23,6 +24,7 @@ location="/GIT/Analysis"#For Running on my Mac
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 for (simnum in 1:100){
+#---- CompileData ----
   for (Exper in 1:3){
     for (pred in 0:2){for (prey in 0:1){
     ################################################
@@ -165,8 +167,11 @@ for (simnum in 1:100){
     }}
   }
 }
+write.table(colnames(melt_B.yr.end),"colnames.txt",col.names = F,row.names = F)
+#---- LOAD_DATA ----
 alldata=read.table("Melted.txt",header=F)
 colnames(alldata)=colnames(melt_B.yr.end)
+#---- Other ----
 subdat=alldata
 subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
 tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),mean)
