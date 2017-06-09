@@ -99,7 +99,7 @@ Run a PCA with each experiment as a different colour.
 	<<echo=FALSE,results='hide',cache=T>>=
 		pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 		pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
-		scatter3D(pca_groups[,1,],pca_groups[,2,],pca_groups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_groups)[1]))
+		scatter3D(pca_groups[,1,],pca_groups[,2,],pca_groups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_groups)[1]),col=1:3)
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
 	\caption{A PCA plot where the dimensions represent the total biomass of different groups (fish, invertebrates, autotrophs).}
@@ -110,7 +110,7 @@ So that didn't work out too well, probably because the data is too extreme. Let'
 		pca_logGroups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 		pca_logGroups=pca_logGroups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
 		pca_logGroups=log10(pca_logGroups)
-		scatter3D(pca_logGroups[,1,],pca_logGroups[,2,],pca_logGroups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Logged Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_logGroups)[1]))
+		scatter3D(pca_logGroups[,1,],pca_logGroups[,2,],pca_logGroups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Logged Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_logGroups)[1]),col=1:3)
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
 	\caption{A PCA plot where the dimensions represent the total logged biomass of different groups (fish, invertebrates, autotrophs).}
@@ -119,7 +119,7 @@ So that didn't work out too well, probably because the data is too extreme. Let'
 	<<echo=FALSE,results='hide',cache=T>>=
 		pca_lstages=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 		pca_lstages=pca_lstages[,c("Fish_ls_1","Fish_ls_2","Fish_ls_4"),]
-		scatter3D(pca_lstages[,1,],pca_lstages[,2,],pca_lstages[,3,], xlab="Offspring", ylab="Juveniles", zlab="Adults", main="Total Biomass For Each Lifestage",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_lstages)[1]))
+		scatter3D(pca_lstages[,1,],pca_lstages[,2,],pca_lstages[,3,], xlab="Offspring", ylab="Juveniles", zlab="Adults", main="Total Biomass For Each Lifestage",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_lstages)[1]),col=1:3)
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
 	\caption{A PCA plot where the dimensions represent different fish lifestages. Of course, since we can't make a 4D plot, we're only using lifestages 1,2, and 4.}
