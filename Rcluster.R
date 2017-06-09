@@ -14,8 +14,8 @@ library(reshape2)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
-DATE="2017May23"
-Version="0"
+DATE="2017Jun08"
+Version="1"
 #simnum=1
 #Exper=1
 location="/GIT/Analysis"#For Running on my Mac
@@ -24,18 +24,19 @@ run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 for (simnum in 1:100){
   for (Exper in 1:3){
+    for (pred in 0:2){for (prey in 0:1){
     ################################################
     ############### Read in Data ###################
     ################################################
-    name=paste0(run_name,"_seed",seed_0,"_sim",simnum,"_Exper",Exper)
+    name=paste0(run_name,"_seed",seed_0,"_sim",simnum,"_Exper",Exper,"_pred",pred,"_prey",prey)
     
     import_vars_sim='B_year_end'#c('B','B_year_end','B_stable_phase')
-    import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass')
+    import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','lifehis.splitdiet','lifehis.fishpred')
     import_vars=c(import_vars_sim,import_vars_web)
     for (item in 1:length(import_vars)){
       trial=paste0(name,"_",import_vars[item],".txt")
       trial=as.matrix(read.csv(trial,header=F))
-      #if (sum(dim(trial))==2) {trial=as.integer(trial)}
+      if (sum(dim(trial))==2) {trial=as.integer(trial)}
       do.call("<-",list(import_vars[item], trial))
     }
     
@@ -92,6 +93,9 @@ for (simnum in 1:100){
       melted_df[,"Seed"]=c(seed_0)
       melted_df[,"Simnum"]=c(simnum)
       melted_df[,"Exper"]=c(Exper)
+      melted_df[,"Prey"]=c(prey)
+      melted_df[,"Pred"]=c(pred)
+      melted_df[,"ShouldBe0"]=c(abs(prey-lifehis.splitdiet)+abs(pred-lifehis.fishpred))
       result=melted_df
     }
     
@@ -158,6 +162,7 @@ for (simnum in 1:100){
     melt_B.yr.end
     write.table(melt_B.yr.end,"Melted.txt",append=T,col.names = F,row.names = F)
     print(simnum)
+    }}
   }
 }
 alldata=read.table("Melted.txt",header=F)
