@@ -104,7 +104,7 @@ Run a PCA with each experiment as a different colour.
 	@
 	\caption{A PCA plot where the dimensions represent the total biomass of different groups (fish, invertebrates, autotrophs).}
 \end{figure}
-So that didn't work out too well, because the data is too extreme. Let's try logging it first
+So that didn't work out too well, probably because the data is too extreme. Let's try logging it first
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
 		pca_logGroups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
