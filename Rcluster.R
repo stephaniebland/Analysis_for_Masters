@@ -62,7 +62,7 @@ for (simnum in 201:207){
       for (item in fish_names){
         Fish_tot_per_sp_df=cbind(Fish_tot_per_sp_df,rowSums(B_mat[,species==item]))
       }
-      colnames(Fish_tot_per_sp_df)=paste0('Fish_sp_',fish_names)
+      colnames(Fish_tot_per_sp_df)=paste0('Fish_sp_',1:length(fish_names))
       
       #Fish total per lifestage
       Fish_tot_per_ls_df=c()
