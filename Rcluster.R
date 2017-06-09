@@ -23,8 +23,8 @@ location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
-for (simnum in 1:100){
 #---- CompileData ----
+for (simnum in 201:207){
   for (Exper in 1:3){
     for (pred in 0:2){for (prey in 0:1){
     ################################################
@@ -232,29 +232,6 @@ summary(stress.aov)
 
 
 
-
-
-
-
-
-# Now try a PCA with each exper as diff colour, and the dimensions are either different groups (fish, invert, basal), species, fish lifestages, or nodes. 
-groupedata=alldata
-groupedata=groupedata[groupedata$Phase_df==2,]
-groupedata=groupedata[groupedata$Prey==1,]
-groupedata=groupedata[groupedata$Pred==2,]
-pcastuff=tapply(groupedata$Biomass,list(groupedata$Nodes_df,groupedata$Simnum,groupedata$Exper),mean)
-pcastuff=pcastuff[c("Fish_tot_df","inverts_tot_df","basal_tot_df"),,]
-library(plot3Drgl)
-library(plot3D)
-#scatter3Drgl(pcastuff[1,,],pcastuff[2,,],pcastuff[3,,])
-scatter3D(pcastuff[1,,],pcastuff[2,,],pcastuff[3,,],xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,col=0)
-legend(0.1,.45,1:3,col=1:3,pch=1,title="Experiment")
-for (i in 1:3){
-  #plot(pcastuff[1,,i],pcastuff[2,,i],col=i,add=T)
-  #scatter3Drgl(pcastuff[1,,i],pcastuff[2,,i],pcastuff[3,,i],col=i,add=T)
-  scatter3D(pcastuff[1,,i],pcastuff[2,,i],pcastuff[3,,i],col=i,add=T)
-}
-#And since total biomass seems p stable, try one with (%biomass that's fish) plotted against (% biomass that's basal)
 
 
 
