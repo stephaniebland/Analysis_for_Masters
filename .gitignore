@@ -18,6 +18,8 @@ cache
 # Example Data Files #
 ######################
 *.csv
+*.zip
 
+/2017*
 
 
