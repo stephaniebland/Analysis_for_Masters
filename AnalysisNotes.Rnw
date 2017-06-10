@@ -41,11 +41,11 @@ We are writing a methods paper describing the effect of including lifehistory in
 
 This compares three different experiments:
 \begin{enumerate}
-	\item No new lifestages
-	\item New lifestages (as in nodes), but they aren't linked with lifehistory.
-	\\There's no leslie matrix and lifestages behave as individual species. 
 	\item New lifestages that are linked.
 	\\Lifestages are linked with a leslie matrix and grow from one stage to the next once per year. The rest of the year they behave as individual nodes.
+	\item New lifestages (as in nodes), but they aren't linked with lifehistory.
+	\\There's no leslie matrix and lifestages behave as individual species. 
+	\item No new lifestages
 \end{enumerate}
 
 This means that we have pairs of experiments that we run with the same initial conditions - so when doing our analysis we should take advantage of these links between experiments. Try a repeated measures ANOVA...
