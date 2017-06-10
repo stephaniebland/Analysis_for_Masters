@@ -24,7 +24,7 @@ location="/GIT/Analysis"#For Running on my Mac
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 #---- CompileData ----
-for (simnum in 201:207){
+for (simnum in c(201:252,258:270,272:307,309:382,384:400)){
   for (Exper in 1:3){
     for (pred in 0:2){for (prey in 0:1){
     ################################################

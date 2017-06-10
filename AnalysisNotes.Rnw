@@ -88,7 +88,7 @@ I'm also only running an analysis on the data once it stabilized.
 
 \section{Analysis} % (fold)
 \label{sec:analysis}
-Everything in this section should be accurate regardless of the data set. 
+Everything in this section should be accurate regardless of the data set. I'm mostly looking at the means of biomass right now, but using the variance of biomass would be just as interesting!
 % Set up the parameters for the analysis:
 <<echo=FALSE,results='hide',cache=T>>=
 	N_Exper=as.integer(nlevels(factor(alldata$Exper)))
@@ -96,7 +96,7 @@ Everything in this section should be accurate regardless of the data set.
 % The actual Analysis:
 \subsubsection{Principle Component Analysis} % (fold)
 \label{ssub:principle_component_analysis}
-Run a PCA with each experiment as a different colour.
+Run a PCA with each experiment as a different colour. This will be interesting, but an LDA seems like a better solution right now. 
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
 		pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
@@ -104,18 +104,21 @@ Run a PCA with each experiment as a different colour.
 		scatter3D(pca_groups[,1,],pca_groups[,2,],pca_groups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_groups)[1]),col=1:3)
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
-	\caption{A PCA plot where the dimensions represent the total biomass of different groups (fish, invertebrates, autotrophs).}
+	\caption{A plot where the dimensions represent the total biomass of different groups (fish, invertebrates, autotrophs).}
 \end{figure}
 So that didn't work out too well, probably because the data is too extreme. Let's try logging it first
 \begin{figure}
-	<<echo=FALSE,results='hide',cache=T>>=
+	<<cache=T>>=
 		pca_logGroups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 		pca_logGroups=pca_logGroups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
 		pca_logGroups=log10(pca_logGroups)
+		# pca_groups=pca_groups[1:27,,]
+		# pca_logGroups=pca_logGroups[1:27,,]
+		# scatter3D(pca_groups[,1,],pca_groups[,2,],pca_logGroups[,3,])
 		scatter3D(pca_logGroups[,1,],pca_logGroups[,2,],pca_logGroups[,3,], xlab="Fish",ylab="Invertebrates",zlab="Autotrophs",main="Total Logged Biomass For Each Group",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_logGroups)[1]),col=1:3)
-		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
+		legend(-0.4,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
-	\caption{A PCA plot where the dimensions represent the total logged biomass of different groups (fish, invertebrates, autotrophs).}
+	\caption{A plot where the dimensions represent the total logged biomass of different groups (fish, invertebrates, autotrophs). This is still a bit buggy - see attached picture for this instead (The code itself is fine, it just doesn't show up in this report for some reason...).}
 \end{figure}
 \begin{figure}
 	<<echo=FALSE,results='hide',cache=T>>=
@@ -124,13 +127,24 @@ So that didn't work out too well, probably because the data is too extreme. Let'
 		scatter3D(pca_lstages[,1,],pca_lstages[,2,],pca_lstages[,3,], xlab="Offspring", ylab="Juveniles", zlab="Adults", main="Total Biomass For Each Lifestage",colkey=F,ticktype = "detailed",colvar=rep(1:N_Exper,each=dim(pca_lstages)[1]),col=1:3)
 		legend(0.1,.45,1:N_Exper,col=1:N_Exper,pch=1,title="Experiment")
 	@
-	\caption{A PCA plot where the dimensions represent different fish lifestages. Of course, since we can't make a 4D plot, we're only using lifestages 1,2, and 4.}
+	\caption{A plot where the dimensions represent different fish lifestages. Of course, since we can't make a 4D plot, we're only using lifestages 1,2, and 4.}
 \end{figure}
 
-species, or nodes.
+% Try with species, or nodes.
+
+% Try a new one: axes are experiments, colours are species, and simnums are replicates.
+
+
 % subsubsection principle_component_analysis (end)
 
+\subsection{Linear Discriminant Analysis} % (fold)
+\label{sub:linear_discriminant_analysis}
+What we're really looking for is a way to separate these experimental conditions. It doesn't really matter what the differences are between them (they can be combination of factors), but we do want to find some separation. An LDA would be perfect for this; we can find a distinction between the experimental treatments without forcing it to be a change in a single species. It might also be a good idea to order the nodes so that fish species are always compared against one another rather than ordered by niche value.
 
+Reminder: LDAs work by looking for the (combination of) dimensions which maximizes the difference between treatments while minimizing the variance within treatments. In this case our dimensions will be species biomass.
+
+We can also take advantage of the paired treatments with a paired LDA. 
+% subsection linear_discriminant_analysis (end)
 
 
 
