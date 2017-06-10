@@ -48,6 +48,8 @@ This compares three different experiments:
 	\\Lifestages are linked with a leslie matrix and grow from one stage to the next once per year. The rest of the year they behave as individual nodes.
 \end{enumerate}
 
+This means that we have pairs of experiments that we run with the same initial conditions - so when doing our analysis we should take advantage of these links between experiments. Try a repeated measures ANOVA...
+
 {\bf Discussion:} 
 
 Are the results realistic? Does including lifehistory make it seem more realistic?
