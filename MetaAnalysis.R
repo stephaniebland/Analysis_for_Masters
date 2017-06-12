@@ -3,6 +3,15 @@
 
 
 
+xkcd <- function(thing1,group_by){
+	ir.pca <- prcomp(thing1,center = TRUE, scale. = TRUE) 
+	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
+	g <- g + scale_color_discrete(name = '')
+	g <- g + theme(legend.direction = 'horizontal', legend.position = 'top')
+	print(g)
+}
+
+
 backupdata=alldata
 alldata=alldata[alldata$Exper<3,]
 
@@ -16,17 +25,7 @@ ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
 # apply PCA - scale. = TRUE is highly 
 # advisable, but default is FALSE. 
 row.names(pca_logGroups)=1:dim(pca_bound)[1]
-
-
-xkcd <- function(thing1,group_by){
-	ir.pca <- prcomp(thing1,center = TRUE, scale. = TRUE) 
-	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
-	g <- g + scale_color_discrete(name = '')
-	g <- g + theme(legend.direction = 'horizontal', legend.position = 'top')
-	print(g)
-}
-
-testry =xkcd(pca_logGroups,ir.species)
+xkcd(pca_logGroups,ir.species)
 
 
 
