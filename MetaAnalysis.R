@@ -84,6 +84,37 @@ summary(xk)
 
 
 
+
+
+
+
+
+
+
+#############################################
+# Linear Discriminant Analysis
+#############################################
+
+
+
+alldata=backupdata
+#alldata=alldata[alldata$Exper<3,]
+pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
+#pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
+# log transform 
+pca_logGroups=log10(pca_bound+0.1)
+ir.species=rep(c("one","two","three"),each=dim(pca_groups)[1])
+#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
+row.names(pca_logGroups)=1:dim(pca_bound)[1]
+
+
+
+#tmp=dim(pca_logGroups)
+#tmp=matrix(rnorm(tmp[1]*tmp[2]),tmp[1],tmp[2])
+#colnames(tmp)=colnames(pca_logGroups)
+
+
 snake <- read.csv(file="~/GIT/HalAnalysisOfBiologicalData/Tutorials/Tutorial\ 1d/snake.csv", header=TRUE)
 Iris=data.frame(pca_logGroups,ir.species)
 head(Iris)
@@ -107,6 +138,8 @@ lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%sn
 plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
 	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
 plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
+	 ,main="Discriminant analysis")
+plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate"
 	 ,main="Discriminant analysis")
 legend("topright",1,pch=1,legend=unique(Iris$ir.species),
 	   col=unique(Iris$ir.species))
@@ -137,6 +170,8 @@ lscore = cbind(Iris$Fish_tot_df,Iris$inverts_tot_df,Iris$basal_tot_df)%*%snake.l
 plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
 	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
 plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
+	 ,main="Discriminant analysis")
+plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate"
 	 ,main="Discriminant analysis")
 legend("topright",1,pch=1,legend=unique(Iris$ir.species),
 	   col=unique(Iris$ir.species))
