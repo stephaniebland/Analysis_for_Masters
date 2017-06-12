@@ -29,7 +29,7 @@ pca_func <- function(data,group_by){
 
 pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
-
+pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
 pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
 # log transform 
 pca_logGroups=log10(pca_bound+0.1)
@@ -86,6 +86,7 @@ summary(xk)
 
 snake <- read.csv(file="~/GIT/HalAnalysisOfBiologicalData/Tutorials/Tutorial\ 1d/snake.csv", header=TRUE)
 Iris=data.frame(pca_logGroups,ir.species)
+head(Iris)
 snake.lda<-lda(ir.species ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris)
 #prior: the prior probabilities used.
 snake.lda$prior
@@ -104,16 +105,41 @@ snake.lda$scaling
 lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%snake.lda$scaling 
 # Plotting
 plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
-	 ,main="Discriminant analysis")
+	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
 plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
 	 ,main="Discriminant analysis")
 legend("topright",1,pch=1,legend=unique(Iris$ir.species),
 	   col=unique(Iris$ir.species))
 
 
+#############################################
+# Try again with looser parameters
+#############################################
 
+Iris=data.frame(pca_logGroups,ir.species)
+snake.lda<-lda(ir.species ~ Fish_tot_df+inverts_tot_df+basal_tot_df, data=Iris)
+#prior: the prior probabilities used.
+snake.lda$prior
+#means: the group means.
+snake.lda$mean
+#svd: the singular values, which give the ratio of the 
+#between- and within-group standard deviations on the linear
+#discriminant variables. Their squares are the canonical F-statistics.
+snake.lda$svd
+#scaling: a matrix which transforms observations to discriminant
+#functions, normalized so that within groups covariance matrix is
+#spherical. In our case we will have just one Linear discriminant.
+snake.lda$scaling
 
-
+# the scores
+lscore = cbind(Iris$Fish_tot_df,Iris$inverts_tot_df,Iris$basal_tot_df)%*%snake.lda$scaling 
+# Plotting
+plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
+	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
+plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
+	 ,main="Discriminant analysis")
+legend("topright",1,pch=1,legend=unique(Iris$ir.species),
+	   col=unique(Iris$ir.species))
 
 
 
