@@ -16,6 +16,39 @@ alldata=read.table("Melted.txt",header=F)
 colnames(alldata)=colnames(melt_B.yr.end)
 
 
+# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
+node_names=levels(factor(alldata$Nodes_df))
+# In the following line we have some difficulty with node names - after 10 the levels function tries to sort alphabetically but fails miserably.
+node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
+exper_name=c("Life history","New Nodes","No Life history")
+
+
+
+# I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
+### WARNING I need to transform the data also
+
+# So I'll break it down in two sections:
+# FIRST rearrange data into a 
+bland_tapply <- function(alldata,){
+	# 1. Find the mean of Biomass, grouped by list vector items -> produces an array where the dimensions match the order in list. 
+	lda_tapply=tapply(alldata$Biomass,list(alldata$Simnum,.....),mean)
+	# SHOULD I BE TAKING MEAN OF LOG OR LOG OF MEAN - SAME THING FOR VAR CHECK STATS AHHHHHHHHHHHH - Search for arcsine biological abundances in literature. 
+	# 2. Reshape the data to the correct format: this rowbinds the array along the last dimension:
+	a=array(1:factorial(4),2:4)
+	X <- aperm(a,c(1,3,2))
+	dim(X)<- c(8,3)
+	X
+	
+	
+	reshape(lda_tapply)
+	pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
+	row.names(pca_bound)=c()
+	ir.species=rep(paste("Experiment",1:3),each=dim(pca_groups)[1])
+	#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
+}
+
+
+
 pca_func <- function(data,group_by){
 	ir.pca <- prcomp(data,center = F, scale. = F) 
 	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
@@ -100,6 +133,7 @@ summary(xk)
 alldata=backupdata
 #alldata=alldata[alldata$Exper<3,]
 pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+#pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),var)
 pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
 #pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
 # log transform 
@@ -115,7 +149,27 @@ row.names(pca_logGroups)=1:dim(pca_bound)[1]
 #colnames(tmp)=colnames(pca_logGroups)
 
 
-snake <- read.csv(file="~/GIT/HalAnalysisOfBiologicalData/Tutorials/Tutorial\ 1d/snake.csv", header=TRUE)
+
+	
+# I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
+### WARNING I need to transform the data also
+
+# So I'll break it down in two sections:
+# FIRST rearrange data into a 
+bland_tapply <- function(alldata){
+	# 1. Find the mean of Biomass, grouped by list vector items -> produces an array where the dimensions match the order in list. 
+	lda_tapply=tapply(alldata$Biomass,list(alldata$Simnum,.....),mean)
+	# SHOULD I BE TAKING MEAN OF LOG OR LOG OF MEAN - SAME THING FOR VAR CHECK STATS AHHHHHHHHHHHH - Search for arcsin biological abundances in literature. 
+	reshape(lda_tapply)
+	pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
+	row.names(pca_bound)=c()
+	ir.species=rep(paste("Experiment",1:3),each=dim(pca_groups)[1])
+	#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
+}
+
+
+
+
 Iris=data.frame(pca_logGroups,ir.species)
 head(Iris)
 snake.lda<-lda(ir.species ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris)
@@ -138,9 +192,9 @@ lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%sn
 plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
 	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
 plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
-	 ,main="Discriminant analysis")
+	 ,main="Discriminant analysis using Fish Lifestages")
 plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate"
-	 ,main="Discriminant analysis")
+	 ,main="Discriminant analysis using Fish Lifestages")
 legend("topright",1,pch=1,legend=unique(Iris$ir.species),
 	   col=unique(Iris$ir.species))
 
@@ -169,12 +223,9 @@ lscore = cbind(Iris$Fish_tot_df,Iris$inverts_tot_df,Iris$basal_tot_df)%*%snake.l
 # Plotting
 plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
 	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
-plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
-	 ,main="Discriminant analysis")
-plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate"
-	 ,main="Discriminant analysis")
-legend("topright",1,pch=1,legend=unique(Iris$ir.species),
-	   col=unique(Iris$ir.species))
+plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate", main="Discriminant analysis using Total Biomass of Groups")
+plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate", main="Discriminant analysis using Total Biomass of Groups")
+legend("topright",1,pch=1,legend=unique(Iris$ir.species), col=unique(Iris$ir.species))
 
 
 
