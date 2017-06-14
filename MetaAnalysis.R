@@ -37,18 +37,10 @@ BLAND <- function(dat,nodes,func){
 	# Run a PCA: 
 	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
 	# Run a LDA:
-	Iris3=data.frame(tryout[,3:ncol(tryout)],factor(tryout$Nodes_df))
+	Iris3=data.frame(tryout[,3:ncol(tryout)],response=factor(tryout$Nodes_df))
 	colnames(Iris3)
 	head(Iris3)
-	asdf<-lda(factor.tryout.Nodes_df. ~ X1+X2+X3, data=Iris3)
-	#LDA is wrong!!!
-	tryout2<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
-		spread_(key = "Nodes_df", value = func) %>% arrange_("Exper")
-	Iris2=data.frame(tryout2[,3:ncol(tryout2)],tryout2$Exper)
-	Iris2$X1
-	head(Iris2)
-	asdf<-lda(tryout2.Exper ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris2)
-	#asdf<-lda(ir.species ~ Fish_tot_df+inverts_tot_df+basal_tot_df,data=Iris)
+	asdf<-lda(response ~ X1+X2+X3, data=Iris3)
 	return(asdf)
 }
 
