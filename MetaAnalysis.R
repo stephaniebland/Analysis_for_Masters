@@ -1,4 +1,3 @@
-library(reshape2)
 library(ggbiplot)
 seed_0=0
 lifestages_linked=1
@@ -22,6 +21,56 @@ node_names=levels(factor(alldata$Nodes_df))
 node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
 exper_name=c("Life history","New Nodes","No Life history")
 
+
+# Now we can write some functions to create PCAs or LDAs or whatever you need:
+# dat = The data frame you will be inputing
+# nodes = The species you will use
+# func = mean, logmean, var, logvar....
+BLAND <- function(dat,nodes,func){
+	test <- dat %>% group_by(Exper, Simnum, Nodes_df) %>% 
+		summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
+		mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
+		filter(Nodes_df %in% nodes)
+	
+	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
+		spread_(key = "Exper", value = func) %>% arrange_("Nodes_df")
+	# Run a PCA: 
+	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
+	#LDA is wrong!!!
+	# tryout2<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
+	# 	spread_(key = "Nodes_df", value = func) %>% arrange_("Exper")
+	# Iris2=data.frame(tryout2[,3:ncol(tryout2)],tryout2$Exper)
+	# Iris2$X1
+	# head(Iris2)
+	# snake.lda<-lda(tryout2.Exper ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris2)
+	#asdf<-lda(ir.species ~ Fish_tot_df+inverts_tot_df+basal_tot_df,data=Iris)
+	#return(asdf)
+}
+
+BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
+BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean")
+
+
+
+
+test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
+	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
+	filter(Nodes_df %in% node_names[grep("Fish_ls_",node_names),1])
+
+tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
+pca_func(tryout[,3:5],tryout$Nodes_df)
+
+
+select(test, Exper, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Nodes_df, value = logmean) %>% arrange(Exper)
+
+
+thing="logmean"
+select(test, Exper, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
+pca_func(tryout[,3:5],tryout$Nodes_df)
 
 
 # I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
@@ -66,8 +115,11 @@ test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>%
 	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
 	filter(Nodes_df %in% c("Fish_tot_df","inverts_tot_df","basal_tot_df"))
 
-select(test, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Exper, value = logmean)
+tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
+pca_func(tryout[,3:5],tryout$Nodes_df)
+
+
 
 xkcd<-func(mean)
 
