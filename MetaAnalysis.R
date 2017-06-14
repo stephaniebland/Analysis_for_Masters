@@ -36,6 +36,11 @@ BLAND <- function(dat,nodes,func){
 		spread_(key = "Exper", value = func) %>% arrange_("Nodes_df")
 	# Run a PCA: 
 	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
+	# Run a LDA:
+	Iris3=data.frame(tryout[,3:ncol(tryout)],factor(tryout$Nodes_df))
+	colnames(Iris3)
+	head(Iris3)
+	asdf<-lda(factor.tryout.Nodes_df. ~ X1+X2+X3, data=Iris3)
 	#LDA is wrong!!!
 	tryout2<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
 		spread_(key = "Nodes_df", value = func) %>% arrange_("Exper")
