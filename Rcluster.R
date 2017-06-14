@@ -222,6 +222,8 @@ head(melt_counts)
 stress.aov <- with(melt_counts,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
 summary(stress.aov)
 tapply(melt_counts$Count_extant,melt_counts$Exper_b,mean)
+library(dplyr)
+melt_counts %>% group_by(Exper_b) %>% summarise(mean = mean(Count_extant))
 # Now try between the first two experiments
 first_two_Exper=melt_counts
 first_two_Exper=first_two_Exper[first_two_Exper$Exper_b<3,]

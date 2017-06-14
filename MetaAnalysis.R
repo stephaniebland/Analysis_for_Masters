@@ -45,7 +45,7 @@ bland_tapply <- function(alldata,){
 	#########THE EACH ELEMENT HERE MAKES NO SENSE I DONT KNOW WHY BOTH SEEM TO WORK THIS IS CRAZY
 	X=data.frame(ir.species,bound)
 }
-
+library(dplyr)
 
 
 pca_func <- function(data,group_by){
@@ -60,6 +60,18 @@ pca_func <- function(data,group_by){
 
 
 pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+
+test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
+	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
+	filter(Nodes_df %in% c("Fish_tot_df","inverts_tot_df","basal_tot_df"))
+
+select(test, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Exper, value = logmean)
+
+xkcd<-func(mean)
+
+
 pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
 pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
 pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
@@ -72,7 +84,7 @@ ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
 row.names(pca_logGroups)=1:dim(pca_bound)[1]
 pca_func(pca_logGroups,ir.species)
 
-
+pca_groups[,,1:3] %>% dim
 
 
 
