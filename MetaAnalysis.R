@@ -21,6 +21,14 @@ node_names=levels(factor(alldata$Nodes_df))
 node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
 exper_name=c("Life history","New Nodes","No Life history")
 
+# A Quick PCA graphics function
+pca_func <- function(data,group_by){
+	ir.pca <- prcomp(data,center = F, scale. = F) 
+	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
+	g <- g + scale_color_discrete(name = '')
+	g <- g + theme(legend.direction = 'horizontal', legend.position = 'top')
+	print(g)
+}
 
 # Now we can write some functions to create PCAs or LDAs or whatever you need:
 # dat = The data frame you will be inputing
@@ -91,16 +99,9 @@ bland_tapply <- function(alldata,){
 	#########THE EACH ELEMENT HERE MAKES NO SENSE I DONT KNOW WHY BOTH SEEM TO WORK THIS IS CRAZY
 	X=data.frame(ir.species,bound)
 }
-library(dplyr)
 
 
-pca_func <- function(data,group_by){
-	ir.pca <- prcomp(data,center = F, scale. = F) 
-	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
-	g <- g + scale_color_discrete(name = '')
-	g <- g + theme(legend.direction = 'horizontal', legend.position = 'top')
-	print(g)
-}
+
 
 
 
