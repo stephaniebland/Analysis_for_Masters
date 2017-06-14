@@ -26,25 +26,24 @@ exper_name=c("Life history","New Nodes","No Life history")
 
 # I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
 ### WARNING I need to transform the data also
-
+N_Exper=as.integer(nlevels(factor(alldata$Exper)))
 # So I'll break it down in two sections:
 # FIRST rearrange data into a 
 bland_tapply <- function(alldata,){
 	# 1. Find the mean of Biomass, grouped by list vector items -> produces an array where the dimensions match the order in list. 
-	lda_tapply=tapply(alldata$Biomass,list(alldata$Simnum,.....),mean)
+	tapplied=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
+	tapplied=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Exper,alldata$Nodes_df),mean)
 	# SHOULD I BE TAKING MEAN OF LOG OR LOG OF MEAN - SAME THING FOR VAR CHECK STATS AHHHHHHHHHHHH - Search for arcsine biological abundances in literature. 
 	# 2. Reshape the data to the correct format: this rowbinds the array along the last dimension:
-	a=array(1:factorial(4),2:4)
-	X <- aperm(a,c(1,3,2))
-	dim(X)<- c(8,3)
-	X
+	bound=aperm(tapplied,c(1,3,2))
+	dim(bound)=c(prod(dim(bound)[1:2]),dim(bound)[3])
 	
-	
-	reshape(lda_tapply)
-	pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-	row.names(pca_bound)=c()
-	ir.species=rep(paste("Experiment",1:3),each=dim(pca_groups)[1])
-	#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
+	row.names(bound)=c()
+	colnames(bound)=colnames(tapplied)
+	ir.species=rep(exper_name,each=dim(pca_groups)[1])
+	ir.species=rep(levels(factor(alldata$Nodes_df)),each=dim(pca_groups)[1])
+	#########THE EACH ELEMENT HERE MAKES NO SENSE I DONT KNOW WHY BOTH SEEM TO WORK THIS IS CRAZY
+	X=data.frame(ir.species,bound)
 }
 
 
