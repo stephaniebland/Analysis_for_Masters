@@ -37,17 +37,17 @@ BLAND <- function(dat,nodes,func){
 	# Run a PCA: 
 	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
 	#LDA is wrong!!!
-	# tryout2<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
-	# 	spread_(key = "Nodes_df", value = func) %>% arrange_("Exper")
-	# Iris2=data.frame(tryout2[,3:ncol(tryout2)],tryout2$Exper)
-	# Iris2$X1
-	# head(Iris2)
-	# snake.lda<-lda(tryout2.Exper ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris2)
+	tryout2<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
+		spread_(key = "Nodes_df", value = func) %>% arrange_("Exper")
+	Iris2=data.frame(tryout2[,3:ncol(tryout2)],tryout2$Exper)
+	Iris2$X1
+	head(Iris2)
+	asdf<-lda(tryout2.Exper ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris2)
 	#asdf<-lda(ir.species ~ Fish_tot_df+inverts_tot_df+basal_tot_df,data=Iris)
-	#return(asdf)
+	return(asdf)
 }
 
-BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
+#BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
 BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean")
 
 
