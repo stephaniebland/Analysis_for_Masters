@@ -39,7 +39,7 @@ pca_func <- function(data,group_by){
 BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 	test <- dat %>% group_by(Exper, Simnum, Nodes_df) %>% 
 		summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
-		mutate(logmean = log10(mean + 0.1), logvar=log(var+.1)) %>% 
+		mutate(logmean = log10(mean + 0.1), logvar=log10(var+.1)) %>% 
 		filter(Nodes_df %in% nodes) %>%
 		filter(Exper %in% exper_n)
 	
@@ -60,68 +60,10 @@ BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 #BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
 BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Nodes_df","Exper",1:3)
 BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:2)
+BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:3)
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:2)
-
-pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
-
-pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
-# log transform 
-pca_logGroups=log10(pca_bound+0.1)
-ir.species=rep(c("one","two","three"),each=dim(pca_groups)[1])
-ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
-# apply PCA - scale. = TRUE is highly 
-# advisable, but default is FALSE. 
-row.names(pca_logGroups)=1:dim(pca_bound)[1]
-pca_func(pca_logGroups,ir.species)
-
-
-
-pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Exper,alldata$Nodes_df),mean)
-pca_groups=pca_groups[,,c("Fish_tot_df","inverts_tot_df","basal_tot_df")]
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-# log transform 
-pca_logGroups=log10(pca_bound+0.1)
-ir.species=rep(c("Fish_tot_df","inverts_tot_df","basal_tot_df"),each=dim(pca_groups)[1])
-# apply PCA - scale. = TRUE is highly 
-# advisable, but default is FALSE. 
-row.names(pca_logGroups)=1:dim(pca_bound)[1]
-pca_func(pca_logGroups,ir.species)
-
-
-
-pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
-pca_groups=pca_groups[,grep("Fish_ls_",colnames(pca_groups)),]
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
-# log transform 
-pca_logGroups=log10(pca_bound+0.1)
-ir.species=rep(c("one","two","three"),each=dim(pca_groups)[1])
-ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
-# apply PCA - scale. = TRUE is highly 
-# advisable, but default is FALSE. 
-row.names(pca_logGroups)=1:dim(pca_bound)[1]
-pca_func(pca_logGroups,ir.species)
-
-
-
-
-xk=prcomp(pca_logGroups,center = T,scale. = F)
-summary(xk)
-
-
-
-
-
-
-
-
-
-
-
-
+BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
+BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
 
 
 #############################################
