@@ -36,6 +36,7 @@ pca_func <- function(data,group_by){
 # func = mean, logmean, var, logvar....
 # grouped = the name you would like to appear in the legend
 # Axes = the lines in the center.
+# exper_n = list of experiments you want to produce it on
 BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 	test <- dat %>% group_by(Exper, Simnum, Nodes_df) %>% 
 		summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
@@ -44,17 +45,21 @@ BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 		filter(Exper %in% exper_n)
 	
 	test$Exper=exper_name[test$Exper]
+	test$Nodes_df=factor(test$Nodes_df)
+	levels(test$Nodes_df)=node_names[,2]
 	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
 		spread_(key = axes, value = func) %>% arrange_(grouped)
+	response=factor(tryout[[grouped]])
+	indep_var=tryout[,3:ncol(tryout)]
 	# Run a PCA: 
-	pca_func(tryout[,3:ncol(tryout)],tryout[[grouped]])
+	pca_func(indep_var,response)
 	# Run a LDA:
-	# Iris3=data.frame(tryout[,3:ncol(tryout)],response=factor(tryout$Nodes_df))
-	# colnames(Iris3)
-	# head(Iris3)
-	# asdf<-lda(response ~ X1+X2+X3, data=Iris3)
-	# lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%asdf$scaling
-	# return(asdf)
+	asdf<-lda(response~.,indep_var)
+	lscore = as.matrix(indep_var)%*%asdf$scaling
+	plot(lscore[,1], col=response, ylab="1st canonical variate", main=paste("Discriminant analysis")) # I tried this with random values - it still produces the same ordering so Index is meaningless - just the way we ordered the data in the dataframe. 
+	plot(lscore[,1], lscore[,2], col=response, xlab="1st canonical variate", ylab="2nd canonical variate", main=paste("Discriminant analysis using"))
+	legend("topright", 1, pch=1, legend=unique(response), col=unique(response))
+	return(asdf)
 }
 
 #BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
@@ -65,158 +70,6 @@ BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper"
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
 
-
-#############################################
-# Linear Discriminant Analysis
-#############################################
-
-
-
-alldata=backupdata
-#alldata=alldata[alldata$Exper<3,]
-pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
-#pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),var)
-pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-#pca_bound=rbind(pca_groups[,,1],pca_groups[,,2])#,pca_groups[,,3])
-# log transform 
-pca_logGroups=log10(pca_bound+0.1)
-ir.species=rep(c("one","two","three"),each=dim(pca_groups)[1])
-#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
-row.names(pca_logGroups)=1:dim(pca_bound)[1]
-
-
-
-#tmp=dim(pca_logGroups)
-#tmp=matrix(rnorm(tmp[1]*tmp[2]),tmp[1],tmp[2])
-#colnames(tmp)=colnames(pca_logGroups)
-
-
-
-	
-# I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
-### WARNING I need to transform the data also
-
-# So I'll break it down in two sections:
-# FIRST rearrange data into a 
-bland_tapply <- function(alldata){
-	# 1. Find the mean of Biomass, grouped by list vector items -> produces an array where the dimensions match the order in list. 
-	lda_tapply=tapply(alldata$Biomass,list(alldata$Simnum,.....),mean)
-	# SHOULD I BE TAKING MEAN OF LOG OR LOG OF MEAN - SAME THING FOR VAR CHECK STATS AHHHHHHHHHHHH - Search for arcsin biological abundances in literature. 
-	reshape(lda_tapply)
-	pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
-	row.names(pca_bound)=c()
-	ir.species=rep(paste("Experiment",1:3),each=dim(pca_groups)[1])
-	#ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
-}
-
-
-
-
-Iris=data.frame(pca_logGroups,ir.species)
-head(Iris)
-snake.lda<-lda(ir.species ~ Fish_ls_1+Fish_ls_2+Fish_ls_3+Fish_ls_4, data=Iris)
-#prior: the prior probabilities used.
-snake.lda$prior
-#means: the group means.
-snake.lda$mean
-#svd: the singular values, which give the ratio of the 
-#between- and within-group standard deviations on the linear
-#discriminant variables. Their squares are the canonical F-statistics.
-snake.lda$svd
-#scaling: a matrix which transforms observations to discriminant
-#functions, normalized so that within groups covariance matrix is
-#spherical. In our case we will have just one Linear discriminant.
-snake.lda$scaling
-
-# the scores
-lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%snake.lda$scaling 
-# Plotting
-plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
-	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
-plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate"
-	 ,main="Discriminant analysis using Fish Lifestages")
-plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate"
-	 ,main="Discriminant analysis using Fish Lifestages")
-legend("topright",1,pch=1,legend=unique(Iris$ir.species),
-	   col=unique(Iris$ir.species))
-
-
-#############################################
-# Try again with looser parameters
-#############################################
-
-Iris=data.frame(pca_logGroups,ir.species)
-snake.lda<-lda(ir.species ~ Fish_tot_df+inverts_tot_df+basal_tot_df, data=Iris)
-#prior: the prior probabilities used.
-snake.lda$prior
-#means: the group means.
-snake.lda$mean
-#svd: the singular values, which give the ratio of the 
-#between- and within-group standard deviations on the linear
-#discriminant variables. Their squares are the canonical F-statistics.
-snake.lda$svd
-#scaling: a matrix which transforms observations to discriminant
-#functions, normalized so that within groups covariance matrix is
-#spherical. In our case we will have just one Linear discriminant.
-snake.lda$scaling
-
-# the scores
-lscore = cbind(Iris$Fish_tot_df,Iris$inverts_tot_df,Iris$basal_tot_df)%*%snake.lda$scaling 
-# Plotting
-plot(lscore[,1],col=Iris$ir.species,asp=1,ylab="1st canonical variate"
-	 ,main="Discriminant analysis")#Asp is just the y/x aspect ratio, so we don't need this plot.
-plot(lscore[,1],col=Iris$ir.species,ylab="1st canonical variate", main="Discriminant analysis using Total Biomass of Groups")
-plot(lscore[,1],lscore[,2],col=Iris$ir.species,xlab="1st canonical variate",ylab="2nd canonical variate", main="Discriminant analysis using Total Biomass of Groups")
-legend("topright",1,pch=1,legend=unique(Iris$ir.species), col=unique(Iris$ir.species))
-
-
-
-
-
-
-
-
-require(MASS)
-Iris=data.frame(pca_logGroups,ir.species)
-#r <- lda(formula = pca_logGroups ~ ir.species,,grouping=ir.species,  prior = c(1,1,1)/3)
-z <- lda(ir.species ~ ., Iris)#, prior = c(1,1,1)/3, subset = train)
-lda=z
-prop.lda = r$svd^2/sum(r$svd^2)
-
-plda <- predict(object = lda,newdata = Iris)
-
-dataset = data.frame(species = ir.species,
-					 pca = xk$x, lda = plda$x)
-lda
-p1 <- ggplot(dataset) + geom_point(aes(lda.LD1, lda.LD2, colour = species, shape = species), size = 2.5) + 
-	labs(x = paste("LD1 (", percent(prop.lda[1]), ")", sep=""),
-		 y = paste("LD2 (", percent(prop.lda[2]), ")", sep=""))
-
-
-Iris <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
-				   Sp = rep(c("s","c","v"), rep(50,3)))
-train <- sample(1:150, 75)
-table(Iris$Sp[train])
-## your answer may differ
-##  c  s  v
-## 22 23 30
-z <- lda(Sp ~ ., Iris, prior = c(1,1,1)/3, subset = train)
-predict(z, Iris[-train, ])$class
-##  [1] s s s s s s s s s s s s s s s s s s s s s s s s s s s c c c
-## [31] c c c c c c c v c c c c v c c c c c c c c c c c c v v v v v
-## [61] v v v v v v v v v v v v v v v
-(z1 <- update(z, . ~ . - Petal.W.))
-
-
-
-test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
-	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
-	filter(Nodes_df %in% c("Fish_tot_df","inverts_tot_df","basal_tot_df"))
-
-tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
-pca_func(tryout[,3:5],tryout$Nodes_df)
 
 
 
