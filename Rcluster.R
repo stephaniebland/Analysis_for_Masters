@@ -233,34 +233,6 @@ summary(stress.aov)
 
 
 
-pca_groups=tapply(alldata$Biomass,list(alldata$Nodes_df,alldata$Exper,alldata$Simnum),mean)
-pca_groups=pca_groups[c("Fish_tot_df","inverts_tot_df","basal_tot_df"),,]
-pca_bind=c()
-for (i in 1:7){pca_bind=rbind(pca_bind,pca_groups[,,i])}
-summary(pc.cr <- princomp(pca_bind, cor = TRUE))
-loadings(pc.cr)  # note that blank entries are small but not zero
-## The signs of the columns are arbitrary
-plot(pc.cr) # shows a screeplot.
-biplot(pc.cr)
-
-## Formula interface
-princomp(~ ., data = USArrests, cor = TRUE)
-
-## NA-handling
-USArrests[1, 2] <- NA
-pc.cr <- princomp(~ Murder + Assault + UrbanPop,
-                  data = USArrests, na.action = na.exclude, cor = TRUE)
-pc.cr$scores[1:5, ]
-
-## (Simple) Robust PCA:
-## Classical:
-(pc.cl  <- princomp(stackloss))
-## Robust:
-(pc.rob <- princomp(stackloss, covmat = MASS::cov.rob(stackloss)))
-
-
-
-
 
 ################################################
 ############# May be of interest ###############
