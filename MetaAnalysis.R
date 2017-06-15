@@ -34,17 +34,20 @@ pca_func <- function(data,group_by){
 # dat = The data frame you will be inputing
 # nodes = The species you will use
 # func = mean, logmean, var, logvar....
-BLAND <- function(dat,nodes,func){
+# grouped = the name you would like to appear in the legend
+# Axes = the lines in the center.
+BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 	test <- dat %>% group_by(Exper, Simnum, Nodes_df) %>% 
 		summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
-		mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
-		filter(Nodes_df %in% nodes)
+		mutate(logmean = log10(mean + 0.1), logvar=log(var+.1)) %>% 
+		filter(Nodes_df %in% nodes) %>%
+		filter(Exper %in% exper_n)
 	
-	test$Exper=paste("Experiment",test$Exper)
+	test$Exper=exper_name[test$Exper]
 	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
-		spread_(key = "Exper", value = func) %>% arrange_("Nodes_df")
+		spread_(key = axes, value = func) %>% arrange_(grouped)
 	# Run a PCA: 
-	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
+	pca_func(tryout[,3:ncol(tryout)],tryout[[grouped]])
 	# Run a LDA:
 	# Iris3=data.frame(tryout[,3:ncol(tryout)],response=factor(tryout$Nodes_df))
 	# colnames(Iris3)
@@ -55,8 +58,9 @@ BLAND <- function(dat,nodes,func){
 }
 
 #BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
-BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean")
-
+BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Nodes_df","Exper",1:3)
+BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:2)
+BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:2)
 
 pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
 
