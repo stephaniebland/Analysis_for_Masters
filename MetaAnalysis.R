@@ -38,6 +38,7 @@ pca_func <- function(data,group_by){
 # Axes = the lines in the center.
 # exper_n = list of experiments you want to produce it on
 BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
+	dat$Nodes_df=factor(dat$Nodes_df)
 	test <- dat %>% group_by(Exper, Simnum, Nodes_df) %>% 
 		summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
 		mutate(logmean = log10(mean + 0.1), logvar=log10(var+.1)) %>% 
@@ -45,7 +46,6 @@ BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 		filter(Exper %in% exper_n)
 	
 	test$Exper=exper_name[test$Exper]
-	test$Nodes_df=factor(test$Nodes_df)
 	levels(test$Nodes_df)=node_names[,2]
 	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
 		spread_(key = axes, value = func) %>% arrange_(grouped)
