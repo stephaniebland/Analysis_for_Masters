@@ -40,87 +40,25 @@ BLAND <- function(dat,nodes,func){
 		mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
 		filter(Nodes_df %in% nodes)
 	
+	test$Exper=paste("Experiment",test$Exper)
 	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
 		spread_(key = "Exper", value = func) %>% arrange_("Nodes_df")
 	# Run a PCA: 
 	pca_func(tryout[,3:ncol(tryout)],tryout$Nodes_df)
 	# Run a LDA:
-	Iris3=data.frame(tryout[,3:ncol(tryout)],response=factor(tryout$Nodes_df))
-	colnames(Iris3)
-	head(Iris3)
-	asdf<-lda(response ~ X1+X2+X3, data=Iris3)
-	return(asdf)
+	# Iris3=data.frame(tryout[,3:ncol(tryout)],response=factor(tryout$Nodes_df))
+	# colnames(Iris3)
+	# head(Iris3)
+	# asdf<-lda(response ~ X1+X2+X3, data=Iris3)
+	# lscore = cbind(Iris$Fish_ls_1,Iris$Fish_ls_2,Iris$Fish_ls_3,Iris$Fish_ls_4)%*%asdf$scaling
+	# return(asdf)
 }
 
 #BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
 BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean")
 
 
-
-
-test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
-	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
-	filter(Nodes_df %in% node_names[grep("Fish_ls_",node_names),1])
-
-tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
-pca_func(tryout[,3:5],tryout$Nodes_df)
-
-
-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Nodes_df, value = logmean) %>% arrange(Exper)
-
-
-thing="logmean"
-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
-pca_func(tryout[,3:5],tryout$Nodes_df)
-
-
-# I want to write a function that takes in all data, the experiment numbers, species (values in Nodes_df), and sort factor (group by experiment or species?) to produce a plot LD1 against LD2 maybe?
-### WARNING I need to transform the data also
-N_Exper=as.integer(nlevels(factor(alldata$Exper)))
-# So I'll break it down in two sections:
-# FIRST rearrange data into a 
-bland_tapply <- function(alldata,){
-	# 1. Find the mean of Biomass, grouped by list vector items -> produces an array where the dimensions match the order in list. 
-	tapplied=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
-	tapplied=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Exper,alldata$Nodes_df),mean)
-	# SHOULD I BE TAKING MEAN OF LOG OR LOG OF MEAN - SAME THING FOR VAR CHECK STATS AHHHHHHHHHHHH - Search for arcsine biological abundances in literature. 
-	# 2. Reshape the data to the correct format: this rowbinds the array along the last dimension:
-	bound=aperm(tapplied,c(1,3,2))
-	dim(bound)=c(prod(dim(bound)[1:2]),dim(bound)[3])
-	
-	row.names(bound)=c()
-	colnames(bound)=colnames(tapplied)
-	ir.species=rep(exper_name,each=dim(pca_groups)[1])
-	ir.species=rep(levels(factor(alldata$Nodes_df)),each=dim(pca_groups)[1])
-	#########THE EACH ELEMENT HERE MAKES NO SENSE I DONT KNOW WHY BOTH SEEM TO WORK THIS IS CRAZY
-	X=data.frame(ir.species,bound)
-}
-
-
-
-
-
-
-
 pca_groups=tapply(alldata$Biomass,list(alldata$Simnum,alldata$Nodes_df,alldata$Exper),mean)
-
-test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
-	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
-	filter(Nodes_df %in% c("Fish_tot_df","inverts_tot_df","basal_tot_df"))
-
-tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
-	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
-pca_func(tryout[,3:5],tryout$Nodes_df)
-
-
-
-xkcd<-func(mean)
-
 
 pca_groups=pca_groups[,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),]
 pca_bound=rbind(pca_groups[,,1],pca_groups[,,2],pca_groups[,,3])
@@ -133,9 +71,6 @@ ir.species=rep(c("one","two"),each=dim(pca_groups)[1])
 # advisable, but default is FALSE. 
 row.names(pca_logGroups)=1:dim(pca_bound)[1]
 pca_func(pca_logGroups,ir.species)
-
-pca_groups[,,1:3] %>% dim
-
 
 
 
@@ -325,6 +260,17 @@ predict(z, Iris[-train, ])$class
 ## [31] c c c c c c c v c c c c v c c c c c c c c c c c c v v v v v
 ## [61] v v v v v v v v v v v v v v v
 (z1 <- update(z, . ~ . - Petal.W.))
+
+
+
+test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+	summarise(mean = mean(Biomass),var=var(Biomass)) %>% 
+	mutate(logmean = log(mean + 0.1), logvar=log(var+.1)) %>% 
+	filter(Nodes_df %in% c("Fish_tot_df","inverts_tot_df","basal_tot_df"))
+
+tryout<-select(test, Exper, Simnum, Nodes_df, logmean) %>% 
+	spread(key = Exper, value = logmean) %>% arrange(Nodes_df)
+pca_func(tryout[,3:5],tryout$Nodes_df)
 
 
 
