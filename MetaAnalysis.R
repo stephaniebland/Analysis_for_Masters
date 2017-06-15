@@ -1,3 +1,4 @@
+#---- Hidden ----
 library(ggbiplot)
 seed_0=0
 lifestages_linked=1
@@ -10,11 +11,11 @@ location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
-
+#---- LOAD_DATA ----
 alldata=read.table("Melted.txt",header=F)
 colnames(alldata)=colnames(melt_B.yr.end)
 
-
+#---- Functions ----
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
 node_names=levels(factor(alldata$Nodes_df))
 # In the following line we have some difficulty with node names - after 10 the levels function tries to sort alphabetically but fails miserably.
