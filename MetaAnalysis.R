@@ -23,9 +23,12 @@ node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",
 exper_name=c("Life history","New Nodes","No Life history")
 
 # A Quick PCA graphics function
-pca_func <- function(data,group_by){
-	ir.pca <- prcomp(data,center = F, scale. = F) 
-	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = group_by, ellipse = TRUE, circle = TRUE)
+pca_func <- function(dat,nodes,func,grouped,axes,exper_n){
+	ls_ret =BLAND(dat,nodes,func,grouped,axes,exper_n)
+	response=ls_ret$response
+	indep_var=ls_ret$indep_var
+	ir.pca <- prcomp(indep_var,center = F, scale. = F) 
+	g <- ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, groups = response, ellipse = TRUE, circle = TRUE)
 	g <- g + scale_color_discrete(name = '')
 	g <- g + theme(legend.direction = 'horizontal', legend.position = 'top')
 	print(g)
@@ -53,23 +56,26 @@ BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 	response=factor(tryout[[grouped]])
 	indep_var=tryout[,3:ncol(tryout)]
 	# Run a PCA: 
-	pca_func(indep_var,response)
+	#pca_func(indep_var,response)
 	# Run a LDA:
 	asdf<-lda(response~.,indep_var)
 	lscore = as.matrix(indep_var)%*%asdf$scaling
-	plot(lscore[,1], col=response, ylab="1st canonical variate", main=paste("Discriminant analysis")) # I tried this with random values - it still produces the same ordering so Index is meaningless - just the way we ordered the data in the dataframe. 
-	plot(lscore[,1], lscore[,2], col=response, xlab="1st canonical variate", ylab="2nd canonical variate", main=paste("Discriminant analysis using"))
-	legend("topright", 1, pch=1, legend=unique(response), col=unique(response))
-	return(asdf)
+	# plot(lscore[,1], col=response, ylab="1st canonical variate", main=paste("Discriminant analysis")) # I tried this with random values - it still produces the same ordering so Index is meaningless - just the way we ordered the data in the dataframe.
+	# plot(lscore[,1], lscore[,2], col=response, xlab="1st canonical variate", ylab="2nd canonical variate", main=paste("Discriminant analysis using"))
+	# legend("topright", 1, pch=1, legend=unique(response), col=unique(response))
+	# return(asdf)
+	ls_ret=list("response"=(response),"indep_var"=(indep_var))
+	return(ls_ret)
 }
 
 #BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean")
-BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Nodes_df","Exper",1:3)
-BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:2)
-BLAND(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:3)
-BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:2)
-BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
-BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
+pca_func(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Nodes_df","Exper",1:3)
+pca_func(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:2)
+pca_func(alldata,node_names[grep("Fish_ls_",node_names),1],"logmean","Exper","Nodes_df",1:3)
+pca_func(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:2)
+pca_func(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
+pca_func(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
+
 
 #---- Plots ----
 bland_plot <- function(ie){
