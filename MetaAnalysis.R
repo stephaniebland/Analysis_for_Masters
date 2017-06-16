@@ -71,6 +71,84 @@ BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper"
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
 
+#---- Stats ----
+#Find the mean and variance of each group
+alldata %>% group_by(Exper, Simnum, Nodes_df) %>% # Group by simnum too because you want to take the means of the time series means
+	summarise(mean = mean(Biomass)) %>% 
+	group_by(Exper,Nodes_df) %>%
+	summarise (avg=mean(mean),var=var(mean)) %>%
+	filter (Nodes_df %in% "Fish_tot_df")
+	
+alldata %>% group_by(Exper, Nodes_df) %>% # Group by simnum too because you want to take the means of the time series means
+	summarise(mean = mean(Biomass), var=var(Biomass))
+	
+	mutate(logmean = log10(mean + 0.1), logvar=log10(var+.1)) %>% 
+	filter(Nodes_df %in% nodes) %>%
+	filter(Exper %in% exper_n)
+
+#---- Other ----
+alldata=backupdata
+subdat=alldata
+subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),mean)
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),var)
+subdat=alldata
+subdat=subdat[subdat$Phase_df==2,]
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),mean)
+tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),var)
+# Now try Repeated Measures ANOVA
+# https://datascienceplus.com/two-way-anova-with-repeated-measures/
+subdat=alldata
+subdat=subdat[subdat$Phase_df==2,]
+subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
+myData.mean <- aggregate(subdat$Biomass,by=list(subdat$Simnum,subdat$Exper), FUN = 'mean')
+colnames(myData.mean) <- c("Simnum_a","Exper_a","Biomass_a")
+myData.mean <- myData.mean[order(myData.mean$Simnum_a), ]
+head(myData.mean)
+stress.aov <- with(myData.mean,aov(Biomass_a~Exper_a +Error(Simnum_a / (Exper_a))))
+summary(stress.aov)
+# Ok so no differences yet. Let's look at extinctions instead.
+subdat=alldata
+subdat=subdat[subdat$Year_df==max(subdat$Year_df),] # Only use data once it's stable; assume all plots reach stability (no multi-year cycles)
+subdat=subdat[grep("Node_",subdat$Nodes_df),] # Only look at individual nodes
+subdat=subdat[subdat$Biomass!=0,] # Find all non-extinct species
+head(subdat)
+dim(subdat)
+extant_counts=tapply(subdat$Nodes_df, list(subdat$Simnum,subdat$Exper), function(x) length(unique(x))) 
+extant_counts[is.na(extant_counts)]=0
+colMeans(extant_counts)
+diag(var(extant_counts))
+melt_counts=melt(extant_counts); colnames(melt_counts)=c("Simnum_b","Exper_b","Count_extant")
+head(melt_counts)
+stress.aov <- with(melt_counts,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
+#Now try the same thing, but just with fish species
+subdat=alldata
+subdat=subdat[subdat$Year_df==max(subdat$Year_df),] # Only use data once it's stable; assume all plots reach stability (no multi-year cycles)
+subdat=subdat[grep("Fish_sp_",subdat$Nodes_df),] # Only look at individual nodes
+subdat=subdat[subdat$Biomass!=0,] # Find all non-extinct species
+head(subdat)
+dim(subdat)
+extant_counts=tapply(subdat$Nodes_df, list(subdat$Simnum,subdat$Exper), function(x) length(unique(x))) 
+extant_counts[is.na(extant_counts)]=0
+colMeans(extant_counts)
+diag(var(extant_counts))
+melt_counts=melt(extant_counts); colnames(melt_counts)=c("Simnum_b","Exper_b","Count_extant")
+head(melt_counts)
+stress.aov <- with(melt_counts,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
+tapply(melt_counts$Count_extant,melt_counts$Exper_b,mean)
+library(dplyr)
+melt_counts %>% group_by(Exper_b) %>% summarise(mean = mean(Count_extant))
+# Now try between the first two experiments
+first_two_Exper=melt_counts
+first_two_Exper=first_two_Exper[first_two_Exper$Exper_b<3,]
+stress.aov <- with(first_two_Exper,aov(Count_extant~Exper_b +Error(Simnum_b / (Exper_b))))
+summary(stress.aov)
+
+
+
+
 
 
 
