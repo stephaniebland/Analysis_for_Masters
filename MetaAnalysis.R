@@ -20,7 +20,7 @@ colnames(alldata)=colnames(melt_B.yr.end)
 node_names=levels(factor(alldata$Nodes_df))
 # In the following line we have some difficulty with node names - after 10 the levels function tries to sort alphabetically but fails miserably.
 node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
-exper_name=c("Life history","New Nodes","No Life history")
+exper_name=c("Leslie & History","Extended Web","Original Web")
 
 # A Quick PCA graphics function
 pca_func <- function(data,group_by){
@@ -84,13 +84,37 @@ test$Exper=exper_name[test$Exper]
 ie=alldata %>% 
 	filter(Nodes_df %in% "Tot_df") %>%
 	filter(Simnum %in% 205) %>%
-	select(Simnum,Day_df,Exper,Biomass) %>%
-	spread(key=Exper,value=Biomass) %>%
-	select(3:5) # %>%
-	# do(plot=bland_plot(.))
+	mutate(logBiomass=log10(Biomass+0.01)) %>%
+	select(Simnum,Day_df,Exper,logBiomass) %>%
+	spread(key=Exper,value=logBiomass) %>%
+	select(3:5)
 ie
 #plot(ie$Day_df,ie$Biomass,type="l")
-matplot(ie,type="l",lwd=3)
+matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
+legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
+
+par(mfrow=c(4,3))
+par(oma = c(4, 4, 0, 0)) # make room (i.e. the 4's) for the overall x and y axis titles
+par(mar = c(2, 2, 1, 1)) # make the plots be closer together
+for (i in 201:204){
+	for (j in 6:8){
+		thing=node_names[j,1]
+		ie=alldata %>% 
+			filter(Nodes_df %in% thing) %>%
+			filter(Simnum %in% i) %>%
+			mutate(logBiomass=log10(Biomass+0.01),) %>%
+			select(Simnum,Day_df,Exper,logBiomass) %>%
+			spread(key=Exper,value=logBiomass) %>%
+			select(3:5)
+		#ie
+		#plot(ie$Day_df,ie$Biomass,type="l")
+		matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
+	}
+}
+legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
+mtext('Time (Years)', side = 1, outer = TRUE, line = 2)
+mtext('Time (Years)', side = 3, outer = TRUE, line = 2)
+mtext('Log of Biomass', side = 2, outer = TRUE, line = 2)
 
 do(plot=bland_plot(.))
 	
