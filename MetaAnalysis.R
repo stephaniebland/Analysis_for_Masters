@@ -71,31 +71,63 @@ BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper"
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Exper","Nodes_df",1:3)
 BLAND(alldata,c("Fish_tot_df","inverts_tot_df","basal_tot_df"),"logmean","Nodes_df","Exper",1:3)
 
-#---- Stats ----
-#Find the mean and variance of each group
-alldata %>% group_by(Exper, Simnum, Nodes_df) %>% # Group by simnum too because you want to take the means of the time series means
-	summarise(mean = mean(Biomass)) %>% 
-	group_by(Exper,Nodes_df) %>%
-	summarise (avg=mean(mean),var=var(mean)) %>%
-	filter (Nodes_df %in% "Fish_tot_df")
+#---- Plots ----
+bland_plot <- function(ie){
+	p = matplot(ie,type="l",lwd=3)
+	print(p)
+	#plot(1:10,type="l")
+}
+
+subdat=alldata
+dat$Nodes_df=factor(dat$Nodes_df)
+test$Exper=exper_name[test$Exper]
+ie=alldata %>% 
+	filter(Nodes_df %in% "Tot_df") %>%
+	filter(Simnum %in% 205) %>%
+	select(Simnum,Day_df,Exper,Biomass) %>%
+	spread(key=Exper,value=Biomass) %>%
+	select(3:5) # %>%
+	# do(plot=bland_plot(.))
+ie
+#plot(ie$Day_df,ie$Biomass,type="l")
+matplot(ie,type="l",lwd=3)
+
+do(plot=bland_plot(.))
 	
-alldata %>% group_by(Exper, Nodes_df) %>% # Group by simnum too because you want to take the means of the time series means
-	summarise(mean = mean(Biomass), var=var(Biomass))
+plot_species <- function(species_data){
+	p <- qplot(data=species_data,
+			   x=Sepal.Length,
+			   y=Sepal.Width)
+	print(p)
+}
+
+(((tapply(melt_B.yr.end$Biomass,list(melt_B.yr.end$Nodes_df,melt_B.yr.end$Phase_df),mean))))
+
+
+
+matplot(log10(t(tail(tapply(melt_B.yr.end$Biomass,list(melt_B.yr.end$Nodes_df,melt_B.yr.end$Phase_df),mean)))),type="l",lwd=3, xlab="Phase",ylab="Mean of Biomass (log)")
+legend("bottomleft",c("fish adults","Tot_B","fish","nonfish","Basal","inverts"),col=1:6,lty=1:6,lwd=3)
+
+
+
+
+
+#---- Stats ----
+#Find the mean and variance of each group. The variance here is the variance of the time series means. 
+alldata %>% group_by(Exper, Simnum, Nodes_df) %>% # Group by simnum too because you want to take the means of the time series means
+	summarise(mean = mean(Biomass)) %>% # First step is to take the time series means. 
+	group_by(Nodes_df,Exper) %>% 
+	summarise (avg=mean(mean),var=var(mean)) %>% # Then we can find the mean and var across simulations
+	filter (Nodes_df %in% "Fish_tot_df")
+
+
+
 	
 	mutate(logmean = log10(mean + 0.1), logvar=log10(var+.1)) %>% 
 	filter(Nodes_df %in% nodes) %>%
 	filter(Exper %in% exper_n)
 
 #---- Other ----
-alldata=backupdata
-subdat=alldata
-subdat=subdat[subdat$Nodes_df=="Fish_tot_df",]
-tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),mean)
-tapply(subdat$Biomass,list(subdat$Exper,subdat$Phase_df),var)
-subdat=alldata
-subdat=subdat[subdat$Phase_df==2,]
-tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),mean)
-tapply(subdat$Biomass,list(subdat$Exper,subdat$Nodes_df),var)
 # Now try Repeated Measures ANOVA
 # https://datascienceplus.com/two-way-anova-with-repeated-measures/
 subdat=alldata
