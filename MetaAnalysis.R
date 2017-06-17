@@ -1,5 +1,6 @@
 #---- Hidden ----
 library(ggbiplot)
+library(tidyverse)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
@@ -12,8 +13,12 @@ location="/GIT/Analysis"#For Running on my Mac
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 #---- LOAD_DATA ----
-alldata=read.table("Melted.txt",header=F)
-colnames(alldata)=colnames(melt_B.yr.end)
+backupdata=read.table("Melted.txt",header=F)
+colnames(backupdata)=as.matrix(read.table("colnames.txt"))
+alldata=backupdata
+alldata=alldata[alldata$Prey==0,]
+alldata=alldata[alldata$Pred==2,]
+alldata=alldata[alldata$Phase_df==2,]
 
 #---- Functions ----
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
@@ -92,29 +97,32 @@ ie
 #plot(ie$Day_df,ie$Biomass,type="l")
 matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
 legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
-
-par(mfrow=c(4,3))
-par(oma = c(4, 4, 0, 0)) # make room (i.e. the 4's) for the overall x and y axis titles
-par(mar = c(2, 2, 1, 1)) # make the plots be closer together
-for (i in 201:204){
-	for (j in 6:8){
-		thing=node_names[j,1]
-		ie=alldata %>% 
-			filter(Nodes_df %in% thing) %>%
-			filter(Simnum %in% i) %>%
-			mutate(logBiomass=log10(Biomass+0.01),) %>%
-			select(Simnum,Day_df,Exper,logBiomass) %>%
-			spread(key=Exper,value=logBiomass) %>%
-			select(3:5)
-		#ie
-		#plot(ie$Day_df,ie$Biomass,type="l")
-		matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
+node_ts <- function(sims,nodes){
+	par(mfrow=c(length(sims),length(nodes)))
+	par(oma = c(4, 4, 0, 0)) # make room (i.e. the 4's) for the overall x and y axis titles
+	par(mar = c(2, 2, 1, 1)) # make the plots be closer together
+	for (i in sims){
+		for (j in nodes){
+			thing=node_names[j,1]
+			ie=alldata %>% 
+				filter(Nodes_df %in% thing) %>%
+				filter(Simnum %in% i) %>%
+				mutate(logBiomass=log10(Biomass+0.01)) %>%
+				select(Simnum,Day_df,Exper,logBiomass) %>%
+				spread(key=Exper,value=logBiomass) %>%
+				select(3:5)
+			#ie
+			#plot(ie$Day_df,ie$Biomass,type="l")
+			matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
+		}
 	}
+	legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
+	# Label The large axes
+	mtext('Time (Years)', side = 1, outer = TRUE, line = 2)
+	mtext('Log of Biomass', side = 2, outer = TRUE, line = 2)
 }
-legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
-mtext('Time (Years)', side = 1, outer = TRUE, line = 2)
-mtext('Time (Years)', side = 3, outer = TRUE, line = 2)
-mtext('Log of Biomass', side = 2, outer = TRUE, line = 2)
+node_ts(201:204,6:8)
+plot(1:100)
 
 do(plot=bland_plot(.))
 	
