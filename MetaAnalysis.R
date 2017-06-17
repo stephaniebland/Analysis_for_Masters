@@ -110,17 +110,17 @@ node_ts <- function(sims,nodes){
 				mutate(logBiomass=log10(Biomass+0.01)) %>%
 				select(Simnum,Day_df,Exper,logBiomass) %>%
 				spread(key=Exper,value=logBiomass) %>%
-				select(3:5)
-			#ie
-			#plot(ie$Day_df,ie$Biomass,type="l")
-			matplot(ie,type="l",lwd=3,xlab="Time (Years)",ylab="Log of Biomass",main=node_names[j,2])
+				select(-(1:2))
+			matplot(ie,type="l",lwd=3,main=node_names[j,2])
+			N_exper=dim(ie)[2]
 		}
 	}
-	legend("bottomright",exper_name,col=1:3,lty=1:3,lwd=3)
+	legend("bottomright",exper_name,col=1:N_exper,lty=1:N_exper,lwd=3)
 	# Label The large axes
 	mtext('Time (Years)', side = 1, outer = TRUE, line = 2)
 	mtext('Log of Biomass', side = 2, outer = TRUE, line = 2)
 }
+node_ts(205:208,c(1,9,10))
 node_ts(201:204,6:8)
 plot(1:100)
 
