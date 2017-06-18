@@ -56,7 +56,7 @@ BLAND <- function(dat,nodes,func,grouped,axes,exper_n){
 	tryout<-select_(test, "Exper", "Simnum", "Nodes_df", func) %>% 
 		spread_(key = axes, value = func) %>% arrange_(grouped)
 	response=factor(tryout[[grouped]])
-	indep_var=tryout[,3:ncol(tryout)]
+	indep_var=tryout[,-(1:2)]
 	# Run a PCA: 
 	pca_func(indep_var,response)
 	# Run a LDA:
