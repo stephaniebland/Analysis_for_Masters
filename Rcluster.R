@@ -9,6 +9,10 @@
 ################################################
 ############### Temp Testing ###################
 ################################################
+#---- Hidden ----
+rm(list=ls())
+library(reshape2)
+
 #---- functions ----
 lump_Bio_sums <- function(B_mat){# 1 Add columns for sum of nodes so we have biomass of groups of species (ex. all fish)
 	colnames(B_mat)=paste0('Node_',1:nichewebsize)
@@ -56,9 +60,7 @@ melt_new_col=function(melted_df){
 	result=melted_df
 }
 
-#---- Hidden ----
-rm(list=ls())
-library(reshape2)
+#---- DataSet ----
 seed_0=0
 lifestages_linked=1
 Adults_only=0
