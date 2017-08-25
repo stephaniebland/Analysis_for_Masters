@@ -121,41 +121,6 @@ for (simnum in c(1:400)){
     #extinct=which(B[tot_days,]==0)
     
     ################################################
-    ############### Sample Plots ###################
-    ################################################
-    samp_plot=1:10
-    if (simnum %in% samp_plot){
-      # # Von Bertalanffy curve
-      # matplot(matrix(log10(Mass[species %in% fish_names]),max(lifestage),length(fish_names)),type="l",lwd=3,xlab="Lifestage",ylab="Individual Body Mass (log10)",main="Von Bertalanffy curve")
-      # #dev.print()
-      # # Phase Diagrams
-      # library(plot3D)
-      # library(plot3Drgl)
-      # xkcd=log10(B_df[,5])
-      # lag_h=0.21#0.21 is nice
-      # xkcd_h=lag(xkcd,n=L_year*lag_h)
-      # xkcd_2h=lag(xkcd,n=L_year*lag_h*2)
-      # lines3D(xkcd,xkcd_h,xkcd_2h)
-      # # Species plot against each other
-      # t_0=500
-      # t_f=dim(B)[1]
-      # 
-      # plot_time=Timegroups[2,"Day_start"]:Timegroups[2,"Day_end"]
-      # xkcd1=log10(B_df[plot_time,"Fish_tot_df"])
-      # xkcd2=log10(B_df[plot_time,"basal_tot_df"])
-      # xkcd3=log10(B_df[plot_time,"inverts_tot_df"])
-      # scatter3Drgl(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of All Fish (log)",ylab="Biomass of All Autotrophs (log)",zlab="Biomass of All Invertebrates (log)")
-      # mtext(side = 3, text = "Sum all lifestages", line = -2.5)
-      # 
-      # 
-      # plot_time=Timegroups[2,"Year_start"]:Timegroups[2,"Year_end"]
-      # xkcd1=log10(B_df_yr_ends[plot_time,"Fish_tot_df"])
-      # xkcd2=log10(B_df_yr_ends[plot_time,"basal_tot_df"])
-      # xkcd3=log10(B_df_yr_ends[plot_time,"inverts_tot_df"])
-      # scatter3Drgl(xkcd1,xkcd2,xkcd3, phi = 0, bty = "g", type = "l", ticktype = "detailed", lwd = 1,colkey=(add=F),xlab="Biomass of All Fish (log)",ylab="Biomass of All Autotrophs (log)",zlab="Biomass of All Invertebrates (log)")
-      # mtext(side = 3, text = "Sum all lifestages", line = -2.5)
-    }
-    ################################################
     ################## Save Data ###################
     ################################################
     # Last line is Data entry into matrix, because line should only be entered if all data was collected
