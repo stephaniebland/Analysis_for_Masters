@@ -76,8 +76,8 @@ for (simnum in c(1:400)){
       Tot_df=rowSums(B_mat)
       Fish_tot_df=rowSums(B_mat[,isfish==1])#Total biomass of all fish species
       non_fish_df=rowSums(B_mat[,isfish==0])#Total Biomass of Non Fish species
-      basal_tot_df=rowSums(B_mat[,basalsp])#Total Biomass of all autotrophs
-      inverts_tot_df=rowSums(B_mat[,inverts_only])#Total Biomass of invertebrates only
+      basal_tot_df=rowSums(as.matrix(B_mat[,basalsp]))#Total Biomass of all autotrophs
+      inverts_tot_df=rowSums(as.matrix(B_mat[,inverts_only]))#Total Biomass of invertebrates only
       
       #Bind them to regular Data frame
       B_df=cbind(B_mat,Fish_tot_per_sp_df,Fish_tot_per_ls_df,Tot_df,Fish_tot_df,non_fish_df,basal_tot_df,inverts_tot_df)
