@@ -15,8 +15,8 @@ library(reshape2)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
-DATE="2017Jun08"
-Version="1"
+DATE="2017Jul19"
+Version="0"
 #simnum=1
 #Exper=1
 location="/GIT/Analysis"#For Running on my Mac
@@ -24,7 +24,7 @@ location="/GIT/Analysis"#For Running on my Mac
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 #---- CompileData ----
-for (simnum in c(201:252,258:270,272:307,309:382,384:400)){
+for (simnum in c(1:400)){
   for (Exper in 1:3){
     for (pred in 0:2){for (prey in 0:1){
     ################################################
