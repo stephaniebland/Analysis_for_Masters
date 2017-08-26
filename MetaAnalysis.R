@@ -31,6 +31,16 @@ node_names=levels(factor(alldata$Nodes_df))
 node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
 exper_name=c("Leslie & History","Extended Web","Original Web")
 
+
+# Oscillation Statistics
+# Magnitude of oscillations should be a function that lets us choose log vs. absolute vs. coefficients of variation, which group of species (if multiple, take sum of biomass),
+# Coefficient of Variation Function
+CV <- function(dat){
+	sd(dat)/mean(dat)*100
+}
+range(alldata$Biomass)# Finds min and max
+
+
 # A Quick PCA graphics function
 pca_func <- function(data,group_by){
 	ir.pca <- prcomp(data,center = F, scale. = F) 
