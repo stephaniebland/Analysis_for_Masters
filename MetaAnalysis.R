@@ -34,12 +34,22 @@ exper_name=c("Leslie & History","Extended Web","Original Web")
 
 # Oscillation Statistics
 # Magnitude of oscillations should be a function that lets us choose log vs. absolute vs. coefficients of variation, which group of species (if multiple, take sum of biomass),
+# The thing is, it doesn't even make very much sense to find CV of groups of species - because different species could have biomasses that vary by orders of magnitude. Suppose salmon are stable and have biomass of 1000, while sardines fluctuate rapidly but have a small population of 10.
+
 # Coefficient of Variation Function
 CV <- function(dat){
 	sd(dat)/mean(dat)*100
 }
-range(alldata$Biomass)# Finds min and max
 
+alldata$Nodes_df=="Fish_sp_1"
+
+nodes="Fish_sp_3"
+exper_n=1
+test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+	summarise(CV = CV(Biomass), max=max(Biomass)) %>% 
+	filter(Nodes_df %in% nodes) %>%
+	filter(Exper %in% exper_n)
+test
 
 # A Quick PCA graphics function
 pca_func <- function(data,group_by){
