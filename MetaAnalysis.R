@@ -4,8 +4,8 @@ library(tidyverse)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
-DATE="2017Jun08"
-Version="1"
+DATE="2017Jul19"
+Version="0"
 #simnum=1
 #Exper=1
 location="/GIT/Analysis"#For Running on my Mac
