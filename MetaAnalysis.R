@@ -38,11 +38,7 @@ exper_name=c("Leslie & History","Extended Web","Original Web")
 
 # Coefficient of Variation Function
 CV <- function(dat){
-	CV=sd(dat)/mean(dat)*100
-	if (max(dat)==0){
-		CV=0
-	}
-	return(CV)
+	sd(dat)/mean(dat)*100
 }
 
 alldata$Nodes_df=="Fish_sp_1"
