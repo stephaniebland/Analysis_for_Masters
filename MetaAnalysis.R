@@ -38,18 +38,24 @@ exper_name=c("Leslie & History","Extended Web","Original Web")
 
 # Coefficient of Variation Function
 CV <- function(dat){
-	sd(dat)/mean(dat)*100
+	CV=sd(dat)/mean(dat)*100
+	if (max(dat)==0){
+		CV=0
+	}
+	return(CV)
 }
 
 alldata$Nodes_df=="Fish_sp_1"
 
 nodes="Fish_sp_3"
-exper_n=1
+nodes="Fish_tot_df"
 test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	summarise(CV = CV(Biomass), max=max(Biomass)) %>% 
+	summarise(CV = CV(Biomass)) %>% 
 	filter(Nodes_df %in% nodes) %>%
-	filter(Exper %in% exper_n)
+	spread(key=Exper, value=CV)
 test
+
+
 
 # A Quick PCA graphics function
 pca_func <- function(data,group_by){
