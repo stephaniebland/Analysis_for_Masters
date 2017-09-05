@@ -41,8 +41,6 @@ CV <- function(dat){
 	sd(dat)/mean(dat)*100
 }
 
-alldata$Nodes_df=="Fish_sp_1"
-
 nodes="Fish_sp_3"
 nodes="Fish_tot_df"
 test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
@@ -51,6 +49,19 @@ test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>%
 	spread(key=Exper, value=CV)
 test
 
+
+eh <- alldata %>% group_by(Day_df,Calen_df,Year_df,Phase_df,yr_in_phase,Seed,Simnum,Exper,Prey,Pred) %>%
+	nest()
+
+eh <- alldata %>% group_by(Seed,Simnum,Exper,Prey,Pred) %>%
+	nest() %>% group_by(Simnum) %>% nest()
+
+eh <- alldata %>% group_by(Seed,Simnum,Exper,Prey,Pred,Nodes_df) %>%
+	nest() %>% 
+	group_by(Seed,Simnum,Exper,Prey,Pred) %>%
+	nest()
+
+alldata %>% nest(Simnum,Exper,Day_df)
 
 
 # A Quick PCA graphics function
