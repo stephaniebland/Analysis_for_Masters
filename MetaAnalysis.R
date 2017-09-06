@@ -50,17 +50,9 @@ test <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>%
 test
 
 alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	filter(Year_df %in% max(Year_df), Nodes_df %in% c("Fish_sp_1","Fish_sp_2","Fish_sp_3")) %>% 
+	filter(Year_df %in% max(Year_df), str_detect(Nodes_df,"Fish_sp_")) %>% 
 	summarise(Extant=(Biomass>0)) %>%
 	spread(key=Exper, value=Extant)
-	
-alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	filter(Year_df %in% max(Year_df), Nodes_df %in% grepl("Fish_sp_1",alldata$Nodes_df)) 
-
-alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	filter(Year_df %in% max(Year_df), Nodes_df %in% "Fish_sp_1") 
-
-alldata %>% dplyr::filter(str_detect(Nodes_df,"Fish_sp_"))
 
 eh <- alldata %>% group_by(Day_df,Calen_df,Year_df,Phase_df,yr_in_phase,Seed,Simnum,Exper,Prey,Pred) %>%
 	nest()
