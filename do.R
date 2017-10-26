@@ -34,18 +34,23 @@ exper_name=c("Leslie & History","Extended Web","Original Web")
 # This analysis will only look at the Pristine scenario, so phase 2. 
 # Okay, so clearly the first problem is how do we want to define "stability"? For the purpose of this analysis, I'll define it as the persistance of life (any or fish specifically) till the end of the simulation (so there is life at the end of the second phase)
 # I will group these values by Experiment, and have a mean and variance so I can make bar plots. 
-# So three sections are necessary 
-# 1. What percentage of webs have any life at all?
-# 2. What percentage of webs have at least one fish life stage (node)?
-# 
+# So two sections are necessary:
+# 1. What percentage of webs have at least one fish life stage (node) persist in ANY of the experiments?
+# 2. What percentage of webs have at least some fish biomass persist in every experiment. 
+# Also interesting, but not my focus:
+# What percentage of webs have any life at all (without grouping by simulation)?
 # Should I also make a general stat of how many webs have at least one life stage persist in all three experiments? 
-alldata %>% 
+nodes="Fish_tot_df"
+persist=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), Nodes_df %in% nodes) %>%
+	spread(key=Exper, value=Biomass) %>%
+	summarise(any=as.logical(sum(`1`,`2`,`3`)),all=as.logical(prod(`1`,`2`,`3`)))
+# 1.
+sum(persist$any)/length(persist$any)
+# 2.
+sum(persist$all)/length(persist$all)
+	
 
-
-alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-summarise(CV = CV(Biomass)) %>% 
-filter(Nodes_df %in% nodes) %>%
-spread(key=Exper, value=CV)
 
 
 
