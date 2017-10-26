@@ -1,0 +1,30 @@
+First Paragraph: Overall description, general overview:
+A basic time series that shows what this model output looks like
+verbally describe what happens in the simulations
+Mention how many simulations actually stabilize (as percentage) for each experiment
+
+
+#CODE ELIMINATE ALL DATA WHERE NOTHING STABILIZES
+
+
+Second Paragraph: Number of extinctions
+Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
+just make sure i talk about the cool stuff i emailed
+
+
+
+#CODE ELIMINATE ALL DATA WHERE FISH DONT STABILIZE
+
+
+
+Third Paragraph: Stability -> Coefficient variation (CV)
+Start with stability of total ecosystem, finish with stability of fish only (one or two paragraphs)
+Fish to total biomass ratios for each experiment
+
+
+
+End paragraph: Von-Bertalanffy
+PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
+coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
+
+ask anna about how to save results
