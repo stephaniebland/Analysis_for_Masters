@@ -4,13 +4,23 @@ verbally describe what happens in the simulations
 Mention how many simulations actually stabilize (as percentage) for each experiment
 
 
+Roughly half of our simulations stabilized to periodic or chaotic oscillations within ______ years. A typical time series of the logged biomass for a stable population is shown in figure x. 
+
+
+
+Only about half of our simulations stabilized. This is to be expected, as we placed minimal constraints on food webs during the web creation stage. Some of the we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it actually is analogous to what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
+
+only a few of randomly generated ecosystems are actually stable: “Natural ecosystems, whether structurally complex or simple, are the product of a long history of coevolution of their constituent plants and animals. It is at least plausible that such intricate evolutionary processes have, in effect, sought out those relatively tiny and mathematically atypical regions of parameter space which endow the system with long-term stability.” (May, Model ecosystems, p. 173)
+
+
 #CODE ELIMINATE ALL DATA WHERE NOTHING STABILIZES
 
 
 Second Paragraph: Number of extinctions
 Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
 just make sure i talk about the cool stuff i emailed
-
+Fish are more likely to go extinct 
+The probability of any single life stage persisting is greater when they are linked together than without.
 
 
 #CODE ELIMINATE ALL DATA WHERE FISH DONT STABILIZE
