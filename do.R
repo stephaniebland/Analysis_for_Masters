@@ -78,11 +78,8 @@ sure_dis=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
 	group_by(Simnum,Exper)
 meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(var(count_extant$`1`),var(count_extant$`2`),var(count_extant$`3`)))
 ggplot(meh, aes(x=Exper, y=Num_extant)) +
-	geom_bar(position=position_dodge(),stat="identity") + geom_errorbar(aes(ymin=Num_extant-se, ymax=Num_extant+se), width=.1) 
-barplot(c(x,y,z),main="Mean number of extant species\n in simulations that meet first criteria",names.arg=exper_name)
-sum(count_extant$`1`)/(length(unique(alldata$Simnum))*3)
-sum(count_extant$`2`)/(length(unique(alldata$Simnum))*3)
-sum(count_extant$`3`)/(length(unique(alldata$Simnum))*3)
+	geom_bar(position=position_dodge(),stat="identity") + 
+	geom_errorbar(aes(ymin=Num_extant-se, ymax=Num_extant+se), width=.1) 
 #OKAY SO I WAS DOING IT ALL WRONG! I want to detect simulations where at least one fish species persists in any of the experiments
 
 
