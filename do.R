@@ -2,6 +2,7 @@
 library(ggbiplot)
 library(tidyverse)
 library(MASS)
+library(stringr)
 DATE="2017Jul19"
 Version="0"
 location="/GIT/Analysis"#For Running on my Mac
@@ -51,6 +52,24 @@ sum(persist$any)/length(persist$any)
 # 2.
 sum(persist$all)/length(persist$all)
 	
+#---- Percent_Extant ----
+# Second Paragraph: Number of extinctions
+#Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
+count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), str_detect(Nodes_df,"Fish_sp_")) %>% 
+	summarise(Extant=(Biomass>0)) %>%
+	spread(key=Nodes_df, value=Extant) %>%
+	summarise(fish_persist=sum(Fish_sp_1,Fish_sp_2,Fish_sp_3)) %>%
+	spread(key=Exper,value=fish_persist) %>%
+	mutate(keep_sim=sum(`1`,`2`,`3`)) %>%
+	filter(keep_sim>0)
+mean(count_extant$`1`)
+mean(count_extant$`2`)
+mean(count_extant$`3`)
+sum(count_extant$`1`)/(length(unique(alldata$Simnum))*3)
+sum(count_extant$`2`)/(length(unique(alldata$Simnum))*3)
+sum(count_extant$`3`)/(length(unique(alldata$Simnum))*3)
+#OKAY SO I WAS DOING IT ALL WRONG! I want to detect simulations where at least one fish species persists in any of the experiments
 
 
 
