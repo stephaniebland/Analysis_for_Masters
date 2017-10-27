@@ -63,9 +63,23 @@ count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
 	spread(key=Exper,value=fish_persist) %>%
 	mutate(keep_sim=sum(`1`,`2`,`3`)) %>%
 	filter(keep_sim>0)
-mean(count_extant$`1`)
-mean(count_extant$`2`)
-mean(count_extant$`3`)
+x=mean(count_extant$`1`)
+y=mean(count_extant$`2`)
+z=mean(count_extant$`3`)
+sure_dis=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), str_detect(Nodes_df,"Fish_sp_")) %>% 
+	summarise(Extant=(Biomass>0)) %>%
+	spread(key=Nodes_df, value=Extant) %>%
+	summarise(fish_persist=sum(Fish_sp_1,Fish_sp_2,Fish_sp_3)) %>%
+	spread(key=Exper,value=fish_persist) %>%
+	mutate(keep_sim=sum(`1`,`2`,`3`)) %>%
+	filter(keep_sim>0) %>%
+	gather(key=Exper,value=Num_extant,c(`1`,`2`,`3`))%>%
+	group_by(Simnum,Exper)
+meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(var(count_extant$`1`),var(count_extant$`2`),var(count_extant$`3`)))
+ggplot(meh, aes(x=Exper, y=Num_extant)) +
+	geom_bar(position=position_dodge(),stat="identity") + geom_errorbar(aes(ymin=Num_extant-se, ymax=Num_extant+se), width=.1) 
+barplot(c(x,y,z),main="Mean number of extant species\n in simulations that meet first criteria",names.arg=exper_name)
 sum(count_extant$`1`)/(length(unique(alldata$Simnum))*3)
 sum(count_extant$`2`)/(length(unique(alldata$Simnum))*3)
 sum(count_extant$`3`)/(length(unique(alldata$Simnum))*3)
