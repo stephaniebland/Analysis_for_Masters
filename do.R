@@ -44,7 +44,8 @@ nodes="Fish_tot_df"
 persist=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
 	filter(Year_df %in% max(Year_df), Nodes_df %in% nodes) %>%
 	spread(key=Exper, value=Biomass) %>%
-	summarise(any=as.logical(sum(`1`,`2`,`3`)),all=as.logical(prod(`1`,`2`,`3`)))
+	summarise(any=sum(`1`,`2`,`3`),all=prod(`1`,`2`,`3`)) %>%
+	mutate_at(c("any","all"),as.logical)
 # 1.
 sum(persist$any)/length(persist$any)
 # 2.
