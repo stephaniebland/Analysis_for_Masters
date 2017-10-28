@@ -67,18 +67,59 @@ criteria2_totBiomass=100*sum(persist$all)/length(persist$all)
 `r criteria2_totBiomass`% of our simulations stabilized for any species in every experiment. This includes webs were fish would go extinct. 
 
 ## Second Paragraph: Number of extinctions
+```{r extant_species}
+count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), str_detect(Nodes_df,"Fish_sp_")) %>% 
+	summarise(Extant=(Biomass>0)) %>%
+	spread(key=Nodes_df, value=Extant) %>%
+	summarise(fish_persist=sum(Fish_sp_1,Fish_sp_2,Fish_sp_3)) %>%
+	spread(key=Exper,value=fish_persist) %>%
+	mutate(keep_sim=sum(`1`,`2`,`3`)) %>%
+	filter(keep_sim>0)
+x=mean(count_extant$`1`)
+y=mean(count_extant$`2`)
+z=mean(count_extant$`3`)
+sem <- function(x) {sd(x)/sqrt(length(x))}
+meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(sem(count_extant$`1`),sem(count_extant$`2`),sem(count_extant$`3`)))
+ggplot(meh, aes(x=Exper, y=Num_extant)) +
+	geom_bar(position=position_dodge(),stat="identity") + 
+	geom_errorbar(aes(ymin=Num_extant-2*se, ymax=Num_extant+2*se), width=.1) +
+	xlab("Experiment") + ylab("Number of extant fish") +
+	labs(caption="The mean number of extant fish in each experiment. The error bars are of 2 times the standard error.")
+```
+
 Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
 just make sure i talk about the cool stuff i emailed
 Fish are more likely to go extinct 
 The probability of any single life stage persisting is greater when they are linked together than without.
 
 
-## Including Plots
+## Third Paragraph: Stability -> Coefficient variation (CV)
+Start with stability of total ecosystem, finish with stability of fish only (one or two paragraphs)
+Fish to total biomass ratios for each experiment
 
-You can also embed plots, for example:
+
+## End paragraph: Von-Bertalanffy
+PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
+coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
+
+
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
