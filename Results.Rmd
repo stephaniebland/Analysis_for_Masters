@@ -5,8 +5,10 @@ date: '2017-10-27'
 output: html_document
 ---
 
-```{r setup, include=FALSE,cache=TRUE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE,echo=FALSE)
+```
+```{r hidden}
 #---- Hidden ----
 library(ggbiplot)
 library(tidyverse)
@@ -49,17 +51,27 @@ criteria1=100*sum(persist$any)/length(persist$any)
 criteria2=100*sum(persist$all)/length(persist$all)
 ```
 
-Roughly half of our simulations stabilized to periodic or chaotic oscillations within x years. A typical time series of the logged biomass for a stable population is shown in figure x. `r criteria1`
+A typical time series of the logged biomass for a stable population is shown in figure x. 
 
-84% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. Only 18% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. 
-
-Only about half of our simulations stabilized. This is to be expected, as we placed minimal constraints on food webs during the web creation stage. Some of the we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it actually is analogous to what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
-
-Some of the simulations stabilized for invertebrates and autotrophs, while all the fish species went extinct. 
-
-```{r cars}
-summary(cars)
+`r criteria1`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r criteria2`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. We anticipated that some simulations would never stablize, as we placed minimal constraints on food webs during the web creation stage. Some of the webs we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
+```{r Total Biomass Stability}
+nodes="Tot_df"
+persist=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), Nodes_df %in% nodes) %>%
+	spread(key=Exper, value=Biomass) %>%
+	summarise(any=sum(`1`,`2`,`3`),all=prod(`1`,`2`,`3`)) %>%
+	mutate_at(c("any","all"),as.logical)
+# Percent of webs that stabilize for any species in every experiment
+criteria2_totBiomass=100*sum(persist$all)/length(persist$all)
 ```
+`r criteria2_totBiomass`% of our simulations stabilized for any species in every experiment. This includes webs were fish would go extinct. 
+
+## Second Paragraph: Number of extinctions
+Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
+just make sure i talk about the cool stuff i emailed
+Fish are more likely to go extinct 
+The probability of any single life stage persisting is greater when they are linked together than without.
+
 
 ## Including Plots
 
