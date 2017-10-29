@@ -67,20 +67,10 @@ dat=read.table("clean.txt",header=F)
 colnames(dat)=colnames(clean)
 #Temporary hosting site for functions:
 
-#library(ggplot2)
 dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
-	#group_by(species) %>%
 	select(lifestage,species,Mass) %>%
 	mutate(species=factor(species)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
-	#filter(species==16) %>%
-	#plot(Mass~lifestage,.)
-	with(plot(lifestage,Mass,type="l"))
-	
-	
-ggplot(data=eh,aes(x=lifestage, y=Mass, colour=species)) +
-	geom_line()
-
 
 
 
