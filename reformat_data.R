@@ -1,3 +1,4 @@
+rm(list=ls())
 library(tidyverse)
 seed_0=0
 lifestages_linked=1
