@@ -134,7 +134,7 @@ ggplot(meh, aes(x=Exper, y=mean_cv)) +
 	labs(caption="Figure 3 The mean CV of the total biomass. The error bars are of 2 times the standard error.")
 
 ```
-
+Standard error is too high - I don't want to include figure 3. 
 
 ```{r CV_fish}
 # Coefficient of Variation Function
@@ -157,9 +157,21 @@ ggplot(meh, aes(x=Exper, y=mean_cv)) +
 	labs(caption="Figure 4 The mean CV of total fish biomass. The error bars are of 2 times the standard error.")
 
 ```
+Figure 4 Shows the mean CV for the total fish biomass. The linked life stages experiment has a higher mean CV and a higher standard error. There is more variance because one life stage can re-establish the populations of other life stages that are less suited to the environment. 
 
+[Note: if there are any fish species with exponential growth, it would really throw the CV off for experiment 1. All these results are tentative, I have a low sample size, and I want to test it with the simplified Leslie Matrix.]
 
-Fish to total biomass ratios for each experiment
+```{r fish_else_ratio}
+ratio=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df),Nodes_df %in% c("Fish_tot_df", "Tot_df")) %>%
+	spread(key=Nodes_df,value=Biomass) %>%
+	mutate(Fish_ratio=Fish_tot_df/Tot_df) %>%
+	group_by(Exper) %>%
+	summarise(mean(Fish_ratio,na.rm=T))
+ratio
+```
+
+The fish to total biomass ratios for each experiment is shown in table 1. 
 
 
 ## End paragraph: Von-Bertalanffy
@@ -169,7 +181,7 @@ coefficient of variation plot (indep) against weight_\infty (dependent) also bio
 
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+#plot(pressure)
 ```
 
 
