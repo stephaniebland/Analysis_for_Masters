@@ -33,25 +33,28 @@ for (item in 1:length(import_vars)){
 ################################################
 ############### Extract Data ###################
 ################################################
-#colnames(B_year_end)=paste0('Node_',1:nichewebsize)
 colnames(B_year_end)=1:nichewebsize
+
 Phase_df=c();yr_in_phase=c()
 for (item in 1:length(numyears)){
 	if (numyears[item]>0) {yr_in_phase=c(yr_in_phase,1:numyears[item])}
 	Phase_df=c(Phase_df,rep(item,numyears[item]))
-	}
-B_year_end=cbind(Year_df=1:dim(B_year_end)[1],B_year_end,Phase_df=Phase_df,yr_in_phase=yr_in_phase)
+}
+B_year_end=cbind(Year_df=1:dim(B_year_end)[1],B_year_end,Phase_df,yr_in_phase)
 
-eh=data.frame(B_year_end) %>% gather(key="Nodes_df",value="Biomass",-Year_df,-Phase_df,-yr_in_phase,convert=TRUE) %>% 
+clean=data.frame(B_year_end) %>% gather(key="Nodes_df",value="Biomass",-Year_df,-Phase_df,-yr_in_phase) %>% 
 	mutate(Day_df=Year_df*L_year) %>%
 	mutate(Seed=seed_0,Simnum=simnum,Exper=Exper,Pred=pred,Prey=prey) %>%
 	mutate(Nodes_df=as.numeric(gsub("[^0-9]","",Nodes_df))) %>%
-	mutate(xkcd=c(50:100)[Nodes_df]) 
+	mutate(isfish=isfish[Nodes_df],basal_ls=basal_ls[Nodes_df],species=species[Nodes_df],lifestage=lifestage[Nodes_df],Mass=Mass[Nodes_df])
 
-
-head(eh)
-head(alldata)
-
+################################################
+################## Save Data ###################
+################################################
+# Last line is Data entry into matrix, because line should only be entered if all data was collected
+# It loads it into line k for the data matrix. 
+write.table(clean,"clean.txt",append=T,col.names = F,row.names = F)
+print(simnum)
 
 
 
