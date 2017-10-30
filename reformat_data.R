@@ -1,3 +1,7 @@
+##### MAKE SURE I TEST THIS
+dat %>% filter(isfish==1,Year_df==max(Year_df)) %>% filter(basal_ls==1)
+##### TO CHECK FOR ERRORS!!!
+
 rm(list=ls())
 library(tidyverse)
 seed_0=0
@@ -66,27 +70,35 @@ write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 #Temporary hosting site for functions:
-#dat %>% as_tibble() %>% mutate_all(is.double(), as.factor())
+# Make Processing faster, I think?
+dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
+	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","Pred","Prey","species","lifestage"),as.factor)
 
-
-
-
+# Probability of fish persisting in at least one of the experiments
+# Probability of fish persisting in all of the experiments
+subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
+	group_by(Simnum,Exper) %>%
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
+	mutate_at(c("any","all"),as.logical)
+subdat_ls %>% summarise_at(c("any","all"),mean)
+# Subset the data that fit criteria 1 and 2
+subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
+subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 
 ### Plot growth over life stages
 dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
 	mutate(species=factor(species)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
 
-subdat=dat
-
 # Biomass against weight_infty (make do w any mass for now though)
-dat %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
+subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
 	group_by(Simnum,Exper,species) %>%
 	summarise(Tot_fish=sum(Biomass),infty=log10(max(Mass))) %>%
 	ggplot(aes(x=infty,y=Tot_fish)) + geom_point()
 #For experiment 3 only and fits criteria 2
 
-dat %>% filter(Year_df==max(Year_df)) %>%
+subdat2 %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Simnum,Exper) %>%
 	summarise(Tot=sum(Biomass)) 
 
