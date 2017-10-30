@@ -88,7 +88,7 @@ subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 
 ### Plot growth over life stages
 dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
-	mutate(species=factor(species)) %>%
+	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
 
 # Biomass against weight_infty (make do w any mass for now though)
