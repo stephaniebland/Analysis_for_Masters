@@ -40,3 +40,5 @@ PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THA
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
 ask anna about how to save results
+
+SAVE FIGURES AS POSTSCRIPTS (.PS)

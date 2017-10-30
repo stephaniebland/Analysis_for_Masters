@@ -119,6 +119,7 @@ CV <- function(dat){sd(dat)/mean(dat)*100}
 
 nodes="Tot_df"
 CV_calc <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+	filter(Phase==2)
 	summarise(CV = CV(Biomass)) %>% 
 	filter(Nodes_df %in% nodes) %>%
 	spread(key=Exper, value=CV)
