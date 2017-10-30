@@ -64,17 +64,35 @@ for (simnum in c(1:100)){
 write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
-colnames(dat)=colnames(clean)
+colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 #Temporary hosting site for functions:
+#dat %>% as_tibble() %>% mutate_all(is.double(), as.factor())
 
+
+
+
+
+### Plot growth over life stages
 dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
-	select(lifestage,species,Mass) %>%
 	mutate(species=factor(species)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
 
+subdat=dat
+
+# Biomass against weight_infty (make do w any mass for now though)
+dat %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
+	group_by(Simnum,Exper,species) %>%
+	summarise(Tot_fish=sum(Biomass),infty=log10(max(Mass))) %>%
+	ggplot(aes(x=infty,y=Tot_fish)) + geom_point()
+#For experiment 3 only and fits criteria 2
+
+dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Simnum,Exper) %>%
+	summarise(Tot=sum(Biomass)) 
 
 
 
+# coefficient of variation plot (indep) against weight_\infty
 
 
 
