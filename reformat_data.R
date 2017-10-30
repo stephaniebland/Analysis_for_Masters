@@ -94,7 +94,8 @@ dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
 	group_by(Simnum,Exper,species) %>%
-	summarise(Tot_fish=sum(Biomass),infty=log10(max(Mass))) %>%
+	summarise(log_Tot_fish=log10(sum(Biomass)),log_infty=log10(max(Mass))) %>%
+	filter(Tot_fish>-1000) %>%
 	ggplot(aes(x=infty,y=Tot_fish)) + geom_point()
 #For experiment 3 only and fits criteria 2
 
