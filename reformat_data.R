@@ -86,6 +86,19 @@ subdat_ls %>% summarise_at(c("any","all"),mean)
 subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
 subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 
+### Coefficient of Variation
+CV <- function(dat){sd(dat)/mean(dat)*100}
+sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
+
+eh=subdat2 %>% group_by(Exper,Simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio))# %>% ### So here we see the CVs for fish and total
+	ggplot(aes(x=Exper,y=CV_tot)) + barplot()
+	hist(eh$CV_fish) # Not notmal
+	
+	summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
+
 ### Plot growth over life stages
 dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
