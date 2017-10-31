@@ -179,6 +179,17 @@ The fish to total biomass ratios for each experiment is shown in table 1.
 
 
 ## End paragraph: Von-Bertalanffy
+```{r Von-Bert-solo}
+dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1) %>%
+	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
+	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
+```
+
+```{r Von-Bert-Multi}
+dat %>% filter(Simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
+	mutate(species=factor(as.integer(species)+(39*Simnum)),lifestage=as.integer(lifestage)) %>%
+	ggplot(aes(x=lifestage, y=log10(Mass), colour=species))+geom_line()
+```
 PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
