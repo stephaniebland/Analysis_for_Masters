@@ -34,6 +34,9 @@ node_names=levels(factor(alldata$Nodes_df))
 # In the following line we have some difficulty with node names - after 10 the levels function tries to sort alphabetically but fails miserably.
 node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
 exper_name=c("Leslie & History","Extended Web","Original Web")
+##### Load New data format too
+dat=read.table("clean.txt",header=F)
+colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 ```
 
 ## First Paragraph: Overall description, general overview
@@ -119,7 +122,7 @@ CV <- function(dat){sd(dat)/mean(dat)*100}
 
 nodes="Tot_df"
 CV_calc <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	filter(Phase==2)
+	filter(Phase_df==2) %>%
 	summarise(CV = CV(Biomass)) %>% 
 	filter(Nodes_df %in% nodes) %>%
 	spread(key=Exper, value=CV)
