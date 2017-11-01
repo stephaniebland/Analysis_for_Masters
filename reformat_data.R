@@ -85,7 +85,51 @@ subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 #### Temporary hosting site for functions: #####
 ################################################
 ################################################
+library(stringr)
+node_ls=unique(alldata$Nodes_df)[str_detect(unique(alldata$Nodes_df),"Node_")]
+count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
+	filter(Year_df %in% max(Year_df), Nodes_df %in% node_ls) %>% 
+	summarise(Extant=(Biomass>0)) %>%
+	spread(key=Nodes_df, value=Extant) %>%
+	summarise(node_persist=sum(Node_1,Node_2,Node_3,Node_4,Node_5,Node_6,Node_7,Node_8,Node_9,Node_10,Node_11,Node_12,Node_13,Node_14,Node_15,Node_16,Node_17,Node_18,Node_19,Node_20,Node_21,Node_22,Node_23,Node_24,Node_25,Node_26,Node_27,Node_28,Node_29,Node_30,Node_31,Node_32,Node_33,Node_34,Node_35,Node_36,Node_37,Node_38,Node_39)) %>%
+	spread(key=Exper,value=node_persist)
+x=mean(count_extant$`1`)/39
+y=mean(count_extant$`2`)/39
+z=mean(count_extant$`3`)/30
+sem <- function(x) {sd(x)/sqrt(length(x))}
+meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(sem(count_extant$`1`/39),sem(count_extant$`2`/39),sem(count_extant$`3`/30)))
+ggplot(meh, aes(x=Exper, y=Num_extant)) +
+	geom_bar(position=position_dodge(),stat="identity") + 
+	geom_errorbar(aes(ymin=Num_extant-2*se, ymax=Num_extant+2*se), width=.1) +
+	xlab("Experiment") + ylab("Percent of extant nodes") +
+	labs(caption="Figure 1 The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error.")
 
+################################################
+extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,Simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_species)
+extant_species %>% summarise(mean(Num_extant),var(Num_extant))
+
+#FIX THIS: I NEED TO DO PERCENT OF EXTANT NODES RATHER THAN NUMBER
+#ALSO DOUBLE CHECK WITH MEH
+extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,Simnum,Nodes_df) %>% 
+	summarise(extant=as.logical(Biomass)) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_nodes)
+extant_nodes %>% summarise(mean(Num_extant),var(Num_extant))
+
+extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,Simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_fish)
+extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
+
+
+################################################
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
