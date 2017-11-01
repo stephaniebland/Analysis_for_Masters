@@ -69,7 +69,6 @@ write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
-#Temporary hosting site for functions:
 # Probability of fish persisting in at least one of the experiments
 # Probability of fish persisting in all of the experiments
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
@@ -80,6 +79,13 @@ subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 # Subset the data that fit criteria 1 and 2
 subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
 subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
+
+################################################
+################################################
+#### Temporary hosting site for functions: #####
+################################################
+################################################
+
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
