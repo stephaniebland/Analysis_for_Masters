@@ -267,7 +267,7 @@ subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4) %>% 
 	#select(Simnum,Mass,scaled_mass) %>%
-	#with(hist(scaled_mass)) %>%
+	#with(hist(scaled_mass)) #%>%
 	with(hist(log10(Mass)))
 ```
 
