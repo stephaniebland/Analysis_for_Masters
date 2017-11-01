@@ -236,10 +236,19 @@ dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 ```
 
 ```{r Von-Bert-Multi}
-subdat1 %>% filter(Simnum<10,Exper==1,Year_df==max(Year_df),isfish==1,Biomass>0) %>%
+# Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
+subdat1 %>% filter(Simnum<10,Exper==1,Year_df==max(Year_df),isfish==1) %>%
+	group_by(Simnum,species) %>%
+	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
+	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
+	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*Simnum)),lifestage=as.integer(lifestage),Simnum=as.factor(Simnum)) %>% 
+	#select(Simnum,species,Biomass, tot_fish_biom,Mass)
 	ggplot(aes(x=lifestage, y=log10(Mass)))+geom_line(aes(group=species, colour=Simnum))
 ```
+
+the fish for any given web are often of similar size
+
 
 ```{r Von-Bert-grid-plot}
 VB_grid=dat %>% filter(Simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
