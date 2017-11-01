@@ -252,6 +252,18 @@ PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THA
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
 Produce a histogram of weight_infty!!!! Scale a bunch of sim webs so largest fish is 10^5
+```{r Weight_infty-Hist}
+subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+	group_by(Simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4) %>% 
+	#select(Simnum,Mass,scaled_mass) %>%
+	#with(hist(scaled_mass)) %>%
+	with(hist(log10(Mass)))
+```
+
+Note to self: So the problem with this histogram plot is that when you scale it you will invariably cause all the fish to be of the same size, so you'll have a massive peak and cliff at 10^5 or whatever you choose to scale by
+
 
 ```{r pressure, echo=FALSE}
 #plot(pressure)
