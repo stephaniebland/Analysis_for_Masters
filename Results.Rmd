@@ -169,46 +169,23 @@ The mean number of extant species is shown in figure 2. Since we only require on
 ```{r CV_total}
 # Coefficient of Variation Function
 CV <- function(dat){sd(dat)/mean(dat)*100}
+sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
 
-nodes="Tot_df"
-CV_calc <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
+CV_plot=subdat2 %>% group_by(Exper,Simnum,Year_df) %>%
 	filter(Phase_df==2) %>%
-	summarise(CV = CV(Biomass)) %>% 
-	filter(Nodes_df %in% nodes) %>%
-	spread(key=Exper, value=CV)
-x=mean(CV_calc$`1`,na.rm=T)
-y=mean(CV_calc$`2`,na.rm=T)
-z=mean(CV_calc$`3`,na.rm=T)
-sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))}
-meh=data.frame(Exper=1:3,mean_cv=c(x,y,z),se=c(sem(CV_calc$`1`),sem(CV_calc$`2`),sem(CV_calc$`3`)))
-ggplot(meh, aes(x=Exper, y=mean_cv)) +
-	geom_bar(position=position_dodge(),stat="identity") + 
-	geom_errorbar(aes(ymin=mean_cv-2*se, ymax=mean_cv+2*se), width=.1) +
-	xlab("Experiment") + ylab("Mean Coefficient of Variation") +
-	labs(caption="Figure 3 The mean CV of the total biomass. The error bars are of 2 times the standard error.")
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio)) # %>% ### So here we see the CVs for fish and total
+	#summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
+
+boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+
+#ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
 ```
-Standard error is too high - I don't want to include figure 3. 
 
 ```{r CV_fish}
-# Coefficient of Variation Function
-CV <- function(dat){sd(dat)/mean(dat)*100}
-
-nodes="Fish_tot_df"
-CV_calc <- alldata %>% group_by(Exper, Simnum, Nodes_df) %>% 
-	summarise(CV = CV(Biomass)) %>% 
-	filter(Nodes_df %in% nodes) %>%
-	spread(key=Exper, value=CV)
-x=mean(CV_calc$`1`,na.rm=T)
-y=mean(CV_calc$`2`,na.rm=T)
-z=mean(CV_calc$`3`,na.rm=T)
-sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))}
-meh=data.frame(Exper=1:3,mean_cv=c(x,y,z),se=c(sem(CV_calc$`1`),sem(CV_calc$`2`),sem(CV_calc$`3`)))
-ggplot(meh, aes(x=Exper, y=mean_cv)) +
-	geom_bar(position=position_dodge(),stat="identity") + 
-	geom_errorbar(aes(ymin=mean_cv-2*se, ymax=mean_cv+2*se), width=.1) +
-	xlab("Experiment") + ylab("Mean Coefficient of Variation") +
-	labs(caption="Figure 4 The mean CV of total fish biomass. The error bars are of 2 times the standard error.")
+boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+#	labs(caption="Figure 4 The CV of total fish biomass.")
 
 ```
 Figure 4 Shows the mean CV for the total fish biomass. The linked life stages experiment has a higher mean CV and a higher standard error. There is more variance because one life stage can re-establish the populations of other life stages that are less suited to the environment. 
