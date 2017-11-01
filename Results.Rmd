@@ -38,6 +38,9 @@ exper_name=c("Leslie & History","Extended Web","Original Web")
 ##### Load New data format too
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+# Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
+# dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
+#	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","Pred","Prey","species","lifestage"),as.factor)
 ```
 ```{r DefineMultiplot}
 # From https://stackoverflow.com/a/24387436

@@ -70,10 +70,6 @@ write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 #Temporary hosting site for functions:
-# Make Processing faster, I think?
-dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
-	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","Pred","Prey","species","lifestage"),as.factor)
-
 # Probability of fish persisting in at least one of the experiments
 # Probability of fish persisting in all of the experiments
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
@@ -81,24 +77,9 @@ subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
-subdat_ls %>% summarise_at(c("any","all"),mean)*100
 # Subset the data that fit criteria 1 and 2
 subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
 subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
-
-### Coefficient of Variation
-CV <- function(dat){sd(dat)/mean(dat)*100}
-sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
-
-eh=subdat2 %>% group_by(Exper,Simnum,Year_df) %>%
-	filter(Phase_df==2) %>%
-	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
-	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio))# %>% ### So here we see the CVs for fish and total
-	ggplot(aes(x=Exper,y=CV_tot)) + barplot()
-	hist(eh$CV_fish) # Not notmal
-	
-	summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
-
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
