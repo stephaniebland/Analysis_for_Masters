@@ -91,21 +91,22 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 ## First Paragraph: Overall description, general overview
 
 ```{r Percent_Stable}
-nodes="Fish_tot_df"
-persist=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
-	filter(Year_df %in% max(Year_df), Nodes_df %in% nodes) %>%
-	spread(key=Exper, value=Biomass) %>%
-	summarise(any=sum(`1`,`2`,`3`),all=prod(`1`,`2`,`3`)) %>%
+# Subset the data that fit criteria 1 and 2
+subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
+	group_by(Simnum,Exper) %>%
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
-# 1.
-criteria1=100*sum(persist$any)/length(persist$any)
-# 2.
-criteria2=100*sum(persist$all)/length(persist$all)
+persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
+# Criteria 1: Probability of fish persisting in at least one of the experiments
+# Criteria 2: Probability of fish persisting in all of the experiments
+subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
+subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 ```
 
 A typical time series of the logged biomass for a stable population is shown in figure x. 
 
-`r criteria1`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r criteria2`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. We anticipated that some simulations would never stablize, as we placed minimal constraints on food webs during the web creation stage. Some of the webs we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
+`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. We anticipated that some simulations would never stablize, as we placed minimal constraints on food webs during the web creation stage. Some of the webs we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
 ```{r Total Biomass Stability}
 nodes="Tot_df"
 persist=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
@@ -235,9 +236,9 @@ dat %>% filter(Simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 ```
 
 ```{r Von-Bert-Multi}
-dat %>% filter(Simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
-	mutate(species=factor(as.integer(species)+(39*Simnum)),lifestage=as.integer(lifestage)) %>%
-	ggplot(aes(x=lifestage, y=log10(Mass), colour=species))+geom_line()
+subdat1 %>% filter(Simnum<10,Exper==1,Year_df==max(Year_df),isfish==1,Biomass>0) %>%
+	mutate(species=factor(as.integer(species)+(39*Simnum)),lifestage=as.integer(lifestage),Simnum=as.factor(Simnum)) %>% 
+	ggplot(aes(x=lifestage, y=log10(Mass)))+geom_line(aes(group=species, colour=Simnum))
 ```
 
 ```{r Von-Bert-grid-plot}
@@ -250,7 +251,7 @@ multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_gri
 PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
-
+Produce a histogram of weight_infty!!!! Scale a bunch of sim webs so largest fish is 10^5
 
 ```{r pressure, echo=FALSE}
 #plot(pressure)
