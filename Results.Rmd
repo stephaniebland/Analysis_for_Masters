@@ -12,7 +12,6 @@ knitr::opts_chunk$set(cache=TRUE,echo=FALSE)
 #---- Hidden ----
 library(ggbiplot)
 library(tidyverse)
-library(MASS)
 library(stringr)
 DATE="2017Jul19"
 Version="0"
@@ -21,23 +20,10 @@ location="/GIT/Analysis"#For Running on my Mac
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 #---- LOAD_DATA ----
-backupdata=read.table("Melted.txt",header=F)
-colnames(backupdata)=as.matrix(read.table("colnames.txt"))
-alldata=backupdata
-alldata=alldata[alldata$Prey==0,]
-alldata=alldata[alldata$Pred==2,]
-alldata=alldata[alldata$Phase_df==2,]
-
-#---- LOAD_DATA ----
-# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
-node_names=levels(factor(alldata$Nodes_df))
-# In the following line we have some difficulty with node names - after 10 the levels function tries to sort alphabetically but fails miserably.
-node_names=cbind(node_names,c("Autotrophs",paste("Life stage",1:4),paste("Fish",1:3),"Fish","Invertebrates",rep("Node",39),"Non Fish","Total Biomass"))
-exper_name=c("Leslie & History","Extended Web","Original Web")
-
-##### Load New data format too
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
+exper_name=c("Leslie & History","Extended Web","Original Web")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","Pred","Prey","species","lifestage"),as.factor)
@@ -184,10 +170,11 @@ Figure 4 Shows the mean CV for the total fish biomass. The linked life stages ex
 [Note: if there are any fish species with exponential growth, it would really throw the CV off for experiment 1. All these results are tentative, I have a low sample size, and I want to test it with the simplified Leslie Matrix.]
 
 ```{r fish_else_ratio}
-ratio=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
-	filter(Year_df %in% max(Year_df),Nodes_df %in% c("Fish_tot_df", "Tot_df")) %>%
-	spread(key=Nodes_df,value=Biomass) %>%
-	mutate(Fish_ratio=Fish_tot_df/Tot_df) %>%
+ratio=dat %>% group_by(Simnum, Exper,isfish) %>%
+	filter(Year_df %in% max(Year_df)) %>% 
+	summarise(Tot_group=sum(Biomass)) %>%
+	spread(isfish,Tot_group) %>%
+	mutate(Fish_ratio=`1`/(`0`+`1`)) %>%
 	group_by(Exper) %>%
 	summarise(mean(Fish_ratio,na.rm=T))
 ratio
