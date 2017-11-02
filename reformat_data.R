@@ -114,12 +114,14 @@ extant_species %>% summarise(mean(Num_extant),var(Num_extant))
 
 #FIX THIS: I NEED TO DO PERCENT OF EXTANT NODES RATHER THAN NUMBER
 #ALSO DOUBLE CHECK WITH MEH
+dat %>% filter(Year_df==1) %>% group_by(Exper,Simnum) %>% summarise(num_nodes=sum(Biomass>0))
 extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Exper,Simnum,Nodes_df) %>% 
 	summarise(extant=as.logical(Biomass)) %>%
-	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Exper,extant_nodes)
-extant_nodes %>% summarise(mean(Num_extant),var(Num_extant))
+	summarise(Num_extant=sum(extant)) %>% 
+	mutate(Per_extant=Num_extant/c(39,39,30)[Exper])
+boxplot(Per_extant~Exper,extant_nodes)
+extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
 
 extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Exper,Simnum,species) %>% 

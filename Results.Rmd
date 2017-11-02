@@ -123,49 +123,38 @@ min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>%
 
 ## Second Paragraph: Number of extinctions
 ```{r extant_nodes}
-node_ls=unique(alldata$Nodes_df)[str_detect(unique(alldata$Nodes_df),"Node_")]
-count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
-	filter(Year_df %in% max(Year_df), Nodes_df %in% node_ls) %>% 
-	summarise(Extant=(Biomass>0)) %>%
-	spread(key=Nodes_df, value=Extant) %>%
-	summarise(node_persist=sum(Node_1,Node_2,Node_3,Node_4,Node_5,Node_6,Node_7,Node_8,Node_9,Node_10,Node_11,Node_12,Node_13,Node_14,Node_15,Node_16,Node_17,Node_18,Node_19,Node_20,Node_21,Node_22,Node_23,Node_24,Node_25,Node_26,Node_27,Node_28,Node_29,Node_30,Node_31,Node_32,Node_33,Node_34,Node_35,Node_36,Node_37,Node_38,Node_39)) %>%
-	spread(key=Exper,value=node_persist)
-x=mean(count_extant$`1`)/39
-y=mean(count_extant$`2`)/39
-z=mean(count_extant$`3`)/30
-sem <- function(x) {sd(x)/sqrt(length(x))}
-meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(sem(count_extant$`1`/39),sem(count_extant$`2`/39),sem(count_extant$`3`/30)))
-ggplot(meh, aes(x=Exper, y=Num_extant)) +
-	geom_bar(position=position_dodge(),stat="identity") + 
-	geom_errorbar(aes(ymin=Num_extant-2*se, ymax=Num_extant+2*se), width=.1) +
-	xlab("Experiment") + ylab("Percent of extant nodes") +
-	labs(caption="Figure 1 The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error.")
+extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,Simnum,Nodes_df) %>% 
+	summarise(extant=as.logical(Biomass)) %>%
+	summarise(Num_extant=sum(extant)) %>% 
+	mutate(Per_extant=Num_extant/c(39,39,30)[Exper])
+boxplot(Per_extant~Exper,extant_nodes,xlab="Experiment",ylab="Percent of extant nodes")
+tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
+#caption="Figure 1 The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error."
 ```
 
 The mean percent of extant nodes is shown in figure 1. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. (Although it could also be true that the new lifestages aren't more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.)
 
-```{r extant_fish}
-count_extant=alldata %>% group_by(Simnum, Exper, Nodes_df) %>%
-	filter(Year_df %in% max(Year_df), str_detect(Nodes_df,"Fish_sp_")) %>% 
-	summarise(Extant=(Biomass>0)) %>%
-	spread(key=Nodes_df, value=Extant) %>%
-	summarise(fish_persist=sum(Fish_sp_1,Fish_sp_2,Fish_sp_3)) %>%
-	spread(key=Exper,value=fish_persist) %>%
-	mutate(keep_sim=sum(`1`,`2`,`3`)) %>%
-	filter(keep_sim>0)
-x=mean(count_extant$`1`)
-y=mean(count_extant$`2`)
-z=mean(count_extant$`3`)
-sem <- function(x) {sd(x)/sqrt(length(x))}
-meh=data.frame(Exper=1:3,Num_extant=c(x,y,z),se=c(sem(count_extant$`1`),sem(count_extant$`2`),sem(count_extant$`3`)))
-ggplot(meh, aes(x=Exper, y=Num_extant)) +
-	geom_bar(position=position_dodge(),stat="identity") + 
-	geom_errorbar(aes(ymin=Num_extant-2*se, ymax=Num_extant+2*se), width=.1) +
-	xlab("Experiment") + ylab("Number of extant fish") +
-	labs(caption="Figure 2 The mean number of extant fish in each experiment. The error bars are of 2 times the standard error.")
+```{r extant_species}
+extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,Simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_species)
+tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
 ```
 
-The mean number of extant species is shown in figure 2. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional nodes.
+```{r extant_fish}
+extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,Simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_fish,xlab="Experiment",ylab="Number of extant fish")
+tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
+#caption="Figure 2 The mean number of extant fish in each experiment. The error bars are of 2 times the standard error."
+```
+
+The mean number of extant species is shown in figure . Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional nodes.
 
 ## Third Paragraph: Stability -> Coefficient variation (CV)
 ```{r CV_total}
