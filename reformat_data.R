@@ -123,6 +123,13 @@ extant_spec_ls=dat %>% filter(Year_df==max(Year_df)) %>%
 #############################################
 #####THIS ONE IS THE GOOD COPY!!!############
 #############################################
+eh=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df,species) %>%
+	summarise(Extant_ls=sum(Biomass)) %>% #an approximation for extant species -> anything that makes it to second phase
+	filter(Extant_ls>0)
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass),max_Z=max(Z),max_T=max(orig_T)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio),max_Z=max(max_Z),max_T=max(max_T),Tot_Bio=mean(Tot_Bio),Fish_tot_Bio=mean(Fish_tot_Bio))
+
 subdat2 %>% filter(Phase_df==2,Exper==1) %>%
 	group_by(simnum,Year_df) %>%
 	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass),max_Z=max(Z),max_T=max(orig_T)) %>%
