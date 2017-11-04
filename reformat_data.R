@@ -7,7 +7,7 @@ library(tidyverse)
 seed_0=0
 lifestages_linked=1
 Adults_only=0
-DATE="2017Jul19"
+DATE="2017Oct30"
 Version="0"
 #simnum=1
 #Exper=1
@@ -27,7 +27,7 @@ for (simnum in c(1:100)){
 				name=paste0(run_name,"_seed",seed_0,"_sim",simnum,"_Exper",Exper,"_pred",pred,"_prey",prey)
 				
 				import_vars_sim='B_year_end'#c('B','B_year_end','B_stable_phase')
-				import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','lifehis.splitdiet','lifehis.fishpred')
+				import_vars_web=c('isfish','basalsp','basal_ls','species','numyears','nichewebsize','ext_thresh','N_stages','lifestage','L_year','Mass','lifehis.splitdiet','lifehis.fishpred','Z','meta','TrophLevel','orig_T')
 				import_vars=c(import_vars_sim,import_vars_web)
 				for (item in 1:length(import_vars)){
 					trial=paste0(name,"_",import_vars[item],".txt")
@@ -50,9 +50,9 @@ for (simnum in c(1:100)){
 				
 				clean=data.frame(B_year_end) %>% gather(key="Nodes_df",value="Biomass",-Year_df,-Phase_df,-yr_in_phase) %>% 
 					mutate(Day_df=Year_df*L_year) %>%
-					mutate(Seed=seed_0,Simnum=simnum,Exper=Exper,Pred=pred,Prey=prey) %>%
+					mutate(Seed=seed_0,simnum,Exper,pred,prey) %>%
 					mutate(Nodes_df=as.numeric(gsub("[^0-9]","",Nodes_df))) %>%
-					mutate(isfish=isfish[Nodes_df],basal_ls=basal_ls[Nodes_df],species=species[Nodes_df],lifestage=lifestage[Nodes_df],Mass=Mass[Nodes_df])
+					mutate(isfish=isfish[Nodes_df],basal_ls=basal_ls[Nodes_df],species=species[Nodes_df],lifestage=lifestage[Nodes_df],Mass=Mass[Nodes_df],Z=Z[Nodes_df],meta=meta[Nodes_df],TrophLevel=TrophLevel[Nodes_df],orig_T=orig_T[Nodes_df])
 				
 				################################################
 				################## Save Data ###################
@@ -72,13 +72,13 @@ colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 # Probability of fish persisting in at least one of the experiments
 # Probability of fish persisting in all of the experiments
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
-	group_by(Simnum,Exper) %>%
+	group_by(simnum,Exper) %>%
 	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
 # Subset the data that fit criteria 1 and 2
-subdat1=dat %>% filter(Simnum %in% (subdat_ls %>% filter(any==TRUE))$Simnum)
-subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
+subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
+subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
 ################################################
 ################################################
@@ -90,14 +90,14 @@ subdat2=dat %>% filter(Simnum %in% (subdat_ls %>% filter(all==TRUE))$Simnum)
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),isfish==1,Exper==1) %>%
-	group_by(Simnum,Exper,species) %>%
+	group_by(simnum,Exper,species) %>%
 	summarise(log_Tot_fish=log10(sum(Biomass)),log_infty=log10(max(Mass))) %>%
 	filter(log_Tot_fish>-1000) %>%
 	ggplot(aes(x=log_infty,y=log_Tot_fish)) + geom_point()
 #For experiment 3 only and fits criteria 2
 
 subdat2 %>% filter(Year_df==max(Year_df)) %>%
-	group_by(Simnum,Exper) %>%
+	group_by(simnum,Exper) %>%
 	summarise(Tot=sum(Biomass)) 
 
 
