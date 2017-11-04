@@ -100,15 +100,39 @@ subdat2 %>% filter(Year_df==max(Year_df)) %>%
 	group_by(simnum,Exper) %>%
 	summarise(Tot=sum(Biomass)) 
 
+eh=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+	group_by(simnum,Exper,isfish,species) %>% 
+	summarise(Tot_species=sum(Biomass)) %>%
+	filter(Tot_species>0)
+eh
 
+subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio)) 
 
+# coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 # coefficient of variation plot (indep) against weight_\infty
 
+subdat2 %>% filter(Year_df==2)
+extant_spec_ls=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass)))
 
 
+#############################################
+#####THIS ONE IS THE GOOD COPY!!!############
+#############################################
+subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass),max_Z=max(Z),max_T=max(orig_T)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio),max_Z=max(max_Z),max_T=max(max_T),Tot_Bio=mean(Tot_Bio),Fish_tot_Bio=mean(Fish_tot_Bio))
+	####OH MAN I ALSO NEED TO SOMEHOW GRAB THE DATA FOR TOT BIO ON THE LAST DAY AND FISH TOT BIO
 
 
-
-
+subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass),max_Z=max(Z),max(orig_T)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio),max_Z=max(max_Z)) 
 
 

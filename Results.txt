@@ -43,6 +43,8 @@ ask anna about how to save results
 
 SAVE FIGURES AS POSTSCRIPTS (.PS)
 
+Also change tot bio numbers from last day results to mean over course of phase 2!!! IMPORTANT BECAUSE VARIANCE IS A THING!!!
+
 I still need to fix weight_inftys because right now i'm just using a place holder
 
 inspect dietary patterns in fish species!!!! try to find patterns for whether they survive
