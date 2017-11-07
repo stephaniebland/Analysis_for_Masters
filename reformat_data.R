@@ -92,13 +92,70 @@ eh1=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0)
 
-subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+# This one works
+TRYTHIS1=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	group_by(simnum,Exper,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0) %>% 
 	group_by(simnum,Exper) %>% 
 	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass))
 
+# Modify this one now:
+eh=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df) %>%
+	mutate(Tot_Bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	group_by(simnum,Exper,species) %>% 
+	mutate(Tot_spec=sum(Biomass)) %>%
+	filter(Tot_spec>0) %>% 
+	group_by(simnum,Exper) %>% 
+	mutate(max_Z=max(Z),max_Mass=max(Mass),CV_tot=max(Tot_Bio),CV_fish=CV(Tot_fish)) %>%
+#	group_by(simnum) %>%
+#	mutate(CV_tot=CV(Tot_Bio),CV_fish=CV(Tot_fish)) %>% 
+	filter(Year_df==max(Year_df)) %>%
+	select(simnum,Year_df,species,isfish,Tot_Bio,Tot_fish,CV_tot,CV_fish) 
+
+# Mehhhhhhhhhh it works i guess but comes up w slightly different results and it BUGS me!
+subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df) %>%
+	mutate(Tot_Bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	group_by(simnum) %>%
+	mutate(CV_tot=CV(Tot_Bio),CV_fish=CV(Tot_fish)) %>% 
+	filter(Year_df==max(Year_df),species==1) %>%
+	select(simnum,Year_df,species,isfish,Tot_Bio,Tot_fish,CV_tot,CV_fish) 
+
+# I guess this one kinda works (keep intact)
+subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df) %>%
+	mutate(Tot_Bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	filter(species==1) %>%
+	group_by(simnum) %>%
+	mutate(CV_tot=CV(Tot_Bio),CV_fish=CV(Tot_fish)) %>% 
+	filter(Year_df==max(Year_df)) %>%
+	select(simnum,Year_df,species,isfish,Tot_Bio,Tot_fish,CV_tot,CV_fish) 
+
+kay=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Year_df) %>%
+	mutate(Tot_Bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	filter(species==1) %>%
+	ungroup() %>%
+	filter(simnum==14) %>%
+	select(Tot_Bio)
+
+CV(kay$Tot_Bio)
+
+TRYTHIS2=dat %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2,Exper==1) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio)) 
+
+xkcd=left_join(TRYTHIS1,TRYTHIS2)
+
+CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_Bio=sum(Biomass),Fish_tot_Bio=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),CV_fish=CV(Fish_tot_Bio))
+
+xkcd=left_join(TRYTHIS1,CV_plot)
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
