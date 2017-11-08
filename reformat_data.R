@@ -90,7 +90,7 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	group_by(simnum,Exper,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
-	filter(Tot_spec>0) %>% 
+	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for extant species
 	group_by(simnum,Exper) %>% 
 	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass),max_fish_mass=max(Mass*isfish))
 
@@ -103,6 +103,15 @@ full_stats=left_join(sim_stats,CV_plot)
 
 full_stats %>% mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass)) %>%
 	ggplot(aes(x=log_max_mass,y=log_fish)) + geom_point()
+
+# Aigghhhht Double check these numbers!
+check2=dat %>% filter(Phase_df==2,Exper==1,simnum==14)
+check2 %>% group_by(Year_df) %>% summarise(tot=sum(Biomass))  %>% # Tot_Bio
+	summarise(CV(tot)) # CV_tot
+check2 %>% filter(isfish==1) %>% group_by(Year_df) %>% summarise(tot=sum(Biomass)) %>% # Tot_Fish
+	summarise(CV(tot)) # CV_fish
+check2 %>% filter(Year_df==max(Year_df),Biomass>0) %>% select(Mass,Z,isfish) # cautious -> lazy method assuming all life stages survive
+
 
 # Biomass against weight_infty (make do w any mass for now though)
 subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
