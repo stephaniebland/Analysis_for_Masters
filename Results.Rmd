@@ -228,10 +228,68 @@ subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 
 Note to self: So the problem with this histogram plot is that when you scale it you will invariably cause all the fish to be of the same size, so you'll have a massive peak and cliff at 10^5 or whatever you choose to scale by
 
+## Life History Correlations
+```{r life_his_setup_clumped}
+# First setup plots where you just find life his stats for largest extant fish species and compare them to the tot fish biomass (all species combined) and total biomass
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+	group_by(simnum,Exper,species) %>% 
+	mutate(Tot_spec=sum(Biomass)) %>%
+	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for extant species
+	group_by(simnum,Exper) %>% 
+	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass),max_fish_mass=max(Mass*isfish))
 
+CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish))
 
+full_stats=left_join(sim_stats,CV_plot) %>% 
+	mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
+```
 
+```{r life_his_setup_indiv}
+# Also setup plots where you're looking at individual extant fish species, and comparing their life history stats to that specific species' biomass.
+# Where it's by species W_infty against (that same species') final biomass and CV
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Exper,species,Year_df) %>%
+	summarise(Tot_spec=sum(Biomass)) %>%
+	summarise(CV_spec=CV(Tot_spec))
 
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+	group_by(simnum,Exper,species) %>%
+	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
+	filter(Tot_spec>0,isfish==1,lifestage==1)
+
+all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>% 
+	mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
+```
+
+```{r life_his_plotZ_clumped}
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")
+xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")
+xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass")
+xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+```
+
+```{r life_his_plotM_clumped}
+xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")
+xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")
+xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+```
+
+```{r life_his_plot_indiv}
+xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")
+xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")
+xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass")
+xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass")
+	
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+```
 
 
 

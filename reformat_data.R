@@ -100,9 +100,23 @@ CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish))
 
 full_stats=left_join(sim_stats,CV_plot) %>% 
-	mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass))
+	mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
 
-full_stats %>% ggplot(aes(x=log_max_mass,y=log_fish)) + geom_point()
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")
+xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")
+xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass")
+xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")
+xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")
+xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+# coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
 # Okay and we can do one last one where it's by species W_infty against (that same species') final biomass and CV
 CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
@@ -118,6 +132,11 @@ gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>% 
 	mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
 
-all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point()
+xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")
+xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")
+xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass")
+xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass")
+	
+multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 ################################################
