@@ -101,8 +101,9 @@ CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
 
 full_stats=left_join(sim_stats,CV_plot)
 
-full_stats %>% mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass)) %>%
-	ggplot(aes(x=log_max_mass,y=log_fish)) + geom_point()
+full_stats=full_stats %>% mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass))
+
+full_stats %>% ggplot(aes(x=log_max_mass,y=log_fish)) + geom_point()
 
 # Okay and we can do one last one where it's by species W_infty against (that same species') final biomass and CV
 CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
@@ -116,5 +117,9 @@ gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
 
 all_spec_stats=left_join(gen_spec_stats,CV_spec_stats)
+
+all_spec_stats=all_spec_stats %>% mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
+
+all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point()
 
 ################################################
