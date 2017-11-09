@@ -264,6 +264,8 @@ all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>%
 	mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
 ```
 
+These plots show the effect of fish allometric ratios on the biomass. Total biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. The CV seems to increase for both the total biomass and the fish only biomass for larger allometric ratios. The total fish biomass also increases with a larger allometric ratio, but that might just be an artefact of a lower metabolic rate. 
+
 ```{r life_his_plotZ_clumped}
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")
