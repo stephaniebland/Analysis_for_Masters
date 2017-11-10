@@ -117,7 +117,7 @@ extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
 boxplot(Per_extant~Exper,extant_nodes,xlab="Experiment",ylab="Percent of extant nodes")
 tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
 
-cap=paste("Figure","The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error.")
+cap=paste("Figure","Boxplot of the percent of extant nodes in each experiment.")
 ```
 
 The mean percent of extant nodes is shown in figure 1. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. (Although it could also be true that the new lifestages aren't more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.)
@@ -127,10 +127,10 @@ extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Exper,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Exper,extant_species)
+boxplot(Num_extant~Exper,extant_species,xlab="Experiment",ylab="Number of extant species")
 tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
 
-cap=paste("Figure","")
+cap=paste("Figure","Boxplot of the number of extant species in each experiment.")
 ```
 
 ```{r extant_fish, fig.cap=cap}
@@ -141,7 +141,7 @@ extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 boxplot(Num_extant~Exper,extant_fish,xlab="Experiment",ylab="Number of extant fish")
 tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
 
-cap=paste("Figure","The mean number of extant fish in each experiment. The error bars are of 2 times the standard error.")
+cap=paste("Figure","Boxplot of the number of extant fish in each experiment.")
 ```
 
 The mean number of extant species is shown in figure . Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional nodes.
