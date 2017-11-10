@@ -108,7 +108,7 @@ min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>%
 `r min_viable_webs`% of our simulations stabilized for any species in every experiment. This includes webs were fish would go extinct. 
 
 ## Second Paragraph: Number of extinctions
-```{r extant_nodes}
+```{r extant_nodes, fig.cap=cap}
 extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Exper,simnum,Nodes_df) %>% 
 	summarise(extant=as.logical(Biomass)) %>%
@@ -116,34 +116,38 @@ extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
 	mutate(Per_extant=Num_extant/c(39,39,30)[Exper])
 boxplot(Per_extant~Exper,extant_nodes,xlab="Experiment",ylab="Percent of extant nodes")
 tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
-#caption="Figure 1 The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error."
+
+cap=paste("Figure","The mean percent of extant nodes in each experiment. The error bars are of 2 times the standard error.")
 ```
 
 The mean percent of extant nodes is shown in figure 1. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. (Although it could also be true that the new lifestages aren't more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.)
 
-```{r extant_species}
+```{r extant_species, fig.cap=cap}
 extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Exper,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
 boxplot(Num_extant~Exper,extant_species)
 tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
+
+cap=paste("Figure","")
 ```
 
-```{r extant_fish}
+```{r extant_fish, fig.cap=cap}
 extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Exper,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
 boxplot(Num_extant~Exper,extant_fish,xlab="Experiment",ylab="Number of extant fish")
 tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
-#caption="Figure 2 The mean number of extant fish in each experiment. The error bars are of 2 times the standard error."
+
+cap=paste("Figure","The mean number of extant fish in each experiment. The error bars are of 2 times the standard error.")
 ```
 
 The mean number of extant species is shown in figure . Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional nodes.
 
 ## Third Paragraph: Stability -> Coefficient variation (CV)
-```{r CV_total}
+```{r CV_total, fig.cap=cap}
 # Coefficient of Variation Function
 CV <- function(dat){sd(dat)/mean(dat)*100}
 sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
@@ -158,12 +162,14 @@ boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 
 #ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
+cap=paste("Figure","")
 ```
 
-```{r CV_fish}
+```{r CV_fish, fig.cap=cap}
 boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
+cap=paste("Figure","")
 ```
 Figure 4 Shows the mean CV for the total fish biomass. The linked life stages experiment has a higher mean CV and a higher standard error. There is more variance because one life stage can re-establish the populations of other life stages that are less suited to the environment. 
 
@@ -184,13 +190,15 @@ The fish to total biomass ratios for each experiment is shown in table 1.
 
 
 ## End paragraph: Von-Bertalanffy
-```{r Von-Bert-solo}
+```{r Von-Bert-solo, fig.cap=cap}
 dat %>% filter(simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
+
+cap=paste("Figure","")
 ```
 
-```{r Von-Bert-Multi}
+```{r Von-Bert-Multi, fig.cap=cap}
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 subdat1 %>% filter(simnum<10,Exper==1,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
@@ -200,30 +208,37 @@ subdat1 %>% filter(simnum<10,Exper==1,Year_df==max(Year_df),isfish==1) %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
 	ggplot(aes(x=lifestage, y=log10(Mass)))+geom_line(aes(group=species, colour=simnum))
+
+cap=paste("Figure","")
 ```
 
 the fish for any given web are often of similar size
 
 
-```{r Von-Bert-grid-plot}
+```{r Von-Bert-grid-plot, fig.cap=cap}
 VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	group_by(simnum) %>%
 	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species))+geom_line())
 multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_grid$g[[5]], VB_grid$g[[6]], VB_grid$g[[7]], VB_grid$g[[8]], VB_grid$g[[9]], cols=3)
+
+cap=paste("Figure","")
 ```
 PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
 Produce a histogram of weight_infty!!!! Scale a bunch of sim webs so largest fish is 10^5
-```{r Weight_infty-Hist}
+```{r Weight_infty-Hist, fig.cap=cap}
 subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4) %>% 
 	#select(simnum,Mass,scaled_mass) %>%
 	#with(hist(scaled_mass)) #%>%
-	with(hist(log10(Mass)))
+	#with(hist(log10(Mass)))
+	with(hist(Z,xlab="Allometric Ratio",main=""))
+
+cap=paste("Figure","A histogram of the allometric ratios for all the extant adult fish life stages.")
 ```
 
 Note to self: So the problem with this histogram plot is that when you scale it you will invariably cause all the fish to be of the same size, so you'll have a massive peak and cliff at 10^5 or whatever you choose to scale by
@@ -266,31 +281,37 @@ all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>%
 
 These plots show the effect of fish allometric ratios on the biomass. Total biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. The CV seems to increase for both the total biomass and the fish only biomass for larger allometric ratios. The total fish biomass also increases with a larger allometric ratio, but that might just be an artefact of a lower metabolic rate. 
 
-```{r life_his_plotZ_clumped}
+```{r life_his_plotZ_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
 xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass")+geom_smooth(method = "lm")
 xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
 
 multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+cap=paste("Figure","")
 ```
 
-```{r life_his_plotM_clumped}
+```{r life_his_plotM_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
 xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
 xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
 
 multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+cap=paste("Figure","")
 ```
 
-```{r life_his_plot_indiv}
+```{r life_his_plot_indiv, fig.cap=cap}
 xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
 xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
 xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass")+geom_smooth(method = "lm")
 xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass")+geom_smooth(method = "lm")
 
 multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+cap=paste("Figure","")
 ```
 
 
