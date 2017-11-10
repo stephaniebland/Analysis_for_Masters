@@ -195,27 +195,26 @@ The fish to total biomass ratios for each experiment is shown in table 1.
 ```{r Von-Bert-solo, fig.cap=cap}
 dat %>% filter(simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
-	ggplot(aes(x=lifestage, y=Mass, colour=species))+geom_line()
+	ggplot(aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Fish life stage",y="Individual body mass")
 
-cap=paste("Figure","")
+cap=paste("Figure","The von-Bertalanffy curve displaying the growth of three different fish species in the same food web simulation")
 ```
 
 ```{r Von-Bert-Multi, fig.cap=cap}
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-subdat1 %>% filter(simnum<10,Exper==1,Year_df==max(Year_df),isfish==1) %>%
+subdat1 %>% filter(simnum<20,Exper==1,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass)))+geom_line(aes(group=species, colour=simnum))
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
 
-cap=paste("Figure","")
+cap=paste("Figure","Von-Bertalanffy curves for extant fish in several simulated food webs. Each colour represents a different food web.")
 ```
 
-the fish for any given web are often of similar size
-
+The fish for any given food web simulation often end up having similar body mass. This is because we only assign life histories to the three largest species in the food web, which will have similar trophic levels and body masses. 
 
 ```{r Von-Bert-grid-plot, fig.cap=cap}
 VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
@@ -224,7 +223,7 @@ VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species))+geom_line())
 multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_grid$g[[5]], VB_grid$g[[6]], VB_grid$g[[7]], VB_grid$g[[8]], VB_grid$g[[9]], cols=3)
 
-cap=paste("Figure","")
+cap=paste("Figure","The von-Bertalanffy plots for the extant fish species in nine different simulations.")
 ```
 PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
