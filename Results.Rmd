@@ -13,6 +13,8 @@ knitr::opts_chunk$set(cache=TRUE,echo=FALSE)
 library(ggbiplot)
 library(tidyverse)
 library(stringr)
+```
+```{r load_data}
 DATE="2017Oct30"
 Version="0"
 location="/GIT/Analysis"#For Running on my Mac
