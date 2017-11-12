@@ -18,7 +18,7 @@ z=0
 ```
 ```{r load_data}
 DATE="2017Oct30"
-Version="0"
+Version="2"
 location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
@@ -209,6 +209,8 @@ z=z+1;VBsol=z
 cap=paste("Figure",VBsol,"The von-Bertalanffy curve displaying the growth of three different fish species in the same food web simulation")
 ```
 
+Our model produces realistic life histories for our fish species (fig `r VBsol`). Fish start off as juveniles with a small body weight and follow a von-Bertalanffy growth curve as they mature. 
+
 ```{r Von-Bert-Multi, fig.cap=cap}
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 subdat1 %>% filter(simnum<20,Exper==1,Year_df==max(Year_df),isfish==1) %>%
@@ -239,7 +241,6 @@ cap=paste("Figure",VBgrid,"The von-Bertalanffy plots for the extant fish species
 PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
 coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
-Produce a histogram of weight_infty!!!! Scale a bunch of sim webs so largest fish is 10^5
 ```{r Weight_infty-Hist, fig.cap=cap}
 subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
@@ -253,6 +254,9 @@ subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 z=z+1;Zhist=z
 cap=paste("Figure",Zhist,"A histogram of the allometric ratios for all the extant adult fish life stages.")
 ```
+
+Figure `r Zhist` shows the distribution of the predator prey body mass ratios for the adult fish species that persist in our simulations. This distribution is similar to the initial log normal random distribution that we assigned the species. This shows that extinctions occur relatively randomly with respect to allometric ratio. allometric ratio does not have a large effect on whether the species will persist
+
 
 Note to self: So the problem with this histogram plot is that when you scale it you will invariably cause all the fish to be of the same size, so you'll have a massive peak and cliff at 10^5 or whatever you choose to scale by
 
@@ -281,7 +285,7 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
 	group_by(simnum,Exper,species,Year_df) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
-	summarise(CV_spec=CV(Tot_spec))
+	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
 gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	group_by(simnum,Exper,species) %>%
@@ -315,8 +319,10 @@ xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + l
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 z=z+1;LH_Mclump=z
-cap=paste("Figure",LH_Mclump,"")
+cap=paste("Figure",LH_Mclump,"The final biomass and CV of ")
 ```
+
+Figure `r LH_Mclump` shows the fish and total ecosystem biomass as a function of the asymptotic body mass of the largest fish species. It also shows the CV of the fish and total biomass after the ecosystem has stabilized. 
 
 ```{r life_his_plot_indiv, fig.cap=cap}
 xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
@@ -330,7 +336,7 @@ z=z+1;LH_ind=z
 cap=paste("Figure",LH_ind,"")
 ```
 
-
+Figure `r LH_ind` S
 
 
 
