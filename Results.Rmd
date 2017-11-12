@@ -238,27 +238,34 @@ multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_gri
 z=z+1;VBgrid=z
 cap=paste("Figure",VBgrid,"The von-Bertalanffy plots for the extant fish species in nine different simulations.")
 ```
-PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
-coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
 
-```{r Weight_infty-Hist, fig.cap=cap}
-subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+Figure `r VBgrid` shows von-Bertalanffy growth curves for all the extant fish species across several simulations.
+
+```{r VB-Hist}
+VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
-	filter(lifestage==4) %>% 
-	#select(simnum,Mass,scaled_mass) %>%
-	#with(hist(scaled_mass)) #%>%
-	#with(hist(log10(Mass)))
-	with(hist(Z,xlab="Allometric Ratio",main=""))
+	filter(lifestage==4)
+```
+
+```{r Z-Hist, fig.cap=cap}
+VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 
 z=z+1;Zhist=z
 cap=paste("Figure",Zhist,"A histogram of the allometric ratios for all the extant adult fish life stages.")
 ```
 
-Figure `r Zhist` shows the distribution of the predator prey body mass ratios for the adult fish species that persist in our simulations. This distribution is similar to the initial log normal random distribution that we assigned the species. This shows that extinctions occur relatively randomly with respect to allometric ratio. allometric ratio does not have a large effect on whether the species will persist
+Figure `r Zhist` shows the distribution of the predator prey body mass ratios for the adult fish species that persist in our simulations. This distribution is similar to the initial log normal random distribution that we assigned the species. This shows that extinctions occur relatively randomly with respect to allometric ratio.
 
+```{r Weight_infty-Hist, fig.cap=cap}
+VB_hist %>% with(hist(log10(Mass),xlab="log of body mass (unitless)",main=""))
 
-Note to self: So the problem with this histogram plot is that when you scale it you will invariably cause all the fish to be of the same size, so you'll have a massive peak and cliff at 10^5 or whatever you choose to scale by
+z=z+1;Whist=z
+cap=paste("Figure",Whist,"A histogram of the logged adult body mass for all the extant fish life stages.")
+```
+
+The absolute mass of most extant fish species are in the 10E8 range, with a few extreme outliers. This isn't a major concern because we are using an allometric network model, where the most important feature are the relative body sizes of predator and prey species. So mass is unitless, and is only meaningful in relation to the other species in that particular simulation. These histograms show the mass of fish species across several different simulations. The only other feature that is affected by body mass is the metabolic rate.
+
 
 ## Life History Correlations
 ```{r life_his_setup_clumped}
