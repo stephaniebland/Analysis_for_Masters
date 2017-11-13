@@ -125,7 +125,7 @@ z=z+1;ex_nodes=z
 cap=paste("Figure",ex_nodes,"Boxplot of the percent of extant nodes in each experiment.")
 ```
 
-The mean percent of extant nodes is shown in figure 1. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. (Although it could also be true that the new lifestages aren't more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.)
+The mean percent of extant nodes is shown in figure 1. Experiment 3 has a slightly higher percentage of extant nodes. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. (Although it could also be true that the new lifestages aren't more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.)
 
 ```{r extant_species, fig.cap=cap}
 extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
@@ -139,6 +139,8 @@ z=z+1;ex_spec=z
 cap=paste("Figure",ex_spec,"Boxplot of the number of extant species in each experiment.")
 ```
 
+There is no significant effect on the number of extant species (fig `r ex_spec`).
+
 ```{r extant_fish, fig.cap=cap}
 extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Exper,simnum,species) %>% 
@@ -151,7 +153,7 @@ z=z+1;ex_fish=z
 cap=paste("Figure",ex_fish,"Boxplot of the number of extant fish in each experiment.")
 ```
 
-The mean number of extant species is shown in figure . Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional nodes.
+The mean number of extant species is shown in figure. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional life stages, which explains why experiment one and two have more persisting fish species.
 
 ## Third Paragraph: Stability -> Coefficient variation (CV)
 ```{r CV_total, fig.cap=cap}
@@ -173,6 +175,8 @@ z=z+1;totCV=z
 cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
 ```
 
+The variability in total biomass is higher in experiment 3 than in the other two (fig `r totCV`). This could be because life histories stabilize the ecosystem, but it might also be because there are more extinctions in the first two experiments. These figures are created with a subset of data where at least some fish persist in all the experiments, so we know it's not just a relic of having more webs that stabilize to total extinction.
+
 ```{r CV_fish, fig.cap=cap}
 boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
@@ -180,9 +184,7 @@ boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
-Figure 4 Shows the mean CV for the total fish biomass. The linked life stages experiment has a higher mean CV and a higher standard error. There is more variance because one life stage can re-establish the populations of other life stages that are less suited to the environment. 
-
-[Note: if there are any fish species with exponential growth, it would really throw the CV off for experiment 1. All these results are tentative, I have a low sample size, and I want to test it with the simplified Leslie Matrix.]
+Figure `r fishCV` shows the CV for the total fish biomass. There is no apparent pattern. 
 
 ```{r fish_else_ratio}
 ratio=dat %>% group_by(simnum, Exper,isfish) %>%
@@ -196,7 +198,7 @@ ratio=dat %>% group_by(simnum, Exper,isfish) %>%
 kable(ratio)
 ```
 
-The fish to total biomass ratios for each experiment is shown in table 1. 
+The fish to total biomass ratios for each experiment is shown in table 1. The basic nicheweb in experiment 3 seems to have a slightly higher proportion of fish biomass, but it doesn't appear to be significant.
 
 
 ## End paragraph: Von-Bertalanffy
