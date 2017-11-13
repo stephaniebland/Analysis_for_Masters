@@ -274,7 +274,7 @@ The absolute mass of most extant fish species are in the 10E8 range, with a few 
 
 
 ## Life History Correlations
-```{r life_his_setup_clumped}
+```{r life_his_setup_clumped, include=FALSE}
 # First setup plots where you just find life his stats for largest extant fish species and compare them to the tot fish biomass (all species combined) and total biomass
 sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	group_by(simnum,Exper,species) %>% 
@@ -292,7 +292,7 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 	mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
 ```
 
-```{r life_his_setup_indiv}
+```{r life_his_setup_indiv, include=FALSE}
 # Also setup plots where you're looking at individual extant fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
 CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
