@@ -1,7 +1,7 @@
 ---
 title: "Results"
 author: "Stephanie Bland"
-date: '2017-10-27'
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: word_document #html_document
 ---
 
