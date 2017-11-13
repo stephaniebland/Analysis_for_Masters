@@ -289,7 +289,7 @@ CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
 
 full_stats=left_join(sim_stats,CV_plot) %>% 
-	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
+	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass),FT_ratio=mean_fish/mean_tot)
 ```
 
 ```{r life_his_setup_indiv, include=FALSE}
@@ -353,6 +353,17 @@ cap=paste("Figure",LH_ind,"The CV and mean of fish biomass is plotted against th
 
 Figure `r LH_ind` shows the correlation between each fish species life history trait against its mean and CV biomass. The main trend here seems to be that the CV of a fish's biomass tends to increase with its trophic level, so the higher up a fish is in the food chain, the more it will experience large population fluctuations. This may be because each consecutive step in the food chain adds variance to the biomass.
 
+```{r life_his_fish_ratio, fig.cap=cap}
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=FT_ratio)) + geom_point() + labs(x="log of fish mass",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,cols=2)
+
+z=z+1;LH_Fratio=z
+cap=paste("Figure",LH_Fratio,"The Fish to total biomass ratio with respect to the allometric ratio and log of the fish mass for the largest adult fish species")
+```
+
+Figure `r LH_Fratio` shows the fish to total species biomass ratio as a function of the two main life history traits: allometric ratio and adult fish aysmptotic body mass. There is a slight terned where larger fish that have a higher asymptotic body size will end up dominating more of the biomass. 
 
 
 
