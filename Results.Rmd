@@ -234,7 +234,7 @@ The fish for any given food web simulation often end up having similar body mass
 VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	group_by(simnum) %>%
-	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species))+geom_line())
+	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Life stage") + theme(legend.position="none"))
 multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_grid$g[[5]], VB_grid$g[[6]], VB_grid$g[[7]], VB_grid$g[[8]], VB_grid$g[[9]], cols=3)
 
 z=z+1;VBgrid=z
