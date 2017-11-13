@@ -286,10 +286,10 @@ sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
 	filter(Phase_df==2) %>%
 	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
-	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish))
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
 
 full_stats=left_join(sim_stats,CV_plot) %>% 
-	mutate(log_tot=log10(Tot_Bio),log_fish=log10(Tot_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
+	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass))
 ```
 
 ```{r life_his_setup_indiv, include=FALSE}
@@ -306,7 +306,7 @@ gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
 
 all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>% 
-	mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
+	mutate(log_spec=log10(mean_spec),log_max_mass=log10(max_Mass))
 ```
 
 ```{r life_his_plotZ_clumped, fig.cap=cap}
