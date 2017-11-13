@@ -2,13 +2,13 @@
 title: "Results"
 author: "Stephanie Bland"
 date: '2017-10-27'
-output: html_document
+output: word_document #html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache=TRUE,echo=FALSE)
 ```
-```{r hidden}
+```{r hidden, include=FALSE}
 #---- Hidden ----
 library(ggbiplot)
 library(tidyverse)
@@ -83,7 +83,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 ## First Paragraph: Overall description, general overview
 
-```{r Percent_Stable}
+```{r Percent_Stable, include=FALSE}
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
 	group_by(simnum,Exper) %>%
@@ -109,7 +109,9 @@ min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>%
 	mutate_at(c("any","all"),as.logical) %>% 
 	summarise_at("all",mean)*100
 ```
+
 `r min_viable_webs`% of our simulations stabilized for any species in every experiment. This includes webs were fish would go extinct. 
+
 
 ## Second Paragraph: Number of extinctions
 ```{r extant_nodes, fig.cap=cap}
@@ -155,6 +157,7 @@ cap=paste("Figure",ex_fish,"Boxplot of the number of extant fish in each experim
 
 The mean number of extant species is shown in figure. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional life stages, which explains why experiment one and two have more persisting fish species.
 
+
 ## Third Paragraph: Stability -> Coefficient variation (CV)
 ```{r CV_total, fig.cap=cap}
 # Coefficient of Variation Function
@@ -184,6 +187,7 @@ boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
+
 Figure `r fishCV` shows the CV for the total fish biomass. There is no apparent pattern. 
 
 ```{r fish_else_ratio}
@@ -318,7 +322,6 @@ cap=paste("Figure",LH_Zclump,"The mean and CV of fish and total biomass with res
 ```
 
 Figure `r LH_Zclump` shows the effect of the largest fish's allometric ratios on the biomass. The CV of biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. There seems to be a trend of more extreme CV values in total biomass for a larger allometric ratio, but we might not have enough data. Total biomass seems to be relatively unaffected by allometric ratio. Fish biomass increases with a larger allometric ratio, although this might just be because individuals need less food since their per unit mass metabolic rate is lower. 
-
 
 ```{r life_his_plotM_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
