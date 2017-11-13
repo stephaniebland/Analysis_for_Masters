@@ -305,8 +305,6 @@ all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>%
 	mutate(log_spec=log10(Tot_spec),log_max_mass=log10(max_Mass))
 ```
 
-These plots show the effect of fish allometric ratios on the biomass. Total biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. The CV seems to increase for both the total biomass and the fish only biomass for larger allometric ratios. The total fish biomass also increases with a larger allometric ratio, but that might just be an artefact of a lower metabolic rate. 
-
 ```{r life_his_plotZ_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
@@ -316,8 +314,11 @@ xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allom
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 z=z+1;LH_Zclump=z
-cap=paste("Figure",LH_Zclump,"")
+cap=paste("Figure",LH_Zclump,"The mean and CV of fish and total biomass with respect to the largest fish species' allometric ratio.")
 ```
+
+Figure `r LH_Zclump` shows the effect of the largest fish's allometric ratios on the biomass. The CV of biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. There seems to be a trend of more extreme CV values in total biomass for a larger allometric ratio, but we might not have enough data. Total biomass seems to be relatively unaffected by allometric ratio. Fish biomass increases with a larger allometric ratio, although this might just be because individuals need less food since their per unit mass metabolic rate is lower. 
+
 
 ```{r life_his_plotM_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
@@ -328,10 +329,10 @@ xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + l
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 z=z+1;LH_Mclump=z
-cap=paste("Figure",LH_Mclump,"The final biomass and CV of ")
+cap=paste("Figure",LH_Mclump,"The mean and CV of fish and total biomass with respect to the largest fish species' asymptotic body mass.")
 ```
 
-Figure `r LH_Mclump` shows the fish and total ecosystem biomass as a function of the asymptotic body mass of the largest fish species. It also shows the CV of the fish and total biomass after the ecosystem has stabilized. 
+Figure `r LH_Mclump` shows the fish and total ecosystem biomass as a function of the asymptotic body mass of the largest fish species. It also shows the CV of the fish and total biomass after the ecosystem has stabilized. The only apparent trend appears to be that the CV of fish biomass increases with a larger asymptotic individual body mass. 
 
 ```{r life_his_plot_indiv, fig.cap=cap}
 xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
@@ -342,10 +343,12 @@ xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x=
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 z=z+1;LH_ind=z
-cap=paste("Figure",LH_ind,"")
+cap=paste("Figure",LH_ind,"The CV and mean of fish biomass is plotted against the life history traits of adult allometric ratio and trophic level. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits.")
 ```
 
-Figure `r LH_ind` S
+[note, not to be published: this last figure seems to repeat some earlier plots, namely CV/allometric ratio, but it's really entirely new - these plots have more data points because instead of going by the largest fish species allometric ratio/asymptotic body mass, it includes pseudoreplicates for each web so every species is plotted against its CV/mean]
+
+Figure `r LH_ind` shows the correlation between each fish species life history trait against its mean and CV biomass. The main trend here seems to be that the CV of a fish's biomass tends to increase with its trophic level, so the higher up a fish is in the food chain, the more it will experience large population fluctuations. This may be because each consecutive step in the food chain adds variance to the biomass.
 
 
 
