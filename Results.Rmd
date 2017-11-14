@@ -102,10 +102,10 @@ subdat2 %>% filter(Exper==1,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
 	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
-	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage))
+	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)")
 
 z=z+1;TSsolo=z
-cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the Biomass of each fish life stage along with the combined biomass of the rest of the ecosystem.")
+cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
 ```
 
 A typical time series of the logged biomass for a stable population is shown in figure `r TSsolo`. 
