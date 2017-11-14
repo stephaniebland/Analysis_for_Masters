@@ -97,7 +97,18 @@ subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
 subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 ```
 
-A typical time series of the logged biomass for a stable population is shown in figure 1. 
+```{r TS_solo, fig.cap=cap}
+subdat2 %>% filter(Exper==1,simnum==unique(simnum)[4]) %>%
+	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
+	group_by(Year_df,lifestage,species) %>%
+	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
+	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage))
+
+z=z+1;TSsolo=z
+cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the Biomass of each fish life stage along with the combined biomass of the rest of the ecosystem.")
+```
+
+A typical time series of the logged biomass for a stable population is shown in figure `r TSsolo`. 
 
 `r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. We anticipated that some simulations would never stablize, as we placed minimal constraints on food webs during the web creation stage. Some of the webs we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
 ```{r Total Biomass Stability}
@@ -363,8 +374,7 @@ z=z+1;LH_Fratio=z
 cap=paste("Figure",LH_Fratio,"The Fish to total biomass ratio with respect to the allometric ratio and log of the fish mass for the largest adult fish species")
 ```
 
-Figure `r LH_Fratio` shows the fish to total species biomass ratio as a function of the two main life history traits: allometric ratio and adult fish aysmptotic body mass. There is a slight terned where larger fish that have a higher asymptotic body size will end up dominating more of the biomass. 
-
+Figure `r LH_Fratio` shows the fish to total species biomass ratio as a function of the two main life history traits: allometric ratio and adult fish aysmptotic body mass.
 
 
 
