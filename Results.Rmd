@@ -320,13 +320,19 @@ CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Exper,Year_df) %>%
+	summarise(Tot_Bio=sum(Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
+
 gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 	group_by(simnum,Exper,species) %>%
 	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
 
-all_spec_stats=left_join(gen_spec_stats,CV_spec_stats) %>% 
-	mutate(log_spec=log10(mean_spec),log_max_mass=log10(max_Mass))
+all_spec_stats=left_join(gen_spec_stats,CV_spec_stats)
+all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>% 
+	mutate(log_spec=log10(mean_spec),log_tot=log10(mean_tot),log_max_mass=log10(max_Mass))
 ```
 
 ```{r life_his_plotZ_clumped, fig.cap=cap}
@@ -372,6 +378,18 @@ cap=paste("Figure",LH_ind,"The CV and mean of fish biomass is plotted against th
 [note, not to be published: this last figure seems to repeat some earlier plots, namely CV/allometric ratio, but it's really entirely new - these plots have more data points because instead of going by the largest fish species allometric ratio/asymptotic body mass, it includes pseudoreplicates for each web so every species is plotted against its CV/mean]
 
 Figure `r LH_ind` shows the correlation between each fish species life history trait against its mean and CV biomass. The main trend here seems to be that the CV of a fish's biomass tends to increase with its trophic level, so the higher up a fish is in the food chain, the more it will experience large population fluctuations. This may be because each consecutive step in the food chain adds variance to the biomass.
+
+```{r life_his_Winf_indiv, fig.cap=cap}
+xk1=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
+xk2=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
+xk3=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
+xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+z=z+1;Winf_ind=z
+cap=paste("Figure",Winf_ind,"The CV and mean of fish and total biomass is plotted against the asymptotic body mass of individual fish species. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits.")
+```
 
 ```{r life_his_fish_ratio, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
