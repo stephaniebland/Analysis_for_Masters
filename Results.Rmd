@@ -200,7 +200,7 @@ cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in 
 
 The variability in total biomass is higher in experiment 3 than in the other two (fig `r totCV`). This could be because life histories stabilize the ecosystem, but it might also be because there are more extinctions in the first two experiments. These figures are created with a subset of data where at least some fish persist in all the experiments, so we know it's not just a relic of having more webs that stabilize to total extinction.
 
-```{r CV_fish, fig.cap=cap}
+```{r CV_fish, fig.cap=cap, include=F}
 boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
@@ -208,7 +208,7 @@ z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
 
-Figure `r fishCV` shows the CV for the total fish biomass. There is no apparent pattern. 
+There is no apparent pattern in the CV for the total fish biomass. 
 
 ```{r fish_else_ratio}
 ratio=dat %>% group_by(simnum, Exper,isfish) %>%
