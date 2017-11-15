@@ -148,7 +148,7 @@ z=z+1;ex_spec=z
 cap=paste("Figure",ex_spec,"Boxplot of the number of extant species in each experiment.")
 ```
 
-There is no significant effect on the number of extant species (fig `r ex_spec`).
+There is no significant effect on the number of extant species (fig `r ex_spec`). "this figure seems not needed. You can add this information in to the previous paragraph. Also, focus on number of surviving species because those are the ones we are interested in" -> this figure is the one about the number of surviving species. The previous figure (fig `r ex_nodes`) is about the percent of surviving nodes. 
 
 ```{r extant_fish, fig.cap=cap}
 extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
@@ -162,7 +162,7 @@ z=z+1;ex_fish=z
 cap=paste("Figure",ex_fish,"Boxplot of the number of extant fish in each experiment.")
 ```
 
-The mean number of extant species is shown in figure. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional life stages, which explains why experiment one and two have more persisting fish species.
+The mean number of extant species is shown in figure `r ex_fish`. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional life stages, which explains why experiment one and two have more persisting fish species.
 
 
 ## Third Paragraph: Stability -> Coefficient variation (CV)
