@@ -176,7 +176,7 @@ z=z+1;hist_ex_fish=z
 cap=paste("Figure",hist_ex_fish,"Histogram of the number of extant fish in each experiment.")
 ```
 
-A histogram of the number of extant fish species is shown in figure `r hist_ex_fish`. The original web has the most extinctions
+A histogram of the number of extant fish species is shown in figure `r hist_ex_fish`. The original web has the most extinctions and fewest surviving species. Adding in life stages increases the probability of survival, but linking them together decreases it yet again.
 
 ## Third Paragraph: Stability -> Coefficient variation (CV)
 ```{r CV_total, fig.cap=cap}
