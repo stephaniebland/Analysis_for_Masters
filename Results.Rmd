@@ -348,7 +348,7 @@ z=z+1;LH_Zclump=z
 cap=paste("Figure",LH_Zclump,"The mean and CV of fish and total biomass with respect to the largest fish species' allometric ratio. The lines shows the fit of a linear model.")
 ```
 
-Figure `r LH_Zclump` shows the effect of the largest fish's allometric ratios on the biomass. The CV of biomass is invariant with allometric ratio, because there's a lot of noise added in and it's too difficult to detect the effect of larger ratios. There seems to be a trend of more extreme CV values in total biomass for a larger allometric ratio, but we might not have enough data. Total biomass seems to be relatively unaffected by allometric ratio. Fish biomass increases with a larger allometric ratio, although this might just be because individuals need less food since their per unit mass metabolic rate is lower. 
+Figure `r LH_Zclump` shows the effect of the largest fish's allometric ratios on the biomass. The CV of biomass is invariant with allometric ratio. There seems to be a trend of more extreme CV values in total biomass for a larger allometric ratio, but we might not have enough data. Total biomass seems to be relatively unaffected by allometric ratio. Fish biomass increases with a larger allometric ratio, although this might just be because individuals need less food since their per unit mass metabolic rate is lower. 
 
 ```{r life_his_plotM_clumped, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
