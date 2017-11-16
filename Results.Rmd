@@ -292,6 +292,8 @@ cap=paste("Figure",Whist,"A histogram of the logged adult body mass for all the 
 
 The absolute mass of most surviving fish species are in the 10E8 range, with a few extreme outliers. This isn't a major concern because we are using an allometric network model, where the most important feature are the relative body sizes of predator and prey species. So mass is unitless, and is only meaningful in relation to the other species in that particular simulation. These histograms show the mass of fish species across several different simulations. The only other feature that is affected by body mass is the metabolic rate.
 
+"You say body mass only matters in relative terms, compared with other species, but is the ratio of fish/invertebrate realistic?" -> Yeah, so this is why I was looking at allometric ratios in figure `r Zhist`. We set the parameters for the initial allometric ratio, so if it's not realistic we can modify it very easily. I'm not quite sure if you were referring to the ratio of individual body mass here (allometric ratio for predator/prey) or the biomass, but I thought I addressed both. 
+
 
 ## Life History Correlations
 ```{r life_his_setup_clumped, include=FALSE}
