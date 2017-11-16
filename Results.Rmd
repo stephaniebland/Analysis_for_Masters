@@ -332,7 +332,8 @@ gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
 
 all_spec_stats=left_join(gen_spec_stats,CV_spec_stats)
 all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>% 
-	mutate(log_spec=log10(mean_spec),log_tot=log10(mean_tot),log_max_mass=log10(max_Mass))
+	mutate(log_spec=log10(mean_spec),log_tot=log10(mean_tot),log_max_mass=log10(max_Mass)) %>%
+	filter(!(simnum==11 && species==30)) # Remove that outlier!!
 ```
 
 ```{r life_his_plotZ_clumped, fig.cap=cap}
