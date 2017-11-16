@@ -389,8 +389,10 @@ xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + la
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 z=z+1;Winf_ind=z
-cap=paste("Figure",Winf_ind,"The CV and mean of fish and total biomass is plotted against the asymptotic body mass of individual fish species. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits.")
+cap=paste("Figure",Winf_ind,"The CV and mean of fish and total biomass is plotted against the asymptotic body mass of individual fish species. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits. The line shows the fit of a linear model.")
 ```
+
+The asymptotic body mass of individual fish species does not have a strong effect on the total biomass (fig `r Winf_ind`). Fish biomass seems to decrease for larger fish species (fig `r Winf_ind`), which seemingly contradicts our earlier result from figure `r LH_Mclump`. The difference between these two figures is that figure `r LH_Mclump` plots the total fish biomass against the asymptotic body size of the largest fish in the ecosystem, while figure `r Winf_ind` plots it on a species level basis. So maybe the smaller fish species are the fish that increase the biomass. So they would increase the total fish biomass in figure `r LH_Mclump` without getting the credit for it. The CV of fish biomass increases for larger fish species (fig `r Winf_ind`).
 
 ```{r life_his_fish_ratio, fig.cap=cap}
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
