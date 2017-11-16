@@ -134,7 +134,7 @@ z=z+1;ex_nodes=z
 cap=paste("Figure",ex_nodes,"Boxplot of the percent of surviving nodes in each experiment.")
 ```
 
-The mean percent of surviving nodes is shown in figure `r ex_nodes`. Experiment 3 has a slightly higher percentage of surviving nodes. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. Alternatively through,  it could also be true that the new lifestages are not more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.
+The mean percent of surviving nodes is shown in figure `r ex_nodes`. Experiment 3 has a slightly higher percentage of surviving nodes. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. Alternatively through, it could also be true that the new lifestages are not more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added.
 
 ```{r extant_species, fig.cap=cap}
 extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
