@@ -81,6 +81,14 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 ```
 
+Experiments:
+
+1st Experiment: Extended nicheweb + Lifehistory
+
+2nd Experiment: Extended nicheweb
+
+3rd Experiment: Original Nicheweb
+
 ## First Paragraph: Overall description, general overview
 
 ```{r Percent_Stable, include=FALSE}
