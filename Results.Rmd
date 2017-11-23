@@ -186,6 +186,22 @@ cap=paste("Figure",hist_ex_fish,"Histogram of the number of surviving fish in ea
 
 A histogram of the number of surviving fish species is shown in figure `r hist_ex_fish`. The original web has the most extinctions and fewest surviving species. Adding in life stages increases the probability of survival, but linking them together decreases it yet again.
 
+```{r freq_extant_fish, fig.cap=cap}
+dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
+	group_by(Num_extant,Exper) %>%
+	summarise(n=n()) %>% group_by(Exper) %>%
+	mutate(Freq=n/sum(n)) %>%
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_line(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+
+z=z+1;freq_ex_fish=z
+cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
+```
+
+
 ## Third Paragraph: Stability -> Coefficient variation (CV)
 ```{r CV_total, fig.cap=cap}
 # Coefficient of Variation Function
