@@ -38,7 +38,7 @@ We will conduct a preliminary analysis on the probability of extinction in each 
 
 ## Results
 
-The original web has the most amount of extinctions because if the only life stage goes extinct, then the entire species goes extinct. When you add in more life stages, the extinction rate decreases. When these life stages are linked with leslie matrices, the chance of any single fish species surviving increases because you only need one really strong life stage to maintain the survival of a species. However, the chance of all the species surviving decreases because it's more likely for a single life stage from each species to surive than for all the fish to have exactly the right life stages to persist.
+The original web has the most amount of extinctions because it only has one life stage, and if that life stage goes extinct, then the entire species goes extinct. When you add in more life stages, the extinction rate decreases. When these life stages are linked with leslie matrices, the chance of any single fish species surviving increases because you only need one really strong life stage to maintain the survival of a species. However, the chance of all the species surviving decreases because it's more likely for a single life stage from each species to surive than for all the fish to have exactly the right life stages to persist.
 
 
 ## Conclusion
