@@ -1,0 +1,22 @@
+---
+title: "everything_else"
+author: "Stephanie Bland"
+date: '2017-11-25'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Simulation design and analyses
+
+We investigated the model through systematic simulations for two major objectives: Firstly, in order to detect how inclusion of fish life-history structure affects the food web, its structure, dynamics, and stability. Secondly, to investigate how alternative fish life-history strategies are associate with the properties of the food webs. The addition of the  life-history structure for fisheschanges multiple features of the food web. Introduction of life-history stages adds new nodes and feedings links to the web and life-history dynamics (growth from one life-history stage to the next) alters the ways in which biomass is transfers within the food web. To tease apart the relative roles of these components involved with the life-history structures,  we run 3 sets of simulations (hereafter denoted as "experiments"):
+
+1.	Original Web: Each species, including fish, is described through one single node in the food web. 
+2.	Life History stages: We split the fish species into life-history stages, but we do not  link them together with leslie matrices. The new fish life stages are independent of each other and (biomass does not growth from one stage to author) and,  thus, they can be considered as new species. While this experiment is not biologically realistic, it is crucial for disentangling the effects of adding new nodes to the food web from the effect of life-history dynamics. 
+3.	Life-history dynamics: Here we link the life-history stages together with a Leslie matrix.  
+
+To compare these three experiments, we use the same initial conditions for all of them and run 500 simulations in each experiment for a paired comparison.  In each simulation, the food web is allowed to stabilize for 100 years, after which the food web is either accepted or rejected based on the rules detailed below. The dynamics of the food webs are then investigated across another 100 year period. Each year consists of 100 simulation time steps, representing a 100 day growth season. 
+Because our objective is to study the impact of fish life-history stages, we choose amongst the stabilized food webs only those that contain at least one fish species or at least one fish life-history stage (in experiment 2). 
+We will conduct a preliminary analysis on the probability of extinction in each experiment. For this analysis we will only discard webs where all fish go extinct in every experiment. The reamining analyses will have a more stringent constraint; at least one fish species must persist in every experiment for the web to be included.
