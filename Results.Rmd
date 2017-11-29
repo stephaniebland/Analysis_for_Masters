@@ -17,8 +17,8 @@ library(knitr)
 z=0
 ```
 ```{r load_data}
-DATE="2017Oct30"
-Version="2"
+DATE="2017Nov28"
+Version="0"
 location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
