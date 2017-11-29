@@ -1,7 +1,7 @@
 
 
 #---- Hidden ----
-library(ggbiplot)
+#library(ggbiplot)
 library(tidyverse)
 library(stringr)
 library(knitr)
@@ -87,7 +87,7 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
 
 
-subdat2 %>% filter(Exper==1,simnum==unique(simnum)[4]) %>%
+subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
 	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
@@ -196,7 +196,7 @@ kable(ratio)
 
 
 
-dat %>% filter(simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
+dat %>% filter(simnum==3,Exper==3,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Fish life stage",y="Individual body mass")
 
@@ -204,7 +204,7 @@ dat %>% filter(simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
 
 
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-subdat1 %>% filter(simnum<20,Exper==1,Year_df==max(Year_df),isfish==1) %>%
+subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
@@ -216,7 +216,7 @@ subdat1 %>% filter(simnum<20,Exper==1,Year_df==max(Year_df),isfish==1) %>%
 
 
 
-VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
+VB_grid=dat %>% filter(simnum<10,Exper==3,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	group_by(simnum) %>%
 	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Life stage") + theme(legend.position="none"))
@@ -224,7 +224,7 @@ multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_gri
 
 
 
-VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
@@ -243,7 +243,7 @@ VB_hist %>% with(hist(log10(Mass),xlab="log of body mass (unitless)",main=""))
 
 
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
-sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==3) %>%
 	group_by(simnum,Exper,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
@@ -262,17 +262,17 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
-CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==3) %>%
 	group_by(simnum,Exper,species,Year_df) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
-CV_tot_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Exper==3) %>%
 	group_by(simnum,Exper,Year_df) %>%
 	summarise(Tot_Bio=sum(Biomass)) %>%
 	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
 
-gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==3) %>%
 	group_by(simnum,Exper,species) %>%
 	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
