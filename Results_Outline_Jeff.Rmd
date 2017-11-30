@@ -32,16 +32,148 @@ exper_name=c("Original Web","Extended Web","Leslie & History")
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
 ```
+```{r DefineMultiplot}
+# From https://stackoverflow.com/a/24387436
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  require(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+```
 
 ## Part A: Show that new models are realistic (Show our setup is good)
+```{r Percent_Stable, include=FALSE}
+# Subset the data that fit criteria 1 and 2
+subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
+	group_by(simnum,Exper) %>%
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
+	mutate_at(c("any","all"),as.logical)
+persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
+# Criteria 1: Probability of fish persisting in at least one of the experiments
+# Criteria 2: Probability of fish persisting in all of the experiments
+subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
+subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
+```
+Figures:
+
++ Fig 1a: Von Bert curves
+
++ Fig 1b: Allometric Ratios are invariant
+
+Text:
+
 - Show VB curves look good
 - Hist of fish Allometric ratios are similar to initial distribution (so fish go extinct randomly with respect to their allometric ratio)
 
 ## Part B: General simulation Output (Start looking at time series results, and compare model types)
-- Show a time series for the linked model
+Figures:
+Fig 2: Time Series for a linked Model
+```{r TS_solo, fig.cap=cap}
+subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
+	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
+	group_by(Year_df,lifestage,species) %>%
+	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
+	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)")
+
+z=z+1;TSsolo=z
+cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
+```
+Fig 3: Hist of number of surviving species (a=0,1,2,3; b=none,all)
+```{r freq_extant_fish, fig.cap=cap}
+dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
+	group_by(Num_extant,Exper) %>%
+	summarise(n=n()) %>% group_by(Exper) %>%
+	mutate(Freq=n/sum(n)) %>%
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+
+z=z+1;freq_ex_fish=z
+cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
+```
+Fig 4a: CV of tot biomass against Model type
+```{r CV_total, fig.cap=cap}
+# Coefficient of Variation Function
+CV <- function(dat){sd(dat)/mean(dat)*100}
+sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
+
+CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish)) # %>% ### So here we see the CVs for fish and total
+	#summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
+
+boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+
+#ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
+
+z=z+1;totCV=z
+cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
+```
+Fig 4b: CV of fish biomass against Model type
+```{r CV_fish, fig.cap=cap, include=F}
+boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+#	labs(caption="Figure 4 The CV of total fish biomass.")
+
+z=z+1;fishCV=z
+cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
+```
+
+Text:
+
 - (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 ## Part C: Output for linked model
+Figures:
+
++ Fig 5: Life History correlation plots
+
+Text:
+
+
 
 
 
