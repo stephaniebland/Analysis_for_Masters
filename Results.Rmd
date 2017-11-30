@@ -6,11 +6,11 @@ output: word_document #html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE,echo=FALSE,fig.pos = 'H')
+knitr::opts_chunk$set(cache=TRUE,echo=FALSE,fig.pos = 'H',cache.lazy = FALSE)
 ```
 ```{r hidden, include=FALSE}
 #---- Hidden ----
-library(ggbiplot)
+#library(ggbiplot)
 library(tidyverse)
 library(stringr)
 library(knitr)
@@ -27,7 +27,7 @@ setwd(paste0("~/",location,"/",run_name))
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
-exper_name=c("Leslie & History","Extended Web","Original Web")
+exper_name=c("Original Web","Extended Web","Leslie & History")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
