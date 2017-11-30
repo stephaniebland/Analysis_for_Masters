@@ -1,0 +1,52 @@
+---
+title: "Results_Outline_Jeff"
+author: "Stephanie Bland"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: word_document #html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,echo=FALSE,fig.pos = 'H',cache.lazy = FALSE)
+```
+```{r hidden, include=FALSE}
+#---- Hidden ----
+#library(ggbiplot)
+library(tidyverse)
+library(stringr)
+library(knitr)
+z=0
+```
+```{r load_data}
+DATE="2017Nov28"
+Version="0"
+location="/GIT/Analysis"#For Running on my Mac
+#location=""#For Clusters
+run_name=paste0(DATE,"_",Version)
+setwd(paste0("~/",location,"/",run_name))
+#---- LOAD_DATA ----
+dat=read.table("clean.txt",header=F)
+colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
+exper_name=c("Original Web","Extended Web","Leslie & History")
+# Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
+# dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
+#	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
+```
+
+## Part A: Show that new models are realistic (Show our setup is good)
+- Show VB curves look good
+- Hist of fish Allometric ratios are similar to initial distribution (so fish go extinct randomly with respect to their allometric ratio)
+
+## Part B: General simulation Output (Start looking at time series results, and compare model types)
+- Show a time series for the linked model
+- (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
+
+## Part C: Output for linked model
+
+
+
+
+
+
+
+
