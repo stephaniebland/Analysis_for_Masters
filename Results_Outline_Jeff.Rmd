@@ -98,8 +98,34 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 Figures:
 
 + Fig 1a: Von Bert curves
+```{r Von-Bert-Multi, fig.cap=cap}
+# Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
+subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
+	group_by(simnum,species) %>%
+	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
+	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
+	ungroup() %>%
+	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
+	#select(simnum,species,Biomass, tot_fish_biom,Mass)
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
 
+z=z+1;VBmult=z
+cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
+```
 + Fig 1b: Allometric Ratios are invariant
+```{r VB-Hist}
+VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+	group_by(simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4)
+```
+
+```{r Z-Hist, fig.cap=cap}
+VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
+
+z=z+1;Zhist=z
+cap=paste("Figure",Zhist,"A histogram of the allometric ratios for all the surviving adult fish life stages.")
+```
 
 Text:
 
