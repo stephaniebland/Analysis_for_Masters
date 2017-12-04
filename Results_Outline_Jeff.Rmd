@@ -112,6 +112,32 @@ subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
 z=z+1;VBmult=z
 cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
 ```
+
+```{r Von-Bert-Multi2, fig.cap=cap}
+VB_orig_fish=subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
+	group_by(simnum,species) %>%
+	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
+	ungroup() %>%
+	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
+	#select(simnum,species,Biomass, tot_fish_biom,Mass)
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
+
+# Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
+VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>%
+	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
+	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
+	ungroup() %>%
+	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
+	group_by(Exper) %>%
+	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual body mass"))
+
+multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],cols=1)
+
+z=z+1;VBmult2=z
+cap=paste("Figure",VBmult2,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
+```
+
 + Fig 1b: Allometric Ratios are invariant
 ```{r VB-Hist}
 VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
@@ -145,6 +171,7 @@ subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
 z=z+1;TSsolo=z
 cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
 ```
+
 Fig 3: Hist of number of surviving species (a=0,1,2,3; b=none,all)
 ```{r freq_extant_fish, fig.cap=cap}
 dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
@@ -160,6 +187,7 @@ dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 z=z+1;freq_ex_fish=z
 cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
 ```
+
 Fig 4a: CV of tot biomass against Model type
 ```{r CV_total, fig.cap=cap}
 # Coefficient of Variation Function
@@ -179,6 +207,7 @@ boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 z=z+1;totCV=z
 cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
 ```
+
 Fig 4b: CV of fish biomass against Model type
 ```{r CV_fish, fig.cap=cap, include=F}
 boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
@@ -187,6 +216,7 @@ boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
+
 - (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 Text:
