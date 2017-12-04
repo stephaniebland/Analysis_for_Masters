@@ -81,7 +81,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 ```
 
-## Part A: Show that new models are realistic (Show our setup is good)
+## Part A: Model Realism - [Show that new models are realistic (Show our setup is good)]
 ```{r Percent_Stable, include=FALSE}
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
@@ -140,20 +140,37 @@ cap=paste("Figure",VBmult2,"Von-Bertalanffy curves for surviving fish in several
 
 + Fig 1b: Allometric Ratios are invariant
 ```{r VB-Hist}
-VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+VB_orig=dat %>% filter(Year_df==1,Exper==1) %>%
 	group_by(simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4)
+VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio")
+
+VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
+	group_by(Exper,simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
 ```
 
 ```{r Z-Hist, fig.cap=cap}
-VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
+meh=VB_hist %>% group_by(Exper) %>%
+	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio"))
+multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],
+		  VB_hist_orig, meh$k[[1]], meh$k[[2]], meh$k[[3]], cols=2)
 
 z=z+1;Zhist=z
 cap=paste("Figure",Zhist,"A histogram of the allometric ratios for all the surviving adult fish life stages.")
 ```
 
+```{r whatev}
+dat %>% filter(Year_df==1,Exper==1,isfish==1) %>%
+	group_by(simnum) #%>%
+	
+```
+
 Text:
+Our model produces realistic von-Bertalanffy growth curves (fig ...). Since we are using an allometric trophic network model, mass is unitless and all that matters is the relative ratios of predator to prey within the same model. You can not compare mass across simulations. However, fish species within simulations tend to be in the same size range, as the weight range for fish species often overlap each other. The youngest life stage of the largest fish species is smaller than the oldest life stage of the youngest fish .... percent of the time. The growth curves for any given species is also realistic, as we defined the curve to follow a von-Bertalanffy growth function. Our model produces fish species with realistic allometric ratios (fig ...), and fish extinctions are equally probably across the lognormal distribution of allometric ratios, so our model is not favouring fish of any particular body mass. 
+
 
 - Show VB curves look good
 - Hist of fish Allometric ratios are similar to initial distribution (so fish go extinct randomly with respect to their allometric ratio)
@@ -174,15 +191,21 @@ cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows th
 
 Fig 3: Hist of number of surviving species (a=0,1,2,3; b=none,all)
 ```{r freq_extant_fish, fig.cap=cap}
-dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Exper,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) %>%
 	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
 	group_by(Num_extant,Exper) %>%
 	summarise(n=n()) %>% group_by(Exper) %>%
-	mutate(Freq=n/sum(n)) %>%
+	mutate(Freq=n/sum(n))
+
+xkcd1=xkcd %>% 
 	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
+	mutate(Num_extant=as.factor(Num_extant)) %>%
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All"))
+multiplot(xkcd1,xkcd2)
 
 z=z+1;freq_ex_fish=z
 cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
