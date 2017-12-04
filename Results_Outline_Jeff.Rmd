@@ -262,7 +262,16 @@ cap=paste("Figure",fishCV,"The coefficient of variation for the total fish bioma
 #Text:
 `r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stablize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
 
-
+Our models can be broken down into two steps: adding in new life stages and then linking them with life histories.
+One of the goals of this paper is to identify how much each step affects the output of our model. 
+Adding in new life stages reduces the CV of the total biomass, so new life stages stabilize the model (fig `r totCV`).
+Since we can treat new, unlinked, life stages as individual species, this essentially equivalent to saying that an ecosystem with more diverse fish species is more stable.
+None of our model types differ in terms of CV for total fish biomass (fig `r fishCV`).
+The general trend is that adding in new life stages is far more important than linking them together.
+This trend is further backed up by the frequency of the consecutive number of surviving fish species in each model (fig `r freq_ex_fish`).
+The models with new life stages are far more likely to have at least one fish species survive, as well as having every fish species survive.
+The difference between the linked model and unlinked model is more subtle.
+Linking the life histories seems to steepen the probability of consecutive extinctions, meaning that if one sp
 
 ## Part C: Output for linked model
 Figures:
