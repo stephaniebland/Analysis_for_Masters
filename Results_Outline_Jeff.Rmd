@@ -132,7 +132,7 @@ Text:
 - Show VB curves look good
 - Hist of fish Allometric ratios are similar to initial distribution (so fish go extinct randomly with respect to their allometric ratio)
 
-## Part B: General simulation Output (Start looking at time series results, and compare model types)
+## Part B: General simulation Output (Start looking at time series results, and compare model types
 Figures:
 Fig 2: Time Series for a linked Model
 ```{r TS_solo, fig.cap=cap}
@@ -187,10 +187,10 @@ boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
+- (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 Text:
-
-- (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
+`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stablize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
 
 ## Part C: Output for linked model
 Figures:
