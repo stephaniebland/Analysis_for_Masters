@@ -98,6 +98,7 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 Figures:
 
 + Fig 1a: Von Bert curves
+
 ```{r Von-Bert-Multi, fig.cap=cap}
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
@@ -190,7 +191,7 @@ Fish also have realistic body size ranges for their growth, as there is a large 
 Webs have an overlap between all the fish species size ranges `r percent_range_overlap`% percent of the time.
 
 # Text (Alternate version, says the same thing as above):
-Our model produces realistic von-Bertalanffy growth curves (fig `r VB_Exper_compare`a). Since we are using an allometric trophic network model, mass is unitless and all that matters is the relative ratios of predator to prey within the same model. You can not compare mass across simulations. However, fish species within simulations tend to be in the same size range, as the weight range for fish species often overlap each other. The youngest life stage of the largest fish species is smaller than the oldest life stage of the youngest fish `r percent_range_overlap`% percent of the time. The growth curves for any given species are also realistic, as we defined the curve to follow a von-Bertalanffy growth function. Our model produces fish species with realistic allometric ratios (fig `r VB_Exper_compare`b), and fish extinctions are equally probably across the lognormal distribution of allometric ratios, so our model is not favouring fish of any particular body mass. 
+Our model produces realistic von-Bertalanffy growth curves (fig `r VB_Exper_compare`a). Since we are using an allometric trophic network model, mass is unitless and all that matters is the relative ratios of predator to prey within the same model. You can not compare mass across simulations. However, fish species within simulations tend to be in the same size range, as the weight range for fish species often overlap each other. The youngest life stage of the largest fish species is smaller than the oldest life stage of the youngest fish `r percent_range_overlap`% percent of the time. The growth curves for any given species are also realistic, as we defined the curve to follow a von-Bertalanffy growth function. Our model produces fish species with realistic allometric ratios (fig `r VB_Exper_compare`b), and fish extinctions are equally probable across the lognormal distribution of allometric ratios, so our model is not favouring fish of any particular body mass. 
 
 ## Part B: General simulation Output (Start looking at time series results, and compare model types
 Figures:
@@ -257,6 +258,9 @@ z=z+1;fishCV=z
 cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
 ```
 
+
+
+
 - (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 #Text:
@@ -267,7 +271,6 @@ One of the goals of this paper is to identify how much each step affects the out
 Adding in new life stages reduces the CV of the total biomass, so new life stages stabilize the model (fig `r totCV`).
 Since we can treat new, unlinked, life stages as individual species, this essentially equivalent to saying that an ecosystem with more diverse fish species is more stable.
 None of our model types differ in terms of CV for total fish biomass (fig `r fishCV`).
-The general trend is that adding in new life stages is far more important than linking them together.
 This trend is further backed up by the frequency of the consecutive number of surviving fish species in each model (fig `r freq_ex_fish`).
 The models with new life stages are far more likely to have at least one fish species survive, as well as having every fish species survive.
 The difference between the linked model and unlinked model is more subtle.
@@ -283,7 +286,16 @@ Text:
 
 
 
+### Discussion:
 
+The general trend is that adding in new life stages is far more important than linking them together.
+
+
+Why would more diversity be better: 
+
+-cite Hutchinson less competition
+-better niche filling
+-Along the same lines of fungii/disease being able to spread between phylogenetically similar plant species, predators will be able to share the same prey (I'm not sure if this should relax mortality of rare species and give them a "break" or increase mortality for all similar species) (Donoghue Yale Lecture - Charles Darwin the tree of life, ~50 minutes in)
 
 
 

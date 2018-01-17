@@ -433,7 +433,33 @@ cap=paste("Figure",LH_Fratio,"The Fish to total biomass ratio with respect to th
 Figure `r LH_Fratio` shows the fish to total species biomass ratio as a function of the two main life history traits: allometric ratio and adult fish aysmptotic body mass.
 
 
+```{r}
+#THIS WAS AN ATTEMPT TO FIGURE OUT IF SOME LIFESTAGES SURVIVE DISPROPORTIONATELY WELL
+sure=dat %>% filter(Exper==2,Phase_df==2,isfish==1) %>%
+	group_by(simnum,Exper,Nodes_df) %>%
+	summarise(node_mean=mean(Biomass))
 
+#sure2=sure %>% filter(Exper==2,Phase_df==2,isfish==1) %>%
+#	group_by(simnum,Exper,species) %>%
+#	summarise(fish_mean=mean(Biomass))
+
+aight=dat %>% filter(Exper==2,Year_df==max(Year_df),isfish==1) %>%
+	left_join(.,sure) 
+
+sure2=aight %>% group_by(simnum,Exper,species) %>%
+	summarise(fish_mean=sum(node_mean))
+
+aight2=aight %>% left_join(.,sure2) %>%
+	mutate(prop_stage=node_mean/fish_mean) %>%
+	mutate(prop_stage2=ifelse(is.na(prop_stage),0,prop_stage))
+
+boxplot(node_mean~lifestage,aight2)
+boxplot(prop_stage2~lifestage,aight2)
+boxplot(prop_stage~lifestage,aight2)
+
+aight2 %>% group_by(lifestage) %>% summarise(mean(prop_stage,na.rm=T))
+
+```
 
 
 
