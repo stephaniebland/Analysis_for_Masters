@@ -6,7 +6,7 @@ library(tidyverse)
 library(stringr)
 library(knitr)
 z=0
-
+0
 
 DATE="2017Nov28"
 Version="0"
@@ -156,7 +156,7 @@ dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Num_extant,Exper) %>%
 	summarise(n=n()) %>% group_by(Exper) %>%
 	mutate(Freq=n/sum(n)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_line(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
 
 
 
@@ -191,7 +191,7 @@ ratio=dat %>% group_by(simnum, Exper,isfish) %>%
 	mutate(Fish_ratio=`1`/(`0`+`1`)) %>%
 	group_by(Exper) %>%
 	#ggboxplot(x="Exper",y="Fish_ratio")
-	summarise(mean(Fish_ratio),var(Fish_ratio))
+	summarise(mean(Fish_ratio,na.rm=T),var(Fish_ratio,na.rm=T))
 kable(ratio)
 
 
@@ -233,6 +233,23 @@ VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df),Biomass>0) %>%
 
 VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 
+VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+	group_by(simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4)
+
+
+
+VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
+
+VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df)) %>%
+	group_by(simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4)
+
+
+
+VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 
 
 
@@ -284,45 +301,94 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 
 
 
-xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")+geom_smooth(method = "lm")
-xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
-xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass")+geom_smooth(method = "lm")
-xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
+xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass",title="c*")+geom_smooth(method = "lm")
+xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass",title="d")+geom_smooth(method = "lm")
+
+
+mod1=lm(log_tot~max_Z,full_stats)
+mod2=lm(log_fish~max_Z,full_stats)
+mod3=lm(CV_tot~max_Z,full_stats)
+mod4=lm(CV_fish~max_Z,full_stats)
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+mod1=lm(log_fish~max_Z,full_stats)
+summary(mod1)
+# SEND MOD2 TO ANNA
+mod2=lm(CV_tot~max_Z,full_stats)
+plot(mod2)
+plot(full_stats$max_Z,full_stats$CV_tot)
+summary(mod2)
+
+
+
+
+xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass",title="a**")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass",title="b")+geom_smooth(method = "lm")
+xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass",title="c")+geom_smooth(method = "lm")
+xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass",title="d")+geom_smooth(method = "lm")
+
+mod1=lm(log_tot~log_max_fish_mass,full_stats)
+mod2=lm(log_fish~log_max_fish_mass,full_stats)
+mod3=lm(CV_tot~log_max_fish_mass,full_stats)
+mod4=lm(CV_fish~log_max_fish_mass,full_stats)
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
 
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 
 
-xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
-xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
-xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
-xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
+xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass",title="a")+geom_smooth(method = "lm")
+xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b")+geom_smooth(method = "lm")
+xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass",title="c")+geom_smooth(method = "lm")
+xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass",title="d*")+geom_smooth(method = "lm")
+
+mod1=lm(CV_spec~max_Z,all_spec_stats)
+mod2=lm(log_spec~max_Z,all_spec_stats)
+mod3=lm(CV_spec~orig_T,all_spec_stats)
+mod4=lm(log_spec~orig_T,all_spec_stats)
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
 
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 
 
-xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
-xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
-xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass")+geom_smooth(method = "lm")
-xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass")+geom_smooth(method = "lm")
+xk1=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass",title="a***")+geom_smooth(method = "lm")
+xk2=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass",title="b*")+geom_smooth(method = "lm")
+xk3=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass",title="c")+geom_smooth(method = "lm")
+xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass",title="d")+geom_smooth(method = "lm")
 
+mod1=lm(log_tot~log_max_mass,all_spec_stats)
+mod2=lm(log_spec~log_max_mass,all_spec_stats)
+mod3=lm(CV_tot~log_max_mass,all_spec_stats)
+mod4=lm(CV_spec~log_max_mass,all_spec_stats)
+summary(mod1)
+summary(mod2)
+summary(mod3)
+summary(mod4)
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 
 
-xk1=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
-xk2=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
-xk3=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
-xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio",title="a")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=FT_ratio)) + geom_point() + labs(x="log of fish mass",y="Fish to total biomass ratio",title="b")+geom_smooth(method = "lm")
 
-multiplot(xk1,xk2,xk3,xk4,cols=2)
-
-
-
-xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
-xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=FT_ratio)) + geom_point() + labs(x="log of fish mass",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
-
+mod1=lm(FT_ratio~max_Z,full_stats)
+mod2=lm(FT_ratio~log_max_fish_mass,full_stats)
+summary(mod1)
+summary(mod2)
 multiplot(xk1,xk2,cols=2)
 
 
