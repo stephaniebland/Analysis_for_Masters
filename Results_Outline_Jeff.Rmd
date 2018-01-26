@@ -121,7 +121,7 @@ VB_orig_fish=subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish=
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual\n body mass")
 
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
@@ -131,7 +131,7 @@ VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	group_by(Exper) %>%
-	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual body mass"))
+	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual\n body mass"))
 
 #multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],cols=1)
 
@@ -264,7 +264,7 @@ cap=paste("Figure",fishCV,"The coefficient of variation for the total fish bioma
 - (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 #Text:
-`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stablize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
+`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stabilize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
 
 Our models can be broken down into two steps: adding in new life stages and then linking them with life histories.
 One of the goals of this paper is to identify how much each step affects the output of our model. 
