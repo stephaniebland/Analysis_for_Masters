@@ -17,11 +17,12 @@ setwd(paste0("~/",location,"/",run_name))
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+colnames(dat)[9]="Model"
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
 exper_name=c("Leslie & History","Extended Web","Original Web")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
-#	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
+#	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
 
 
 # From https://stackoverflow.com/a/24387436
@@ -75,7 +76,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
-	group_by(simnum,Exper) %>%
+	group_by(simnum,Model) %>%
 	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
@@ -87,7 +88,7 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
 
 
-subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
+subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
 	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
@@ -98,7 +99,7 @@ subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
 
 # Percent of webs that stabilize for any species in every experiment
 min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>% 
-	group_by(simnum,Exper) %>%
+	group_by(simnum,Model) %>%
 	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical) %>% 
@@ -107,11 +108,11 @@ min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>%
 
 
 extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
-	group_by(Exper,simnum,Nodes_df) %>% 
+	group_by(Model,simnum,Nodes_df) %>% 
 	summarise(extant=as.logical(Biomass)) %>%
 	summarise(Num_extant=sum(extant)) %>% 
-	mutate(Per_extant=Num_extant/c(39,39,30)[Exper])
-boxplot(Per_extant~Exper,extant_nodes,xlab="Experiment",ylab="Percent of surviving nodes")
+	mutate(Per_extant=Num_extant/c(39,39,30)[Model])
+boxplot(Per_extant~Model,extant_nodes,xlab="Experiment",ylab="Percent of surviving nodes")
 tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
 
 
@@ -119,44 +120,44 @@ tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
 
 
 extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
-	group_by(Exper,simnum,species) %>% 
+	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Exper,extant_species,xlab="Experiment",ylab="Number of surviving species")
+boxplot(Num_extant~Model,extant_species,xlab="Experiment",ylab="Number of surviving species")
 tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
 
 
 
 
 extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
-	group_by(Exper,simnum,species) %>% 
+	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Exper,extant_fish,xlab="Experiment",ylab="Number of surviving fish")
+boxplot(Num_extant~Model,extant_fish,xlab="Experiment",ylab="Number of surviving fish")
 tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
 
 
 
 
 dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
-	group_by(Exper,simnum,species) %>% 
+	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) %>%
-	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
-	ggplot(.,aes(Num_extant,group=Exper,fill=Exper)) + geom_histogram(position="dodge",binwidth=0.5) + theme_bw() + labs(x="Number of surviving fish species") + theme(legend.position=c(0.85,0.8))
+	ungroup() %>% mutate(Model=as.factor(Model)) %>%
+	ggplot(.,aes(Num_extant,group=Model,fill=Model)) + geom_histogram(position="dodge",binwidth=0.5) + theme_bw() + labs(x="Number of surviving fish species") + theme(legend.position=c(0.85,0.8))
 
 
 
 
 dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
-	group_by(Exper,simnum,species) %>% 
+	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) %>%
-	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
-	group_by(Num_extant,Exper) %>%
-	summarise(n=n()) %>% group_by(Exper) %>%
+	ungroup() %>% mutate(Model=as.factor(Model)) %>%
+	group_by(Num_extant,Model) %>%
+	summarise(n=n()) %>% group_by(Model) %>%
 	mutate(Freq=n/sum(n)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
 
 
 
@@ -166,37 +167,37 @@ dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 CV <- function(dat){sd(dat)/mean(dat)*100}
 sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
 
-CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
 	filter(Phase_df==2) %>%
 	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish)) # %>% ### So here we see the CVs for fish and total
 #summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
 
-boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+boxplot(CV_tot~Model,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
 
-#ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
-
-
+#ggplot(CV_plot,aes(x=Model,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
 
-boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+
+
+boxplot(CV_fish~Model,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
 
 
-ratio=dat %>% group_by(simnum, Exper,isfish) %>%
+ratio=dat %>% group_by(simnum, Model,isfish) %>%
 	filter(Year_df %in% max(Year_df)) %>% 
 	summarise(Tot_group=sum(Biomass)) %>%
 	spread(isfish,Tot_group) %>%
 	mutate(Fish_ratio=`1`/(`0`+`1`)) %>%
-	group_by(Exper) %>%
-	#ggboxplot(x="Exper",y="Fish_ratio")
+	group_by(Model) %>%
+	#ggboxplot(x="Model",y="Fish_ratio")
 	summarise(mean(Fish_ratio,na.rm=T),var(Fish_ratio,na.rm=T))
 kable(ratio)
 
 
 
-dat %>% filter(simnum==3,Exper==3,Year_df==1,isfish==1,Biomass>0) %>%
+dat %>% filter(simnum==3,Model==3,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	ggplot(aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Fish life stage",y="Individual body mass")
 
@@ -204,7 +205,7 @@ dat %>% filter(simnum==3,Exper==3,Year_df==1,isfish==1,Biomass>0) %>%
 
 
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
+subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
@@ -216,7 +217,7 @@ subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
 
 
 
-VB_grid=dat %>% filter(simnum<10,Exper==3,Year_df==1,isfish==1,Biomass>0) %>%
+VB_grid=dat %>% filter(simnum<10,Model==3,Year_df==1,isfish==1,Biomass>0) %>%
 	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
 	group_by(simnum) %>%
 	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Life stage") + theme(legend.position="none"))
@@ -224,7 +225,7 @@ multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_gri
 
 
 
-VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df),Biomass>0) %>%
+VB_hist=subdat1 %>% filter(Model==3,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
@@ -233,7 +234,7 @@ VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df),Biomass>0) %>%
 
 VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 
-VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+VB_hist=subdat1 %>% filter(Model==1,Year_df==max(Year_df),Biomass>0) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
@@ -242,7 +243,7 @@ VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
 
 VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 
-VB_hist=subdat1 %>% filter(Exper==3,Year_df==max(Year_df)) %>%
+VB_hist=subdat1 %>% filter(Model==3,Year_df==max(Year_df)) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
@@ -260,14 +261,14 @@ VB_hist %>% with(hist(log10(Mass),xlab="log of body mass (unitless)",main=""))
 
 
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
-sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==3) %>%
-	group_by(simnum,Exper,species) %>% 
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+	group_by(simnum,Model,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
-	group_by(simnum,Exper) %>% 
+	group_by(simnum,Model) %>% 
 	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass),max_fish_mass=max(Mass*isfish))
 
-CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
 	filter(Phase_df==2) %>%
 	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
@@ -279,18 +280,18 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
-CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==3) %>%
-	group_by(simnum,Exper,species,Year_df) %>%
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+	group_by(simnum,Model,species,Year_df) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
-CV_tot_stats=subdat2 %>% filter(Phase_df==2,Exper==3) %>%
-	group_by(simnum,Exper,Year_df) %>%
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+	group_by(simnum,Model,Year_df) %>%
 	summarise(Tot_Bio=sum(Biomass)) %>%
 	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
 
-gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==3) %>%
-	group_by(simnum,Exper,species) %>%
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+	group_by(simnum,Model,species) %>%
 	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
 
