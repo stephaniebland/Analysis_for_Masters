@@ -13,11 +13,12 @@ Version="0"
 #Exper=1
 location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
+#location="current_analysis"
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
 ################################################
-#---- CompileData ----
-for (simnum in c(1:100)){
+#---- CompileData ----335,487-489,493
+for (simnum in c(1:4000)){
 	for (Exper in 1:3){
 		for (pred in 2){
 			for (prey in 0){
@@ -68,6 +69,9 @@ for (simnum in c(1:100)){
 write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
+# Make an easy to load data subset:
+#small_dat=dat %>% filter(simnum<101)
+#write.table(small_dat,"small_dat.txt",append=T,col.names = F,row.names = F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 # Probability of fish persisting in at least one of the experiments
 # Probability of fish persisting in all of the experiments
@@ -206,4 +210,27 @@ xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + la
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 
 
+xk=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) #%>%
+#ggplot(.,aes(Num_extant,group=Exper,fill=Exper)) + geom_histogram(position="dodge",binwidth=0.5) + theme_bw() + labs(x="Number of surviving fish species") + theme(legend.position=c(0.85,0.8))
+ggplot(.,aes(Num_extant,group=Exper,fill=Exper)) + geom_histogram(position="dodge",binwidth=0.5) + theme_bw() + labs(x="Number of surviving fish species") + theme(legend.position=c(0.85,0.8))
+ggplot(.,aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage))
+xkcd=	data.frame(prop.table(table(website=xk$Exper, rating=xk$Num_extant),1))
+ggplot(xkcd, aes(x=rating, y=Freq)) + geom_line(aes(group=website, color=website))+ labs(x="Number of surviving fish species")
+
+dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
+	group_by(Num_extant,Exper) %>%
+	summarise(n=n()) %>% group_by(Exper) %>%
+	mutate(Freq=n/sum(n)) %>%
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_line(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species")
+	
+	
+	
 
