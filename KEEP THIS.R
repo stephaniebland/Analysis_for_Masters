@@ -394,7 +394,10 @@ multiplot(xk1,xk2,cols=2)
 
 
 
+par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
+boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Ecosystem Biomass",ylim=c(0,100))
 
+boxplot(CV_fish~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Fish Biomass",ylim=c(0,100))
 
 
 
