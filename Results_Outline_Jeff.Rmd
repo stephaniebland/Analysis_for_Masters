@@ -27,7 +27,7 @@ setwd(paste0("~/",location,"/",run_name))
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
 colnames(dat)[9]="Model"
-# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
+# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "model 1" and model 2" because people will definitely forget what that means.
 exper_name=c("Original Web","Extended Web","Leslie & History")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
@@ -87,12 +87,12 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
 	group_by(simnum,Model) %>%
-	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL models
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
 persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
-# Criteria 1: Probability of fish persisting in at least one of the experiments
-# Criteria 2: Probability of fish persisting in all of the experiments
+# Criteria 1: Probability of fish persisting in at least one of the models
+# Criteria 2: Probability of fish persisting in all of the models
 subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
 subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 ```
@@ -205,7 +205,7 @@ subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)")
 
 z=z+1;TSsolo=z
-cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
+cap=paste("Figure",TSsolo,"A typical time series for model 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
 ```
 
 Fig 3: Hist of number of surviving species (a=0,1,2,3; b=none,all)
@@ -227,7 +227,7 @@ xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
 multiplot(xkcd1,xkcd2)
 
 z=z+1;freq_ex_fish=z
-cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
+cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each model.")
 ```
 
 Fig 4a: CV of tot biomass against Model type
@@ -247,7 +247,7 @@ boxplot(CV_tot~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation")
 #ggplot(CV_plot,aes(x=Model,y=CV_tot))+geom_boxplot() + xlab("Model") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
 z=z+1;totCV=z
-cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
+cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each model")
 ```
 
 Fig 4b: CV of fish biomass against Model type
@@ -256,7 +256,7 @@ boxplot(CV_fish~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation")
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
 z=z+1;fishCV=z
-cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
+cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each model")
 ```
 
 
@@ -265,7 +265,7 @@ cap=paste("Figure",fishCV,"The coefficient of variation for the total fish bioma
 - (Maybe, if time permits) - A comparison plot of time series for diff sims and models in supplementary
 
 #Text:
-`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stabilize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
+`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the models. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every model. It was anticipated that some simulations would never stabilize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
 
 Our models can be broken down into two steps: adding in new life stages and then linking them with life histories.
 One of the goals of this paper is to identify how much each step affects the output of our model. 
