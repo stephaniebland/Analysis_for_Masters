@@ -14,6 +14,7 @@ location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
+pardefault <- par()
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
@@ -393,13 +394,13 @@ summary(mod2)
 multiplot(xk1,xk2,cols=2)
 
 
-
+png("Figure4_CV_boxplot.png")
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
 boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Ecosystem Biomass",ylim=c(0,100))
 
 boxplot(CV_fish~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Fish Biomass",ylim=c(0,100))
-
-
+dev.off()
+par(pardefault)
 
 
 
