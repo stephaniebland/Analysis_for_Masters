@@ -303,6 +303,8 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 
 
 
+xkcd=matrix(NA,5,4)
+
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
 xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass",title="c*")+geom_smooth(method = "lm")
@@ -318,17 +320,13 @@ summary(mod2)
 summary(mod3)
 summary(mod4)
 
+xkcd[1,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
+xkcd[1,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
+xkcd[1,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
+xkcd[1,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
+png("Model3_row1_Allometric_full_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
-
-mod1=lm(log_fish~max_Z,full_stats)
-summary(mod1)
-# SEND MOD2 TO ANNA
-mod2=lm(CV_tot~max_Z,full_stats)
-plot(mod2)
-plot(full_stats$max_Z,full_stats$CV_tot)
-summary(mod2)
-
-
+dev.off()
 
 
 xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass",title="a**")+geom_smooth(method = "lm")
@@ -345,8 +343,13 @@ summary(mod2)
 summary(mod3)
 summary(mod4)
 
+xkcd[2,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
+xkcd[2,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
+xkcd[2,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
+xkcd[2,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
+png("Model3_row2_logmass_full_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
-
+dev.off()
 
 
 xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass",title="a")+geom_smooth(method = "lm")
@@ -363,8 +366,13 @@ summary(mod2)
 summary(mod3)
 summary(mod4)
 
+xkcd[3,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
+xkcd[3,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
+xkcd[3,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
+xkcd[3,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
+png("Model3_row3_all_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
-
+dev.off()
 
 
 xk1=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass",title="a***")+geom_smooth(method = "lm")
@@ -380,8 +388,14 @@ summary(mod1)
 summary(mod2)
 summary(mod3)
 summary(mod4)
-multiplot(xk1,xk2,xk3,xk4,cols=2)
 
+xkcd[4,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
+xkcd[4,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
+xkcd[4,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
+xkcd[4,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
+png("Model3_row4_all_stats2.png")
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+dev.off()
 
 
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio",title="a")+geom_smooth(method = "lm")
@@ -391,7 +405,13 @@ mod1=lm(FT_ratio~max_Z,full_stats)
 mod2=lm(FT_ratio~log_max_fish_mass,full_stats)
 summary(mod1)
 summary(mod2)
+
+xkcd[5,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
+xkcd[5,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
+png("Model3_row5_full_stats.png")
 multiplot(xk1,xk2,cols=2)
+dev.off()
+
 
 
 png("Figure4_CV_boxplot.png")
