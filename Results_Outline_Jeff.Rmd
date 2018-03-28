@@ -26,11 +26,12 @@ setwd(paste0("~/",location,"/",run_name))
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+colnames(dat)[9]="Model"
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
 exper_name=c("Original Web","Extended Web","Leslie & History")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
-#	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
+#	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
 ```
 ```{r DefineMultiplot}
 # From https://stackoverflow.com/a/24387436
@@ -85,7 +86,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 ```{r Percent_Stable, include=FALSE}
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
-	group_by(simnum,Exper) %>%
+	group_by(simnum,Model) %>%
 	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
@@ -101,7 +102,7 @@ Figures:
 
 ```{r Von-Bert-Multi, fig.cap=cap}
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
+subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
@@ -115,7 +116,7 @@ cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several 
 ```
 
 ```{r Von-Bert-Multi2, fig.cap=cap}
-VB_orig_fish=subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish==1) %>%
+VB_orig_fish=subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	ungroup() %>%
@@ -125,12 +126,12 @@ VB_orig_fish=subdat1 %>% filter(simnum<20,Exper==3,Year_df==max(Year_df),isfish=
 
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
-	group_by(Exper,simnum,species) %>%
+	group_by(Model,simnum,species) %>%
 	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
 	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
-	group_by(Exper) %>%
+	group_by(Model) %>%
 	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual\n body mass"))
 
 #multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],cols=1)
@@ -141,20 +142,20 @@ VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
 
 + Fig 1b: Allometric Ratios are invariant
 ```{r VB-Hist}
-VB_orig=dat %>% filter(Year_df==1,Exper==1) %>%
+VB_orig=dat %>% filter(Year_df==1,Model==1) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
 VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio")
 
 VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
-	group_by(Exper,simnum) %>%
+	group_by(Model,simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
 ```
 
 ```{r VB_Exper_compare, fig.cap=cap,echo=FALSE}
-meh=VB_hist %>% group_by(Exper) %>%
+meh=VB_hist %>% group_by(Model) %>%
 	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio"))
 multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],
 		  VB_hist_orig, meh$k[[1]], meh$k[[2]], meh$k[[3]], cols=2)
@@ -164,7 +165,7 @@ cap=paste("Figure",VB_Exper_compare,"A histogram of the allometric ratios for al
 ```
 
 ```{r Mass_Overlap, fig.cap=cap}
-mass_overlap=dat %>% filter(Year_df==1,Exper==1,isfish==1,lifestage %in% range(lifestage)) %>%
+mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(lifestage)) %>%
 	select(simnum,species,lifestage,Mass) %>%
 	group_by(simnum) %>%
 	spread(key=lifestage,value=Mass) %>%
@@ -197,7 +198,7 @@ Our model produces realistic von-Bertalanffy growth curves (fig `r VB_Exper_comp
 Figures:
 Fig 2: Time Series for a linked Model
 ```{r TS_solo, fig.cap=cap}
-subdat2 %>% filter(Exper==3,simnum==unique(simnum)[4]) %>%
+subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
 	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
@@ -210,19 +211,19 @@ cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows th
 Fig 3: Hist of number of surviving species (a=0,1,2,3; b=none,all)
 ```{r freq_extant_fish, fig.cap=cap}
 xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
-	group_by(Exper,simnum,species) %>% 
+	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) %>%
-	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
-	group_by(Num_extant,Exper) %>%
-	summarise(n=n()) %>% group_by(Exper) %>%
+	ungroup() %>% mutate(Model=as.factor(Model)) %>%
+	group_by(Num_extant,Model) %>%
+	summarise(n=n()) %>% group_by(Model) %>%
 	mutate(Freq=n/sum(n))
 
 xkcd1=xkcd %>% 
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
 xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
 	mutate(Num_extant=as.factor(Num_extant)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All"))
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All"))
 multiplot(xkcd1,xkcd2)
 
 z=z+1;freq_ex_fish=z
@@ -235,15 +236,15 @@ Fig 4a: CV of tot biomass against Model type
 CV <- function(dat){sd(dat)/mean(dat)*100}
 sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
 
-CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
 	filter(Phase_df==2) %>%
 	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish)) # %>% ### So here we see the CVs for fish and total
 	#summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
 
-boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+boxplot(CV_tot~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation")
 
-#ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
+#ggplot(CV_plot,aes(x=Model,y=CV_tot))+geom_boxplot() + xlab("Model") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
 z=z+1;totCV=z
 cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
@@ -251,7 +252,7 @@ cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in 
 
 Fig 4b: CV of fish biomass against Model type
 ```{r CV_fish, fig.cap=cap, include=F}
-boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+boxplot(CV_fish~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
 z=z+1;fishCV=z
