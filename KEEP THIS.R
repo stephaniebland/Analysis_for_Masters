@@ -324,7 +324,7 @@ xkcd[1,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Model3_row1_Allometric_full_stats.png")
+png("Figure6_Model3_row1_Allometric_full_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -347,7 +347,7 @@ xkcd[2,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Model3_row2_logmass_full_stats.png")
+png("Figure7_Model3_row2_logmass_full_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -370,7 +370,7 @@ xkcd[3,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Model3_row3_all_stats.png")
+png("SuppFigure2_Model3_row3_all_stats.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -393,7 +393,7 @@ xkcd[4,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Model3_row4_all_stats2.png")
+png("Figure8_Model3_row4_all_stats2.png")
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -408,7 +408,7 @@ summary(mod2)
 
 xkcd[5,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[5,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
-png("Model3_row5_full_stats.png")
+png("SuppFigure3_Model3_row5_full_stats.png")
 multiplot(xk1,xk2,cols=2)
 dev.off()
 

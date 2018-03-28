@@ -160,10 +160,13 @@ mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(l
 	summarise(youngest_large=max(`1`),oldest_small=min(`4`)) %>%
 	mutate(range_overlap=youngest_large<oldest_small,size_ratio=oldest_small/youngest_large)
 percent_range_overlap=mass_overlap %>% summarise(100*sum(range_overlap)/n())
+
+png("SuppFigure1_AllometricOverlap.png")
 hist(log10(mass_overlap$size_ratio),main="",xlab="Allometric ratio of the smallest fish adult\n to the youngest life stage of the largest fish (log10)")
 
 z=z+1;mass_overlap_cap=z
 cap=paste("Supplementary Figure",mass_overlap_cap,"A histogram of the logged allometric ratios between the oldest life stage of the smallest fish species and the youngest life stage of the largest fish species for any model.")
+dev.off()
 
 ## ----TS_solo, fig.cap=cap------------------------------------------------
 png("Figure3_TS_solo.png")
