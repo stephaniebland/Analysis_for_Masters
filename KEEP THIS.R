@@ -324,7 +324,7 @@ xkcd[1,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[1,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Figure6_Model3_row1_Allometric_full_stats.png")
+postscript("Figure6_Model3_row1_Allometric_full_stats.eps",horiz=FALSE,width=8.5,height=11)
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -347,7 +347,7 @@ xkcd[2,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[2,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Figure7_Model3_row2_logmass_full_stats.png")
+postscript("Figure7_Model3_row2_logmass_full_stats.eps",horiz=FALSE,width=8.5,height=11)
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -370,7 +370,7 @@ xkcd[3,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[3,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("SuppFigure2_Model3_row3_all_stats.png")
+postscript("SuppFigure2_Model3_row3_all_stats.eps",horiz=FALSE,width=8.5,height=11)
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -393,7 +393,7 @@ xkcd[4,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,3]=summary(mod3)$coefficients[2,"Pr(>|t|)"]
 xkcd[4,4]=summary(mod4)$coefficients[2,"Pr(>|t|)"]
-png("Figure8_Model3_row4_all_stats2.png")
+postscript("Figure8_Model3_row4_all_stats2.eps",horiz=FALSE,width=8.5,height=11)
 multiplot(xk1,xk2,xk3,xk4,cols=2)
 dev.off()
 
@@ -408,13 +408,13 @@ summary(mod2)
 
 xkcd[5,1]=summary(mod1)$coefficients[2,"Pr(>|t|)"]
 xkcd[5,2]=summary(mod2)$coefficients[2,"Pr(>|t|)"]
-png("SuppFigure3_Model3_row5_full_stats.png")
+postscript("SuppFigure3_Model3_row5_full_stats.eps",horiz=FALSE,width=8.5,height=11)
 multiplot(xk1,xk2,cols=2)
 dev.off()
 
 
 
-png("Figure4_CV_boxplot.png")
+postscript("Figure4_CV_boxplot.eps",horiz=FALSE,width=8.5,height=11)
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
 boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Ecosystem Biomass",ylim=c(0,100))
 
