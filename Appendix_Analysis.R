@@ -1,8 +1,3 @@
-## ----setup, include=FALSE------------------------------------------------
-knitr::opts_chunk$set(cache=TRUE,echo=FALSE,fig.pos = 'H',cache.lazy = FALSE)
-
-## ----hidden, include=FALSE-----------------------------------------------
-#---- Hidden ----
 #library(ggbiplot)
 library(tidyverse)
 library(stringr)
@@ -16,6 +11,7 @@ location="/GIT/Analysis"#For Running on my Mac
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
+pardefault <- par()
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
@@ -229,90 +225,24 @@ cap=paste("Figure",fishCV,"The coefficient of variation for the total fish bioma
 
 
 
-#---- Hidden ----
-#library(ggbiplot)
-library(tidyverse)
-library(stringr)
-library(knitr)
-z=0
-0
+######################################################
+######################################################
+######################################################
+######################################################
+######################################################
 
-DATE="2017Nov28"
-Version="0"
-location="/GIT/Analysis"#For Running on my Mac
-#location=""#For Clusters
-run_name=paste0(DATE,"_",Version)
-setwd(paste0("~/",location,"/",run_name))
-pardefault <- par()
-#---- LOAD_DATA ----
-dat=read.table("clean.txt",header=F)
-colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
-colnames(dat)[9]="Model"
-# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
-exper_name=c("Leslie & History","Extended Web","Original Web")
-# Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
-# dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
-#	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
-
-
-# From https://stackoverflow.com/a/24387436
-# Multiple plot function
-#
-# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-# - cols:   Number of columns in layout
-# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-#
-# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-# then plot 1 will go in the upper left, 2 will go in the upper right, and
-# 3 will go all the way across the bottom.
-#
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-	require(grid)
-	
-	# Make a list from the ... arguments and plotlist
-	plots <- c(list(...), plotlist)
-	
-	numPlots = length(plots)
-	
-	# If layout is NULL, then use 'cols' to determine layout
-	if (is.null(layout)) {
-		# Make the panel
-		# ncol: Number of columns of plots
-		# nrow: Number of rows needed, calculated from # of cols
-		layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-						 ncol = cols, nrow = ceiling(numPlots/cols))
-	}
-	
-	if (numPlots==1) {
-		print(plots[[1]])
-		
-	} else {
-		# Set up the page
-		grid.newpage()
-		pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-		
-		# Make each plot, in the correct location
-		for (i in 1:numPlots) {
-			# Get the i,j matrix positions of the regions that contain this subplot
-			matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-			
-			print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-											layout.pos.col = matchidx$col))
-		}
-	}
-}
 
 
 
 # Subset the data that fit criteria 1 and 2
 subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
 	group_by(simnum,Model) %>%
-	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL models
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
 persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
-# Criteria 1: Probability of fish persisting in at least one of the experiments
-# Criteria 2: Probability of fish persisting in all of the experiments
+# Criteria 1: Probability of fish persisting in at least one of the models
+# Criteria 2: Probability of fish persisting in all of the models
 subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
 subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
