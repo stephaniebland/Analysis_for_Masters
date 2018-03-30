@@ -257,10 +257,10 @@ subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 
 
 
-# Percent of webs that stabilize for any species in every experiment
+# Percent of webs that stabilize for any species in every model
 min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>% 
 	group_by(simnum,Model) %>%
-	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL models
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical) %>% 
 	summarise_at("all",mean)*100
@@ -272,7 +272,7 @@ extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
 	summarise(extant=as.logical(Biomass)) %>%
 	summarise(Num_extant=sum(extant)) %>% 
 	mutate(Per_extant=Num_extant/c(39,39,30)[Model])
-boxplot(Per_extant~Model,extant_nodes,xlab="Experiment",ylab="Percent of surviving nodes")
+boxplot(Per_extant~Model,extant_nodes,xlab="Model",ylab="Percent of surviving nodes")
 tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
 
 
@@ -283,7 +283,7 @@ extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
 	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Model,extant_species,xlab="Experiment",ylab="Number of surviving species")
+boxplot(Num_extant~Model,extant_species,xlab="Model",ylab="Number of surviving species")
 tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
 
 
@@ -293,7 +293,7 @@ extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) #%>%
-boxplot(Num_extant~Model,extant_fish,xlab="Experiment",ylab="Number of surviving fish")
+boxplot(Num_extant~Model,extant_fish,xlab="Model",ylab="Number of surviving fish")
 tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
 
 
@@ -333,14 +333,14 @@ CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
 	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish)) # %>% ### So here we see the CVs for fish and total
 #summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
 
-boxplot(CV_tot~Model,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+boxplot(CV_tot~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation")
 
-#ggplot(CV_plot,aes(x=Model,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
-
-
+#ggplot(CV_plot,aes(x=Model,y=CV_tot))+geom_boxplot() + xlab("Model") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
 
 
-boxplot(CV_fish~Model,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+
+
+boxplot(CV_fish~Model,CV_plot,xlab="Model",ylab="Coefficient of Variation") 
 #	labs(caption="Figure 4 The CV of total fish biomass.")
 
 
