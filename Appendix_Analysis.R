@@ -458,7 +458,10 @@ plot_relations <- function(dat,xvar,yvar){
 		mutate_(xvar=xvar,yvar=yvar)
 	# Plot the graph
 	graph=dat %>% 
-		ggplot(aes(x=xvar, y=yvar))+geom_point()
+		ggplot(aes(x=xvar, y=yvar)) + 
+		geom_point() + 
+		labs(x="Allometric Ratio",y="CV of total biomass",title="c*") + 
+		geom_smooth(method = "lm")
 	# Correlation Values
 	cor_val=cor.test(dat$xvar,dat$yvar)
 	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
