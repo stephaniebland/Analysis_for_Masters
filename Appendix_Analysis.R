@@ -467,8 +467,15 @@ plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 	# lm values
 	mod=lm(yvar~xvar,dat)
 	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
-	# Significance Indicator 
-	sig_val=cor_pval
+	# Significance Indicator
+	# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+	sig_val=case_when(
+		cor_pval <= 0 ~ "***",
+		cor_pval <= 0.001 ~ "**",
+		cor_pval <= 0.01 ~ "*",
+		cor_pval <= 0.05 ~ ".",
+		cor_pval > 0.05 ~ " "
+	)
 	# Plot the graph
 	graph=dat %>% 
 		ggplot(aes(x=xvar, y=yvar)) + 
