@@ -452,28 +452,37 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 
 
 xkcd=matrix(NA,5,4)
+lm_test=matrix(NA,5,4)
+corr_test=matrix(NA,5,4)
 
-plot_relations <- function(dat,xvar,yvar){
+plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
 		mutate_(xvar=xvar,yvar=yvar)
+	# Correlation Values
+	cor_val=cor.test(dat$xvar,dat$yvar)
+	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
+	cor_pval=cor_val$p.value
+	# lm values
+	mod=lm(yvar~xvar,dat)
+	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
+	# Significance Indicator 
+	sig_val=cor_pval
 	# Plot the graph
 	graph=dat %>% 
 		ggplot(aes(x=xvar, y=yvar)) + 
 		geom_point() + 
-		labs(x="Allometric Ratio",y="CV of total biomass",title="c*") + 
+		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
 		geom_smooth(method = "lm")
-	# Correlation Values
-	cor_val=cor.test(dat$xvar,dat$yvar)
-	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
-	# lm values
-	mod=lm(yvar~xvar,dat)
-	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
 	# Return values
-	my_list <- list("graph" = graph, "cor_vals" = cor_vals, "lm_pval" = lm_pval)
+	my_list <- list("graph" = graph, "cor_vals" = cor_vals, "lm_pval" = lm_pval, "cor_pval" = cor_pval)
 	return(my_list)
 }
 
-k=plot_relations(iris,quo(Sepal.Length),quo(Sepal.Width))
+xk_fig=1 # The figure (in relation to all these figures)
+xk_plot=1 # The plot number within the figure
+k=plot_relations(iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
+lm_test[xk_fig,xk_plot]=k$lm_pval
+corr_test[xk_fig,xk_plot]=k$cor_vals
 
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
