@@ -455,6 +455,8 @@ xkcd=matrix(NA,5,4)
 lm_test=matrix(NA,5,4)
 corr_test=matrix(NA,5,4)
 
+res <- globalenv()
+
 plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
 		mutate_(xvar=xvar,yvar=yvar)
@@ -474,15 +476,14 @@ plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
 		geom_smooth(method = "lm")
 	# Return values
-	my_list <- list("graph" = graph, "cor_vals" = cor_vals, "lm_pval" = lm_pval, "cor_pval" = cor_pval)
-	return(my_list)
+	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
+	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
+	return(graph)
 }
 
 xk_fig=1 # The figure (in relation to all these figures)
 xk_plot=1 # The plot number within the figure
 k=plot_relations(iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
-lm_test[xk_fig,xk_plot]=k$lm_pval
-corr_test[xk_fig,xk_plot]=k$cor_vals
 
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
