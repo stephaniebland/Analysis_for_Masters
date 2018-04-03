@@ -453,6 +453,16 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 
 xkcd=matrix(NA,5,4)
 
+plot_relations <- function(dat,xvar,yvar){
+	graph=dat %>% # filter("se")
+		mutate_(my.xvar=xvar,my.yvar=yvar) %>%
+		ggplot(aes(x=my.xvar, y=my.yvar))+geom_point()
+	my_list <- list("graph" = graph, "size" = 20, "shape" = "round")
+	return(my_list)
+}
+
+k=plot_relations(iris,quo(Sepal.Length),quo(Sepal.Width))
+
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
 xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass",title="c*")+geom_smooth(method = "lm")
