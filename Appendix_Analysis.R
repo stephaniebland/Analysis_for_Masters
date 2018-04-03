@@ -464,6 +464,7 @@ plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 		mutate_(xvar=xvar,yvar=yvar)
 	# Correlation Values
 	cor_val=cor.test(dat$xvar,dat$yvar)
+	cor_val$data.name=paste(xlab,"and",ylab)
 	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
 	cor_pval=cor_val$p.value
 	# lm values
@@ -488,7 +489,8 @@ plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
 	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
-	return(graph)
+	return(cor_val)
+	#return(graph)
 }
 
 xk_fig=1 # The figure (in relation to all these figures)
