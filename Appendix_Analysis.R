@@ -7,6 +7,7 @@
 library(tidyverse)
 library(stringr)
 library(knitr)
+start_fig=0
 z=0
 
 ## ----load_data-----------------------------------------------------------
@@ -91,7 +92,7 @@ subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
 ## ----Von-Bert-Multi, fig.cap=cap-----------------------------------------
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-postscript("Figure1_Von-Bert-Multi.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",1+start_fig,"_Von-Bert-Multi.eps"),horiz=FALSE,width=8.5,height=11)
 
 subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	group_by(simnum,species) %>%
@@ -146,7 +147,7 @@ VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
 meh=VB_hist %>% group_by(Model) %>%
 	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio"))
 
-postscript("Figure2_VB_Exper_compare.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",2+start_fig,"_VB_Exper_compare.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],
 		  VB_hist_orig, meh$k[[1]], meh$k[[2]], meh$k[[3]], cols=2)
 
@@ -163,7 +164,7 @@ mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(l
 	mutate(range_overlap=youngest_large<oldest_small,size_ratio=oldest_small/youngest_large)
 percent_range_overlap=mass_overlap %>% summarise(100*sum(range_overlap)/n())
 
-postscript("SuppFigure1_AllometricOverlap.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("SuppFigure",1+start_fig,"_AllometricOverlap.eps"),horiz=FALSE,width=8.5,height=11)
 hist(log10(mass_overlap$size_ratio),main="",xlab="Allometric ratio of the smallest fish adult\n to the youngest life stage of the largest fish (log10)")
 
 z=z+1;mass_overlap_cap=z
@@ -171,7 +172,7 @@ cap=paste("Supplementary Figure",mass_overlap_cap,"A histogram of the logged all
 dev.off()
 
 ## ----TS_solo, fig.cap=cap------------------------------------------------
-postscript("Figure3_TS_solo.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",3+start_fig,"_TS_solo.eps"),horiz=FALSE,width=8.5,height=11)
 subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
@@ -197,7 +198,7 @@ xkcd1=xkcd %>%
 xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
 	mutate(Num_extant=as.factor(Num_extant)) %>%
 	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All"))
-postscript("Figure5_freq_extant_fish.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",5+start_fig,"_freq_extant_fish.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(xkcd1,xkcd2)
 
 z=z+1;freq_ex_fish=z
@@ -531,23 +532,23 @@ plot_relations(4,4,all_spec_stats,quo(log_max_mass),quo(CV_spec),"log of fish as
 plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish to total biomass ratio")
 plot_relations(5,2,full_stats,quo(log_max_fish_mass),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
 
-postscript("Figure6_Model3_row1_Allometric_full_stats.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",6+start_fig,"_Model3_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[1]],cols=2)
 dev.off()
 
-postscript("Figure7_Model3_row2_logmass_full_stats.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",7+start_fig,"_Model3_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[2]],cols=2)
 dev.off()
 
-postscript("SuppFigure2_Model3_row3_all_stats.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("SuppFigure",2+start_fig,"_Model3_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[3]],cols=2)
 dev.off()
 
-postscript("Figure8_Model3_row4_all_stats2.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",8+start_fig,"_Model3_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
 dev.off()
 
-postscript("SuppFigure3_Model3_row5_full_stats.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("SuppFigure",3+start_fig,"_Model3_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
@@ -556,7 +557,7 @@ dev.off()
 #----CV Boxplot for Fish & Total Biomass across model types----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-postscript("Figure4_CV_boxplot.eps",horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",4+start_fig,"_CV_boxplot.eps"),horiz=FALSE,width=8.5,height=11)
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
 boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Ecosystem Biomass",ylim=c(0,100))
 
