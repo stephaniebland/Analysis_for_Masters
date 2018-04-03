@@ -1,3 +1,8 @@
+#//////////////////////////////////////////////////////////////////////////
+#----Appendix Analysis----
+# Created by Stephanie Bland
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 #library(ggbiplot)
 library(tidyverse)
 library(stringr)
@@ -24,6 +29,7 @@ exper_name=c("Original Web","Extended Web","Leslie & History")
 
 ## ----DefineMultiplot-----------------------------------------------------
 # From https://stackoverflow.com/a/24387436
+# http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 # Multiple plot function
 #
 # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
@@ -407,7 +413,9 @@ VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
 VB_hist %>% with(hist(log10(Mass),xlab="log of body mass (unitless)",main=""))
 
 
-
+#//////////////////////////////////////////////////////////////////////////
+#----Setup Life History Correlations----
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
 sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
@@ -424,7 +432,6 @@ CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
 
 full_stats=left_join(sim_stats,CV_plot) %>% 
 	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass),FT_ratio=mean_fish/mean_tot)
-
 
 
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
@@ -450,6 +457,9 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 	filter(!(simnum==11 && species==30)) # Remove that outlier!!
 
 
+#//////////////////////////////////////////////////////////////////////////
+#----Plot Life History Correlations----
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 lm_test=matrix(NA,5,4)
 corr_test=matrix(NA,5,4)
@@ -542,6 +552,9 @@ multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
 
+#//////////////////////////////////////////////////////////////////////////
+#----CV Boxplot for Fish & Total Biomass across model types----
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 postscript("Figure4_CV_boxplot.eps",horiz=FALSE,width=8.5,height=11)
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
