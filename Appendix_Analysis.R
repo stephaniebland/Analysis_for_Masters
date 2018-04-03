@@ -451,7 +451,6 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 
 
 
-xkcd=matrix(NA,5,4)
 lm_test=matrix(NA,5,4)
 corr_test=matrix(NA,5,4)
 ls=vector("list",4)
@@ -491,6 +490,8 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
 	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
+	# And some data to be returned while running analysis
+	qqplot(dat$xvar,dat$yvar) # Check Normality
 	return(cor_val)
 	#return(graph)
 }
