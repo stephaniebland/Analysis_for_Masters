@@ -234,17 +234,6 @@ cap=paste("Figure",fishCV,"The coefficient of variation for the total fish bioma
 
 
 
-# Subset the data that fit criteria 1 and 2
-subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
-	group_by(simnum,Model) %>%
-	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL models
-	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
-	mutate_at(c("any","all"),as.logical)
-persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
-# Criteria 1: Probability of fish persisting in at least one of the models
-# Criteria 2: Probability of fish persisting in all of the models
-subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
-subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
 
 
 
