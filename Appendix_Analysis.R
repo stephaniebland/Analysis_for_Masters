@@ -521,23 +521,23 @@ plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish 
 plot_relations(5,2,full_stats,quo(log_max_fish_mass),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
 
 postscript("Figure6_Model3_row1_Allometric_full_stats.eps",horiz=FALSE,width=8.5,height=11)
-multiplot(ls_graphs[[1]][1],ls_graphs[[1]][2],ls_graphs[[1]][3],ls_graphs[[1]][4],cols=2)
+multiplot(plotlist=ls_graphs[[1]],cols=2)
 dev.off()
 
 postscript("Figure7_Model3_row2_logmass_full_stats.eps",horiz=FALSE,width=8.5,height=11)
-multiplot(ls_graphs[[2]][1],ls_graphs[[2]][2],ls_graphs[[2]][3],ls_graphs[[2]][4],cols=2)
+multiplot(plotlist=ls_graphs[[2]],cols=2)
 dev.off()
 
 postscript("SuppFigure2_Model3_row3_all_stats.eps",horiz=FALSE,width=8.5,height=11)
-multiplot(ls_graphs[[3]][1],ls_graphs[[3]][2],ls_graphs[[3]][3],ls_graphs[[3]][4],cols=2)
+multiplot(plotlist=ls_graphs[[3]],cols=2)
 dev.off()
 
 postscript("Figure8_Model3_row4_all_stats2.eps",horiz=FALSE,width=8.5,height=11)
-multiplot(ls_graphs[[4]][1],ls_graphs[[4]][2],ls_graphs[[4]][3],ls_graphs[[4]][4],cols=2)
+multiplot(plotlist=ls_graphs[[4]],cols=2)
 dev.off()
 
 postscript("SuppFigure3_Model3_row5_full_stats.eps",horiz=FALSE,width=8.5,height=11)
-multiplot(ls_graphs[[5]][1],ls_graphs[[5]][2],cols=2)
+multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
 
