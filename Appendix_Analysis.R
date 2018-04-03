@@ -454,10 +454,19 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 xkcd=matrix(NA,5,4)
 
 plot_relations <- function(dat,xvar,yvar){
-	graph=dat %>% # filter("se")
-		mutate_(my.xvar=xvar,my.yvar=yvar) %>%
-		ggplot(aes(x=my.xvar, y=my.yvar))+geom_point()
-	my_list <- list("graph" = graph, "size" = 20, "shape" = "round")
+	dat = dat %>% 
+		mutate_(xvar=xvar,yvar=yvar)
+	# Plot the graph
+	graph=dat %>% 
+		ggplot(aes(x=xvar, y=yvar))+geom_point()
+	# Correlation Values
+	cor_val=cor.test(dat$xvar,dat$yvar)
+	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
+	# lm values
+	mod=lm(yvar~xvar,dat)
+	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
+	# Return values
+	my_list <- list("graph" = graph, "cor_vals" = cor_vals, "lm_pval" = lm_pval)
 	return(my_list)
 }
 
