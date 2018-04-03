@@ -457,9 +457,11 @@ corr_test=matrix(NA,5,4)
 ls=vector("list",4)
 ls_graphs=list(ls,ls,ls,ls,ls)
 
-res <- globalenv()
+envir <- globalenv()
 
-plot_relations <- function(dat,xvar,yvar,xlab,ylab){
+# xk_fig # The figure (in relation to all these figures)
+# xk_plot # The plot number within the figure
+plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
 		mutate_(xvar=xvar,yvar=yvar)
 	# Correlation Values
@@ -492,10 +494,31 @@ plot_relations <- function(dat,xvar,yvar,xlab,ylab){
 	return(cor_val)
 	#return(graph)
 }
+# Example use:
+#plot_relations(1,1,iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
 
-xk_fig=1 # The figure (in relation to all these figures)
-xk_plot=1 # The plot number within the figure
-plot_relations(iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
+plot_relations(1,1,full_stats,quo(max_Z),quo(log_tot),"Allometric Ratio","log of total biomass")
+plot_relations(1,2,full_stats,quo(max_Z),quo(log_fish),"Allometric Ratio","log of fish biomass")
+plot_relations(1,3,full_stats,quo(max_Z),quo(CV_tot),"Allometric Ratio","CV of total biomass")
+plot_relations(1,4,full_stats,quo(max_Z),quo(CV_fish),"Allometric Ratio","CV of fish biomass")
+
+plot_relations(2,1,full_stats,quo(log_max_fish_mass),quo(log_tot),"log of fish asymptotic body mass","log of total biomass")
+plot_relations(2,2,full_stats,quo(log_max_fish_mass),quo(log_fish),"log of fish asymptotic body mass","log of fish biomass")
+plot_relations(2,3,full_stats,quo(log_max_fish_mass),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
+plot_relations(2,4,full_stats,quo(log_max_fish_mass),quo(CV_fish),"log of fish asymptotic body mass","CV of fish biomass")
+
+plot_relations(3,1,all_spec_stats,quo(max_Z),quo(CV_spec),"Allometric Ratio","CV of fish biomass")
+plot_relations(3,2,all_spec_stats,quo(max_Z),quo(log_spec),"Allometric Ratio","log of fish biomass")
+plot_relations(3,3,all_spec_stats,quo(orig_T),quo(CV_spec),"Trophic Level","CV of fish biomass")
+plot_relations(3,4,all_spec_stats,quo(orig_T),quo(log_spec),"Trophic Level","log of fish biomass")
+
+plot_relations(4,1,all_spec_stats,quo(log_max_mass),quo(log_tot),"log of fish asymptotic body mass","log of total biomass")
+plot_relations(4,2,all_spec_stats,quo(log_max_mass),quo(log_spec),"log of fish asymptotic body mass","log of fish biomass")
+plot_relations(4,3,all_spec_stats,quo(log_max_mass),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
+plot_relations(4,4,all_spec_stats,quo(log_max_mass),quo(CV_spec),"log of fish asymptotic body mass","CV of fish biomass")
+
+plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish to total biomass ratio")
+plot_relations(5,2,full_stats,quo(log_max_fish_mass),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
 
 xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass",title="a")+geom_smooth(method = "lm")
 xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass",title="b**")+geom_smooth(method = "lm")
