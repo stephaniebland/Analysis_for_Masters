@@ -257,6 +257,7 @@ lm_test=matrix(NA,5,4)
 corr_test=matrix(NA,5,4)
 ls=vector("list",4)
 ls_graphs=list(ls,ls,ls,ls,ls)
+cor_val_printout=list(ls,ls,ls,ls,ls)
 
 envir <- globalenv()
 
@@ -292,6 +293,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
 	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
+	envir[[ "cor_val_printout" ]][[(xk_fig-1)*4+xk_plot]] <- print(cor_val)
 	# And some data to be returned while running analysis
 	qqplot(dat$xvar,dat$yvar) # Check Normality
 	return(cor_val)
@@ -343,6 +345,14 @@ postscript(paste0("SuppFigure",3+start_fig,"_Model3_row5_full_stats.eps"),horiz=
 multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
+#//////////////////////////////////////////////////////////////////////////
+#----Save Model Output----
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+write.csv(lm_test, file = "lm_test.csv",row.names=FALSE, na="")
+write.csv(corr_test, file = "corr_test.csv",row.names=FALSE, na="")
+sink("cor_val_printout.txt")
+print(cor_val_printout)
+sink()  # returns output to the console
 
 #//////////////////////////////////////////////////////////////////////////
 #----CV Boxplot for Fish & Total Biomass across model types----
