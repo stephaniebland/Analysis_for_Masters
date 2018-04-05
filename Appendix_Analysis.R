@@ -208,9 +208,9 @@ dev.off()
 #//////////////////////////////////////////////////////////////////////////
 #----Setup Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
+Test_Model=3
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
-sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
 	group_by(simnum,Model,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
@@ -228,17 +228,17 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
-CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==Test_Model) %>%
 	group_by(simnum,Model,species,Year_df) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
-CV_tot_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Model==Test_Model) %>%
 	group_by(simnum,Model,Year_df) %>%
 	summarise(Tot_Bio=sum(Biomass)) %>%
 	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
 
-gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
 	group_by(simnum,Model,species) %>%
 	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
@@ -265,27 +265,27 @@ envir <- globalenv()
 # xk_plot # The plot number within the figure
 plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
-		mutate_(xvar=xvar,yvar=yvar)
+		mutate_(xvar2=xvar,yvar2=yvar)
 	# Correlation Values
-	cor_val=cor.test(dat$xvar,dat$yvar)
+	cor_val=cor.test(dat$xvar2,dat$yvar2)
 	cor_val$data.name=paste(xlab,"and",ylab)
 	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
 	cor_pval=cor_val$p.value
 	# lm values
-	mod=lm(yvar~xvar,dat)
+	mod=lm(yvar2~xvar2,dat)
 	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
 	# Significance Indicator
 	# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 	sig_val=case_when(
-		cor_pval <= 0 ~ "***",
-		cor_pval <= 0.001 ~ "**",
-		cor_pval <= 0.01 ~ "*",
-		cor_pval <= 0.05 ~ ".",
-		cor_pval > 0.05 ~ " "
+		cor_pval <= 0.001 ~ "***",
+		cor_pval <= 0.01 ~ "**",
+		cor_pval <= 0.05 ~ "*",
+		cor_pval <= 0.1 ~ ".",
+		cor_pval > 0.1 ~ " "
 	)
 	# Plot the graph
 	graph=dat %>% 
-		ggplot(aes(x=xvar, y=yvar)) + 
+		ggplot(aes(x=xvar2, y=yvar2)) + 
 		geom_point() + 
 		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
 		geom_smooth(method = "lm")
@@ -295,7 +295,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
 	envir[[ "cor_val_printout" ]][[(xk_fig-1)*4+xk_plot]] <- print(cor_val)
 	# And some data to be returned while running analysis
-	qqplot(dat$xvar,dat$yvar) # Check Normality
+	qqplot(dat$xvar2,dat$yvar2) # Check Normality
 	return(cor_val)
 	#return(graph)
 }
@@ -518,32 +518,32 @@ plot_relations(5,2,full_stats,quo(log10(max_fish_mass)),quo(FT_ratio),"log of fi
 #       cor 
 # 0.0241003 
 
-postscript(paste0("Figure",6+start_fig,"_Model3_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",6+start_fig,"_Model",Test_Model,"_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[1]],cols=2)
 dev.off()
 
-postscript(paste0("Figure",7+start_fig,"_Model3_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",7+start_fig,"_Model",Test_Model,"_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[2]],cols=2)
 dev.off()
 
-postscript(paste0("S",3,"_Model3_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",3,"_Model",Test_Model,"_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[3]],cols=2)
 dev.off()
 
-postscript(paste0("Figure",8+start_fig,"_Model3_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",8+start_fig,"_Model",Test_Model,"_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
 dev.off()
 
-postscript(paste0("S",4,"_Model3_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",4,"_Model",Test_Model,"_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
 #//////////////////////////////////////////////////////////////////////////
 #----Save Model Output----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-write.csv(lm_test, file = "lm_test.csv",row.names=FALSE, na="")
-write.csv(corr_test, file = "corr_test.csv",row.names=FALSE, na="")
-sink("cor_val_printout.txt")
+write.csv(lm_test, file = "lm_test_Model",Test_Model,".csv",row.names=FALSE, na="")
+write.csv(corr_test, file = "corr_test_Model",Test_Model,".csv",row.names=FALSE, na="")
+sink("cor_val_printout_Model",Test_Model,".txt")
 print(cor_val_printout)
 sink()  # returns output to the console
 
