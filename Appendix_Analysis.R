@@ -277,11 +277,11 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	# Significance Indicator
 	# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 	sig_val=case_when(
-		cor_pval <= 0 ~ "***",
-		cor_pval <= 0.001 ~ "**",
-		cor_pval <= 0.01 ~ "*",
-		cor_pval <= 0.05 ~ ".",
-		cor_pval > 0.05 ~ " "
+		cor_pval <= 0.001 ~ "***",
+		cor_pval <= 0.01 ~ "**",
+		cor_pval <= 0.05 ~ "*",
+		cor_pval <= 0.1 ~ ".",
+		cor_pval > 0.1 ~ " "
 	)
 	# Plot the graph
 	graph=dat %>% 
