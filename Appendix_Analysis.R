@@ -208,9 +208,9 @@ dev.off()
 #//////////////////////////////////////////////////////////////////////////
 #----Setup Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
+Test_Model=3
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
-sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
 	group_by(simnum,Model,species) %>% 
 	mutate(Tot_spec=sum(Biomass)) %>%
 	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
@@ -228,17 +228,17 @@ full_stats=left_join(sim_stats,CV_plot) %>%
 
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
-CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==Test_Model) %>%
 	group_by(simnum,Model,species,Year_df) %>%
 	summarise(Tot_spec=sum(Biomass)) %>%
 	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
 
-CV_tot_stats=subdat2 %>% filter(Phase_df==2,Model==3) %>%
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Model==Test_Model) %>%
 	group_by(simnum,Model,Year_df) %>%
 	summarise(Tot_Bio=sum(Biomass)) %>%
 	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
 
-gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==3) %>%
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
 	group_by(simnum,Model,species) %>%
 	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
 	filter(Tot_spec>0,isfish==1,lifestage==1)
@@ -325,32 +325,32 @@ plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo(CV_spec),"log of fish
 plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish to total biomass ratio")
 plot_relations(5,2,full_stats,quo(log10(max_fish_mass)),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
 
-postscript(paste0("Figure",6+start_fig,"_Model3_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",6+start_fig,"_Model",Test_Model,"_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[1]],cols=2)
 dev.off()
 
-postscript(paste0("Figure",7+start_fig,"_Model3_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",7+start_fig,"_Model",Test_Model,"_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[2]],cols=2)
 dev.off()
 
-postscript(paste0("S",3,"_Model3_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",3,"_Model",Test_Model,"_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[3]],cols=2)
 dev.off()
 
-postscript(paste0("Figure",8+start_fig,"_Model3_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("Figure",8+start_fig,"_Model",Test_Model,"_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
 dev.off()
 
-postscript(paste0("S",4,"_Model3_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",4,"_Model",Test_Model,"_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
 #//////////////////////////////////////////////////////////////////////////
 #----Save Model Output----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-write.csv(lm_test, file = "lm_test.csv",row.names=FALSE, na="")
-write.csv(corr_test, file = "corr_test.csv",row.names=FALSE, na="")
-sink("cor_val_printout.txt")
+write.csv(lm_test, file = "lm_test_Model",Test_Model,".csv",row.names=FALSE, na="")
+write.csv(corr_test, file = "corr_test_Model",Test_Model,".csv",row.names=FALSE, na="")
+sink("cor_val_printout_Model",Test_Model,".txt")
 print(cor_val_printout)
 sink()  # returns output to the console
 
