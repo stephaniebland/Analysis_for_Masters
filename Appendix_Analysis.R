@@ -164,7 +164,7 @@ mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(l
 	mutate(range_overlap=youngest_large<oldest_small,size_ratio=oldest_small/youngest_large)
 percent_range_overlap=mass_overlap %>% summarise(100*sum(range_overlap)/n())
 
-postscript(paste0("SuppFigure",1+start_fig,"_AllometricOverlap.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",2,"_AllometricOverlap.eps"),horiz=FALSE,width=8.5,height=11)
 hist(log10(mass_overlap$size_ratio),main="",xlab="Allometric ratio of the smallest fish adult\n to the youngest life stage of the largest fish (log10)")
 
 z=z+1;mass_overlap_cap=z
@@ -333,7 +333,7 @@ postscript(paste0("Figure",7+start_fig,"_Model3_row2_logmass_full_stats.eps"),ho
 multiplot(plotlist=ls_graphs[[2]],cols=2)
 dev.off()
 
-postscript(paste0("SuppFigure",2+start_fig,"_Model3_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",3,"_Model3_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[3]],cols=2)
 dev.off()
 
@@ -341,7 +341,7 @@ postscript(paste0("Figure",8+start_fig,"_Model3_row4_all_stats2.eps"),horiz=FALS
 multiplot(plotlist=ls_graphs[[4]],cols=2)
 dev.off()
 
-postscript(paste0("SuppFigure",3+start_fig,"_Model3_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
+postscript(paste0("S",4,"_Model3_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
