@@ -265,14 +265,14 @@ envir <- globalenv()
 # xk_plot # The plot number within the figure
 plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
-		mutate_(xvar=xvar,yvar=yvar)
+		mutate_(xvar2=xvar,yvar2=yvar)
 	# Correlation Values
-	cor_val=cor.test(dat$xvar,dat$yvar)
+	cor_val=cor.test(dat$xvar2,dat$yvar2)
 	cor_val$data.name=paste(xlab,"and",ylab)
 	cor_vals=paste0("t=",round(cor_val$statistic,2),", df=",cor_val$parameter,", p=",round(cor_val$p.value,3))
 	cor_pval=cor_val$p.value
 	# lm values
-	mod=lm(yvar~xvar,dat)
+	mod=lm(yvar2~xvar2,dat)
 	lm_pval=summary(mod)$coefficients[2,"Pr(>|t|)"]
 	# Significance Indicator
 	# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
@@ -285,7 +285,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	)
 	# Plot the graph
 	graph=dat %>% 
-		ggplot(aes(x=xvar, y=yvar)) + 
+		ggplot(aes(x=xvar2, y=yvar2)) + 
 		geom_point() + 
 		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
 		geom_smooth(method = "lm")
@@ -295,7 +295,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
 	envir[[ "cor_val_printout" ]][[(xk_fig-1)*4+xk_plot]] <- print(cor_val)
 	# And some data to be returned while running analysis
-	qqplot(dat$xvar,dat$yvar) # Check Normality
+	qqplot(dat$xvar2,dat$yvar2) # Check Normality
 	return(cor_val)
 	#return(graph)
 }
