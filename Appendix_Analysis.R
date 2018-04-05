@@ -303,27 +303,220 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 #plot_relations(1,1,iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
 
 plot_relations(1,1,full_stats,quo(max_Z),quo(log10(mean_tot)),"Allometric Ratio","log of total biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and log of total biomass
+# t = 0.4941, df = 969, p-value = 0.6213
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.04708858  0.07870471
+# sample estimates:
+#        cor 
+# 0.01587087 
+
 plot_relations(1,2,full_stats,quo(max_Z),quo(log10(mean_fish)),"Allometric Ratio","log of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and log of fish biomass
+# t = 3.153, df = 969, p-value = 0.001666
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  0.03810212 0.16265421
+# sample estimates:
+#      cor 
+# 0.100773 
+
 plot_relations(1,3,full_stats,quo(max_Z),quo(CV_tot),"Allometric Ratio","CV of total biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and CV of total biomass
+# t = -2.5487, df = 969, p-value = 0.01097
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.14377727 -0.01878699
+# sample estimates:
+#         cor 
+# -0.08160297 
+
 plot_relations(1,4,full_stats,quo(max_Z),quo(CV_fish),"Allometric Ratio","CV of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and CV of fish biomass
+# t = -1.8661, df = 969, p-value = 0.06233
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.122291487  0.003084599
+# sample estimates:
+#         cor 
+# -0.05983944 
 
 plot_relations(2,1,full_stats,quo(log10(max_fish_mass)),quo(mean_tot),"log of fish asymptotic body mass","total biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and total biomass
+# t = 5.2404, df = 969, p-value = 1.967e-07
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  0.1041847 0.2265553
+# sample estimates:
+#      cor 
+# 0.166009 
+
 plot_relations(2,2,full_stats,quo(log10(max_fish_mass)),quo(mean_fish),"log of fish asymptotic body mass","fish biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and fish biomass
+# t = 0.65371, df = 969, p-value = 0.5135
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.04197235  0.08379726
+# sample estimates:
+#        cor 
+# 0.02099552 
+
 plot_relations(2,3,full_stats,quo(log10(max_fish_mass)),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and CV of total biomass
+# t = 0.35758, df = 969, p-value = 0.7207
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.05146332  0.07434500
+# sample estimates:
+#       cor 
+# 0.0114863 
+
 plot_relations(2,4,full_stats,quo(log10(max_fish_mass)),quo(CV_fish),"log of fish asymptotic body mass","CV of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and CV of fish biomass
+# t = -0.5039, df = 969, p-value = 0.6144
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.07901748  0.04677454
+# sample estimates:
+#         cor 
+# -0.01618551 
 
 plot_relations(3,1,all_spec_stats,quo(max_Z),quo(CV_spec),"Allometric Ratio","CV of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and CV of fish biomass
+# t = -0.42216, df = 1871, p-value = 0.673
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.05502782  0.03554935
+# sample estimates:
+#          cor 
+# -0.009759255 
+
 plot_relations(3,2,all_spec_stats,quo(max_Z),quo(mean_spec),"Allometric Ratio","fish biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and fish biomass
+# t = -0.55945, df = 1871, p-value = 0.5759
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.05819137  0.03237929
+# sample estimates:
+#         cor 
+# -0.01293256 
+
 plot_relations(3,3,all_spec_stats,quo(orig_T),quo(CV_spec),"Trophic Level","CV of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  Trophic Level and CV of fish biomass
+# t = -0.44782, df = 1871, p-value = 0.6543
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.05561935  0.03495675
+# sample estimates:
+#         cor 
+# -0.01035254 
+
 plot_relations(3,4,all_spec_stats,quo(orig_T),quo(mean_spec),"Trophic Level","fish biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  Trophic Level and fish biomass
+# t = 1.6507, df = 1871, p-value = 0.09896
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.007170451  0.083283866
+# sample estimates:
+#        cor 
+# 0.03813483 
 
 plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo(mean_tot),"log of fish asymptotic body mass","total biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and total biomass
+# t = 8.2953, df = 1871, p-value < 2.2e-16
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  0.1442815 0.2316603
+# sample estimates:
+#       cor 
+# 0.1883436 
+
 plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo(mean_spec),"log of fish asymptotic body mass","fish biomass") #updated
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and fish biomass
+# t = 1.1741, df = 1871, p-value = 0.2405
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.01818116  0.07233807
+# sample estimates:
+#        cor 
+# 0.02713408 
+
 plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and CV of total biomass
+# t = 0.41413, df = 1871, p-value = 0.6788
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.03573467  0.05484283
+# sample estimates:
+#         cor 
+# 0.009573718 
+
 plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo(CV_spec),"log of fish asymptotic body mass","CV of fish biomass")
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish asymptotic body mass and CV of fish biomass
+# t = -0.71227, df = 1871, p-value = 0.4764
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.06171148  0.02884980
+# sample estimates:
+#         cor 
+# -0.01646461 
 
 plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish to total biomass ratio")
+# 	Pearson's product-moment correlation
+# 
+# data:  Allometric Ratio and Fish to total biomass ratio
+# t = 0.10071, df = 969, p-value = 0.9198
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.05968941  0.06613414
+# sample estimates:
+#         cor 
+# 0.003235171 
+
 plot_relations(5,2,full_stats,quo(log10(max_fish_mass)),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
+# 	Pearson's product-moment correlation
+# 
+# data:  log of fish mass and Fish to total biomass ratio
+# t = 0.75043, df = 969, p-value = 0.4532
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#  -0.03887106  0.08688100
+# sample estimates:
+#       cor 
+# 0.0241003 
 
 postscript(paste0("Figure",6+start_fig,"_Model3_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[1]],cols=2)
