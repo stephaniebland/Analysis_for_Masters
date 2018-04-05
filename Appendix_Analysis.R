@@ -7,7 +7,7 @@
 library(tidyverse)
 library(stringr)
 library(knitr)
-start_fig=0
+start_fig=5
 z=0
 
 ## ----load_data-----------------------------------------------------------
