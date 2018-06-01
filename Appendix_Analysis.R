@@ -142,7 +142,7 @@ VB_orig=dat %>% filter(Year_df==1,Model==1) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
-VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio" + theme_bw())
+VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio") + theme_bw()
 
 VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
 	group_by(Model,simnum) %>%
