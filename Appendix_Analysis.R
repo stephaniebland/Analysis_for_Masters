@@ -3,6 +3,7 @@
 # Created by Stephanie Bland
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
+#memory.limit()=70000
 #library(ggbiplot)
 library(tidyverse)
 library(stringr)
@@ -106,7 +107,7 @@ subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass") + theme_bw() + theme(text = element_text(size = 14))
 
 z=z+1;VBmult=z
 cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
@@ -119,7 +120,7 @@ VB_orig_fish=subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish=
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual\n body mass")
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual\n body mass") + theme_bw() + theme(legend.key.height=unit(0.5,"line"))
 
 # Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
 VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
@@ -129,14 +130,14 @@ VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	group_by(Model) %>%
-	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual\n body mass"))
+	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual\n body mass") + theme_bw() + theme(legend.key.height=unit(0.5,"line")))
 
 ## ----VB-Hist-------------------------------------------------------------
 VB_orig=dat %>% filter(Year_df==1,Model==1) %>%
 	group_by(simnum) %>%
 	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
 	filter(lifestage==4)
-VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio")
+VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio" + theme_bw())
 
 VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
 	group_by(Model,simnum) %>%
@@ -145,7 +146,7 @@ VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
 
 ## ----VB_Exper_compare, fig.cap=cap,echo=FALSE----------------------------
 meh=VB_hist %>% group_by(Model) %>%
-	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio"))
+	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio") + theme_bw())
 
 postscript(paste0("Figure",2+start_fig,"_VB_Exper_compare.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],
@@ -177,7 +178,7 @@ subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
 	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
 	group_by(Year_df,lifestage,species) %>%
 	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
-	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)")
+	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)") + theme_bw() + labs(colour="Species", linetype='Life stage') + theme(text = element_text(size = 14))
 
 z=z+1;TSsolo=z
 cap=paste("Figure",TSsolo,"A typical time series for model 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
@@ -194,10 +195,10 @@ xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	mutate(Freq=n/sum(n))
 
 xkcd1=xkcd %>% 
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations") + theme_bw() + theme(text = element_text(size = 14))
 xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
 	mutate(Num_extant=as.factor(Num_extant)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model))+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All"))
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All")) + theme_bw() + theme(text = element_text(size = 14))
 postscript(paste0("Figure",5+start_fig,"_freq_extant_fish.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(xkcd1,xkcd2)
 
@@ -288,7 +289,9 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 		ggplot(aes(x=xvar2, y=yvar2)) + 
 		geom_point() + 
 		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
-		geom_smooth(method = "lm")
+		geom_smooth(method = "lm") + 
+		theme_bw() + 
+		theme(text = element_text(size = 14))
 	# Return values
 	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
 	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
