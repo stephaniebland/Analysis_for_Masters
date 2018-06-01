@@ -60,13 +60,13 @@ for (simnum in c(1:4000)){
 				################################################
 				# Last line is Data entry into matrix, because line should only be entered if all data was collected
 				# It loads it into line k for the data matrix. 
-				write.table(clean,"clean.txt",append=T,col.names = F,row.names = F)
+				write.table(clean,paste0("clean_",run_name,".txt"),append=T,col.names = F,row.names = F)
 				print(simnum)
 			}
 		}
 	}
 }
-write.table(colnames(clean),"colnames_clean.txt",col.names = F,row.names = F)
+write.table(colnames(clean),paste0("colnames_clean_",run_name,".txt"),col.names = F,row.names = F)
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
 # Make an easy to load data subset:

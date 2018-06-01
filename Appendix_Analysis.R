@@ -22,8 +22,8 @@ setwd(paste0("~/",location,"/",run_name))
 #setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
-dat=read.table("clean.txt",header=F)
-colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+colnames(dat)=as.matrix(read.table(paste0("colnames_clean_",run_name,".txt")))
 colnames(dat)[9]="Model"
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "model 1" and model 2" because people will definitely forget what that means.
 exper_name=c("Original Web","Extended Web","Leslie & History")
