@@ -3,7 +3,7 @@
 # Created by Stephanie Bland
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-#memory.limit()=70000
+#memory.limit(70000)
 #library(ggbiplot)
 library(tidyverse)
 library(stringr)
@@ -15,9 +15,11 @@ z=0
 DATE="2017Nov28"
 Version="0"
 location="/GIT/Analysis"#For Running on my Mac
+#location="C:/Users/Stephanie/Desktop"#For Running on Windows
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
+#setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
 dat=read.table("clean.txt",header=F)
@@ -28,6 +30,9 @@ exper_name=c("Original Web","Extended Web","Leslie & History")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
 # dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
+
+## ----SAVE RESULTS IN NEW FOLDER------------------------------------------
+setwd(paste0("",location,"/",run_name,"/RESULTS"))
 
 ## ----DefineMultiplot-----------------------------------------------------
 # From https://stackoverflow.com/a/24387436
