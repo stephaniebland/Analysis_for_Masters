@@ -12,13 +12,15 @@ Version="0"
 #simnum=1
 #Exper=1
 location="/GIT/Analysis"#For Running on my Mac
+#location="C:/Users/Stephanie/Desktop"#For Running on Windows
 #location=""#For Clusters
 #location="current_analysis"
 run_name=paste0(DATE,"_",Version)
 setwd(paste0("~/",location,"/",run_name))
+#setwd(paste0(location,"/",run_name,"/files/files"))
 ################################################
 #---- CompileData ----335,487-489,493
-for (simnum in c(1:4000)){
+for (simnum in c(0:3999)){
 	for (Exper in 1:3){
 		for (pred in 2){
 			for (prey in 0){
