@@ -259,11 +259,15 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 #----Plot Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-lm_test=matrix(NA,5,4)
-corr_test=matrix(NA,5,4)
-ls=vector("list",4)
-ls_graphs=list(ls,ls,ls,ls,ls)
-cor_val_printout=list(ls,ls,ls,ls,ls)
+n_fig=5
+n_plot=4
+lm_test=matrix(NA,n_fig,n_plot)
+corr_test=matrix(NA,n_fig,n_plot)
+ls=vector("list",n_plot)
+ls_graphs=rep(list(ls),n_fig)
+ls2=vector("list",1)
+ls2=rep(list(ls2),n_plot)
+cor_val_printout=rep(list(ls2),n_fig)
 
 envir <- globalenv()
 
@@ -293,7 +297,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	graph=dat %>% 
 		ggplot(aes(x=xvar2, y=yvar2)) + 
 		geom_point() + 
-		labs(x=xlab,y=ylab,title=paste0(c("a","b","c","d")[xk_plot],sig_val)) + 
+		labs(x=xlab,y=ylab,title=paste0(letters[xk_plot],sig_val)) + 
 		geom_smooth(method = "lm") + 
 		theme_bw() + 
 		theme(text = element_text(size = 14))
@@ -301,7 +305,7 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	envir[[ "corr_test" ]][xk_fig,xk_plot] <- cor_vals
 	envir[[ "lm_test" ]][xk_fig,xk_plot] <- lm_pval
 	envir[[ "ls_graphs" ]][[xk_fig]][xk_plot] <- list(graph)
-	envir[[ "cor_val_printout" ]][[(xk_fig-1)*4+xk_plot]] <- print(cor_val)
+	envir[[ "cor_val_printout" ]][[xk_fig]][[xk_plot]] <- print(cor_val)
 	# And some data to be returned while running analysis
 	qqplot(dat$xvar2,dat$yvar2) # Check Normality
 	return(cor_val)
