@@ -22,7 +22,25 @@ setwd(paste0("~/",location,"/",run_name))
 #setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
-dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+#dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+# Load Data in chunks
+file_in    <- file(paste0("clean_",run_name,".txt"),"r")
+chunk_size <- 100000 # choose the best size for you
+x=c()
+for (i in 1:3){
+	myLines <- readLines(file_in, n=chunk_size)
+	if (length(myLines) == 0) break
+	myLines=do.call(rbind,strsplit(myLines,' ',fixed=T))
+	x=rbind(x,myLines)
+}
+
+# Convert to a dataframe
+dat <- setNames(
+		as.data.frame(lapply(1:ncol(x), function(i) {
+			type.convert(x[,i])}), stringsAsFactors = FALSE), 
+		paste0('v', 1:ncol(x)))
+
+# Load the column names
 colnames(dat)=as.matrix(read.table(paste0("colnames_clean_",run_name,".txt")))
 colnames(dat)[9]="Model"
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "model 1" and model 2" because people will definitely forget what that means.
