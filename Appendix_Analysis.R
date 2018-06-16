@@ -27,7 +27,7 @@ pardefault <- par()
 file_in    <- file(paste0("clean_",run_name,".txt"),"r")
 chunk_size <- 100000 # choose the best size for you
 x=c()
-for (i in 1:3){
+repeat{
 	myLines <- readLines(file_in, n=chunk_size)
 	if (length(myLines) == 0) break
 	myLines=do.call(rbind,strsplit(myLines,' ',fixed=T))
