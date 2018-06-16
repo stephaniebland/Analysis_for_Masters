@@ -259,7 +259,9 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 #//////////////////////////////////////////////////////////////////////////
 #----Plot Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# Start by creating plot_relations function.
 
+### OUTPUTS: lm_test, corr_test, ls_graphs and cor_val_printout
 # Change the max number of figures (n_fig) and subplots (n_plot)
 n_fig=5 # Max number of figures
 n_plot=4 # Max number of subplots
@@ -278,8 +280,14 @@ cor_val_printout=rep(list(ls2),n_fig)
 # Allow us to modify global variables within a function
 envir <- globalenv()
 
-# xk_fig # The figure (in relation to all these figures)
-# xk_plot # The plot number within the figure
+### INPUTS:
+# xk_fig  >  Figure number (so all xk_fig=1 will be different subplots of the same figure)
+# xk_plot >  Subplot number within the figure (so quadrant a b c or d in a figure)
+# dat     >  Data set used to generate this plot. Choose between full_stats (data set for the largest surviving fish species), or all_spec_stats (data set contains every surviving fish species).
+# xvar    >  x variable
+# yvar    >  y variable
+# xlab    >  x label
+# ylab    >  y label
 plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 	dat = dat %>% 
 		mutate_(xvar2=xvar,yvar2=yvar)
