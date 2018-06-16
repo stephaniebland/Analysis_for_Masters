@@ -214,6 +214,7 @@ dev.off()
 #//////////////////////////////////////////////////////////////////////////
 #----Setup Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# Change the Model being plotted with Test_Model (if you alter this you need to re-run everything below this line to properly update the graphs)
 Test_Model=3
 # First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
 sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
@@ -259,16 +260,22 @@ all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>%
 #----Plot Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-n_fig=5
-n_plot=4
+# Change the max number of figures (n_fig) and subplots (n_plot)
+n_fig=5 # Max number of figures
+n_plot=4 # Max number of subplots
+# Linear regression p-values
 lm_test=matrix(NA,n_fig,n_plot)
+# cor.test p-values
 corr_test=matrix(NA,n_fig,n_plot)
+# Graphs, saved as list where ls_graphs[[x]][y] is the yth subplot of figure x
 ls=vector("list",n_plot)
 ls_graphs=rep(list(ls),n_fig)
+# cor.test printout, saved as list where cor_val_printout[[x]][[y]] is the data for the yth subplot of figure x
 ls2=vector("list",1)
 ls2=rep(list(ls2),n_plot)
 cor_val_printout=rep(list(ls2),n_fig)
 
+# Allow us to modify global variables within a function
 envir <- globalenv()
 
 # xk_fig # The figure (in relation to all these figures)
