@@ -1,0 +1,56 @@
+First Paragraph: Overall description, general overview:
+A basic time series that shows what this model output looks like
+verbally describe what happens in the simulations
+Mention how many simulations actually stabilize (as percentage) for each experiment
+
+
+Roughly half of our simulations stabilized to periodic or chaotic oscillations within ______ years. A typical time series of the logged biomass for a stable population is shown in figure x. 
+
+84% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. Only 18% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. 
+
+Only about half of our simulations stabilized. This is to be expected, as we placed minimal constraints on food webs during the web creation stage. Some of the we created would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it actually is analogous to what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. One would not expect to be able to take a random species from a different continent and populate an island and fill a niche that they were not adapted to. The few species that can successfully invade are anomalies. 
+
+Some of the simulations stabilized for invertebrates and autotrophs, while all the fish species went extinct. 
+
+only a few of randomly generated ecosystems are actually stable: “Natural ecosystems, whether structurally complex or simple, are the product of a long history of coevolution of their constituent plants and animals. It is at least plausible that such intricate evolutionary processes have, in effect, sought out those relatively tiny and mathematically atypical regions of parameter space which endow the system with long-term stability.” (May, Model ecosystems, p. 173)
+
+
+#CODE ELIMINATE ALL DATA WHERE NOTHING STABILIZES
+
+
+Second Paragraph: Number of extinctions
+Bar plot for 3 experiments and percent extinction error bar variance: First one is percent of extinctions among all species (not nodes i think), second is extinction among fish only
+just make sure i talk about the cool stuff i emailed
+Fish are more likely to go extinct 
+The probability of any single life stage persisting is greater when they are linked together than without.
+
+
+#CODE ELIMINATE ALL DATA WHERE FISH DONT STABILIZE
+
+
+
+Third Paragraph: Stability -> Coefficient variation (CV)
+Start with stability of total ecosystem, finish with stability of fish only (one or two paragraphs)
+Fish to total biomass ratios for each experiment
+
+
+
+End paragraph: Von-Bertalanffy
+PROVE THAT FISH LIFE HISTORIES LOOK REALISTIC. I WANT TO CONVINCE THE READER THAT THESE ARE REAL FISH TOTALLY NOT MADE UP
+coefficient of variation plot (indep) against weight_\infty (dependent) also biomass against weight_\infty (for both fish and total so four panel plot!)
+
+ask anna about how to save results
+
+SAVE FIGURES AS POSTSCRIPTS (.PS)
+
+Also change tot bio numbers from last day results to mean over course of phase 2!!! IMPORTANT BECAUSE VARIANCE IS A THING!!!
+
+I still need to fix weight_inftys because right now i'm just using a place holder
+
+inspect dietary patterns in fish species!!!! try to find patterns for whether they survive
+(x=percent herbivory, y=CV total or CV fish)
+
+
+
+
+

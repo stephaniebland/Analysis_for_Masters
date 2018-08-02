@@ -1,0 +1,469 @@
+---
+title: "Results"
+author: "Stephanie Bland"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: word_document #html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE,echo=FALSE,fig.pos = 'H',cache.lazy = FALSE)
+```
+```{r hidden, include=FALSE}
+#---- Hidden ----
+#library(ggbiplot)
+library(tidyverse)
+library(stringr)
+library(knitr)
+z=0
+```
+```{r load_data}
+DATE="2017Nov28"
+Version="0"
+location="/GIT/Analysis"#For Running on my Mac
+#location=""#For Clusters
+run_name=paste0(DATE,"_",Version)
+setwd(paste0("~/",location,"/",run_name))
+#---- LOAD_DATA ----
+dat=read.table("clean.txt",header=F)
+colnames(dat)=as.matrix(read.table("colnames_clean.txt"))
+# The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "experiment 1" and experiment 2" because people will definitely forget what that means.
+exper_name=c("Original Web","Extended Web","Leslie & History")
+# Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
+# dat=dat %>% mutate_at(c("isfish","basal_ls"),as.logical) %>%
+#	mutate_at(c("Phase_df","Nodes_df","Seed","Exper","pred","prey","species","lifestage"),as.factor)
+```
+```{r DefineMultiplot}
+# From https://stackoverflow.com/a/24387436
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  require(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+```
+
+Experiments:
+
+1st Experiment: Extended nicheweb + Lifehistory
+
+2nd Experiment: Extended nicheweb
+
+3rd Experiment: Original Nicheweb
+
+## First Paragraph: Overall description, general overview
+
+```{r Percent_Stable, include=FALSE}
+# Subset the data that fit criteria 1 and 2
+subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>% 
+	group_by(simnum,Exper) %>%
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
+	mutate_at(c("any","all"),as.logical)
+persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
+# Criteria 1: Probability of fish persisting in at least one of the experiments
+# Criteria 2: Probability of fish persisting in all of the experiments
+subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
+subdat2=dat %>% filter(simnum %in% (subdat_ls %>% filter(all==TRUE))$simnum)
+```
+
+```{r TS_solo, fig.cap=cap}
+subdat2 %>% filter(Exper==1,simnum==unique(simnum)[4]) %>%
+	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
+	group_by(Year_df,lifestage,species) %>%
+	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
+	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)")
+
+z=z+1;TSsolo=z
+cap=paste("Figure",TSsolo,"A typical time series for experiment 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
+```
+
+`r persist$any`% of our simulations met the criteria for the first part of the analysis, meaning fish stabilized in at least one of the experiments. `r persist$all`% of our simulations met the second criteria, where at least one fish must stabilize in every experiment. It was anticipated that some simulations would never stablize, given that we placed minimal constraints on food webs during the web creation stage. Thus, some of the webs would invariably end up being completely biologically unrealistic. This process of weeding out unstable webs might seem unintuitive at first, but it mimics what we observe in nature. Just as natural landscapes are eventually populated by stable ecosystems after a long process of species invasions and extinctions. A typical time series of the simulation for a food web that eventually stabilizes is illustrated in figure `r TSsolo`.
+
+```{r Total Biomass Stability}
+# Percent of webs that stabilize for any species in every experiment
+min_viable_webs=dat %>% filter(Year_df==max(Year_df)) %>% 
+	group_by(simnum,Exper) %>%
+	summarise(Tot_species=sum(Biomass)) %>% # But now it needs to survive in ALL experiments
+	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
+	mutate_at(c("any","all"),as.logical) %>% 
+	summarise_at("all",mean)*100
+```
+
+## Second Paragraph: Number of extinctions
+```{r extant_nodes, fig.cap=cap}
+extant_nodes=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,simnum,Nodes_df) %>% 
+	summarise(extant=as.logical(Biomass)) %>%
+	summarise(Num_extant=sum(extant)) %>% 
+	mutate(Per_extant=Num_extant/c(39,39,30)[Exper])
+boxplot(Per_extant~Exper,extant_nodes,xlab="Experiment",ylab="Percent of surviving nodes")
+tbl_nodes=extant_nodes %>% summarise(mean(Per_extant),var(Per_extant))
+
+z=z+1;ex_nodes=z
+cap=paste("Figure",ex_nodes,"Boxplot of the percent of surviving nodes in each experiment.")
+```
+
+The mean percent of surviving nodes is shown in figure `r ex_nodes`. Experiment 3 has a slightly higher percentage of surviving nodes. This indicates that the new fish life stages we added are probably more likely to go extinct than an average node. Alternatively through, it could also be true that the new lifestages are not more likely to go extinct, but the presence of them destabilizes other species instead so other species are more likely to go extinct when new nodes are added. Experiment 1 and 2 have a similar percent of surviving nodes. 
+
+```{r extant_species, fig.cap=cap}
+extant_species=dat %>% filter(Year_df==max(Year_df)) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_species,xlab="Experiment",ylab="Number of surviving species")
+tbl_species=extant_species %>% summarise(mean(Num_extant),var(Num_extant))
+
+z=z+1;ex_spec=z
+cap=paste("Figure",ex_spec,"Boxplot of the number of surviving species in each experiment.")
+```
+
+There is no significant effect on the number of surviving species (fig `r ex_spec`). "this figure seems not needed. You can add this information in to the previous paragraph. Also, focus on number of surviving species because those are the ones we are interested in" -> this figure is the one about the number of surviving species. The previous figure (fig `r ex_nodes`) is about the percent of surviving nodes. 
+
+```{r extant_fish, fig.cap=cap, include=F}
+extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) #%>%
+boxplot(Num_extant~Exper,extant_fish,xlab="Experiment",ylab="Number of surviving fish")
+tbl_fish=extant_fish %>% summarise(mean(Num_extant),var(Num_extant))
+
+z=z+1;ex_fish=z
+cap=paste("Figure",ex_fish,"Boxplot of the number of surviving fish in each experiment.")
+```
+
+[//]: # The mean number of surviving fish species is shown in figure `r ex_fish`. Since we only require one life stage to persist for the duration of the simulation, fish will have a lower extinction rate in the experiments with additional life stages, which explains why experiment one and two have more persisting fish species.
+
+```{r hist_extant_fish, fig.cap=cap}
+dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
+	ggplot(.,aes(Num_extant,group=Exper,fill=Exper)) + geom_histogram(position="dodge",binwidth=0.5) + theme_bw() + labs(x="Number of surviving fish species") + theme(legend.position=c(0.85,0.8))
+
+z=z+1;hist_ex_fish=z
+cap=paste("Figure",hist_ex_fish,"Histogram of the number of surviving fish in each experiment.")
+```
+
+A histogram of the number of surviving fish species is shown in figure `r hist_ex_fish`. The original web has the most extinctions and fewest surviving species. Adding in life stages increases the probability of survival, but linking them together decreases it yet again.
+
+```{r freq_extant_fish, fig.cap=cap}
+dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+	group_by(Exper,simnum,species) %>% 
+	summarise(extant=as.logical(sum(Biomass))) %>%
+	summarise(Num_extant=sum(extant)) %>%
+	ungroup() %>% mutate(Exper=as.factor(Exper)) %>%
+	group_by(Num_extant,Exper) %>%
+	summarise(n=n()) %>% group_by(Exper) %>%
+	mutate(Freq=n/sum(n)) %>%
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_line(aes(group=Exper, color=Exper))+ labs(x="Number of surviving fish species", y="Frequency of simulations")
+
+z=z+1;freq_ex_fish=z
+cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each experiment.")
+```
+
+
+## Third Paragraph: Stability -> Coefficient variation (CV)
+```{r CV_total, fig.cap=cap}
+# Coefficient of Variation Function
+CV <- function(dat){sd(dat)/mean(dat)*100}
+sem <- function(x) {sd(x,na.rm=T)/sqrt(sum(is.na(x)))} # Standard error
+
+CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish)) # %>% ### So here we see the CVs for fish and total
+	#summarise_at(c("CV_tot","CV_fish"),c(mean,sem))
+
+boxplot(CV_tot~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation")
+
+#ggplot(CV_plot,aes(x=Exper,y=CV_tot))+geom_boxplot() + xlab("Experiment") + ylab("Mean Coefficient of Variation") + labs(caption="Figure 3 Box plots for the CV of the total biomass.")
+
+z=z+1;totCV=z
+cap=paste("Figure",totCV,"The coefficient of variation for the total biomass in each experiment")
+```
+
+The variability in total biomass is higher in experiment 3 than in the other two (fig `r totCV`). This could be because life histories stabilize the ecosystem, but it might also be because there are more extinctions in the first two experiments. These figures are created with a subset of data where at least some fish persist in all the experiments, so we know it's not just a relic of having more webs that stabilize to total extinction.
+
+```{r CV_fish, fig.cap=cap, include=F}
+boxplot(CV_fish~Exper,CV_plot,xlab="Experiment",ylab="Coefficient of Variation") 
+#	labs(caption="Figure 4 The CV of total fish biomass.")
+
+z=z+1;fishCV=z
+cap=paste("Figure",fishCV,"The coefficient of variation for the total fish biomass in each experiment")
+```
+
+There is no apparent pattern in the CV for the total fish biomass. 
+
+```{r fish_else_ratio}
+ratio=dat %>% group_by(simnum, Exper,isfish) %>%
+	filter(Year_df %in% max(Year_df)) %>% 
+	summarise(Tot_group=sum(Biomass)) %>%
+	spread(isfish,Tot_group) %>%
+	mutate(Fish_ratio=`1`/(`0`+`1`)) %>%
+	group_by(Exper) %>%
+	#ggboxplot(x="Exper",y="Fish_ratio")
+	summarise(mean(Fish_ratio),var(Fish_ratio))
+kable(ratio)
+```
+
+The fish to total biomass ratios for each experiment is shown in table 1. The basic nicheweb in experiment 3 seems to have a slightly higher proportion of fish biomass, but it doesn't appear to be significant.
+
+
+## End paragraph: Von-Bertalanffy
+```{r Von-Bert-solo, fig.cap=cap}
+dat %>% filter(simnum==3,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
+	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
+	ggplot(aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Fish life stage",y="Individual body mass")
+
+z=z+1;VBsol=z
+cap=paste("Figure",VBsol,"The von-Bertalanffy curve displaying the growth of three different fish species in the same food web simulation")
+```
+
+Our model produces realistic life histories for our fish species (fig `r VBsol`). Fish start off as juveniles with a small body weight and follow a von-Bertalanffy growth curve as they mature. 
+
+```{r Von-Bert-Multi, fig.cap=cap}
+# Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
+subdat1 %>% filter(simnum<20,Exper==1,Year_df==max(Year_df),isfish==1) %>%
+	group_by(simnum,species) %>%
+	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
+	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
+	ungroup() %>%
+	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
+	#select(simnum,species,Biomass, tot_fish_biom,Mass)
+	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass")
+
+z=z+1;VBmult=z
+cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
+```
+
+The fish for any given food web simulation often end up having similar body mass. This is because we only assign life histories to the three largest species in the food web, which will have similar trophic levels and body masses. 
+
+```{r Von-Bert-grid-plot, fig.cap=cap}
+VB_grid=dat %>% filter(simnum<10,Exper==1,Year_df==1,isfish==1,Biomass>0) %>%
+	mutate(species=factor(species),lifestage=as.integer(lifestage)) %>%
+	group_by(simnum) %>%
+	do(g=ggplot(.,aes(x=lifestage, y=Mass, colour=species)) + geom_line() + labs(x="Life stage") + theme(legend.position="none"))
+multiplot(VB_grid$g[[1]], VB_grid$g[[2]], VB_grid$g[[3]], VB_grid$g[[4]], VB_grid$g[[5]], VB_grid$g[[6]], VB_grid$g[[7]], VB_grid$g[[8]], VB_grid$g[[9]], cols=3)
+
+z=z+1;VBgrid=z
+cap=paste("Figure",VBgrid,"The von-Bertalanffy plots for the surviving fish species in nine different simulations.")
+```
+
+Figure `r VBgrid` shows von-Bertalanffy growth curves for all the surviving fish species across several simulations.
+
+```{r VB-Hist}
+VB_hist=subdat1 %>% filter(Exper==1,Year_df==max(Year_df),Biomass>0) %>%
+	group_by(simnum) %>%
+	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
+	filter(lifestage==4)
+```
+
+```{r Z-Hist, fig.cap=cap}
+VB_hist %>% with(hist(Z,xlab="Allometric Ratio",main=""))
+
+z=z+1;Zhist=z
+cap=paste("Figure",Zhist,"A histogram of the allometric ratios for all the surviving adult fish life stages.")
+```
+
+Figure `r Zhist` shows the distribution of the predator prey body mass ratios for the adult fish species that persist in our simulations. This distribution is similar to the initial log normal random distribution that we assigned the species, so extinctions occur relatively randomly with respect to allometric ratio.
+
+```{r Weight_infty-Hist, fig.cap=cap}
+VB_hist %>% with(hist(log10(Mass),xlab="log of body mass (unitless)",main=""))
+
+z=z+1;Whist=z
+cap=paste("Figure",Whist,"A histogram of the logged adult body mass for all the surviving fish life stages.")
+```
+
+The absolute mass of most surviving fish species are in the 10E8 range, with a few extreme outliers. This isn't a major concern because we are using an allometric network model, where the most important feature are the relative body sizes of predator and prey species. So mass is unitless, and is only meaningful in relation to the other species in that particular simulation. These histograms show the mass of fish species across several different simulations. The only other feature that is affected by body mass is the metabolic rate.
+
+"You say body mass only matters in relative terms, compared with other species, but is the ratio of fish/invertebrate realistic?" -> Yeah, so this is why I was looking at allometric ratios in figure `r Zhist`. We set the parameters for the initial allometric ratio, so if it's not realistic we can modify it very easily. I'm not quite sure if you were referring to the ratio of individual body mass here (allometric ratio for predator/prey) or the biomass, but I thought I addressed both. 
+
+
+## Life History Correlations
+```{r life_his_setup_clumped, include=FALSE}
+# First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
+sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+	group_by(simnum,Exper,species) %>% 
+	mutate(Tot_spec=sum(Biomass)) %>%
+	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
+	group_by(simnum,Exper) %>% 
+	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass),max_fish_mass=max(Mass*isfish))
+
+CV_plot=subdat2 %>% group_by(Exper,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
+
+full_stats=left_join(sim_stats,CV_plot) %>% 
+	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass),FT_ratio=mean_fish/mean_tot)
+```
+
+```{r life_his_setup_indiv, include=FALSE}
+# Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
+# Where it's by species W_infty against (that same species') final biomass and CV
+CV_spec_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Exper,species,Year_df) %>%
+	summarise(Tot_spec=sum(Biomass)) %>%
+	summarise(CV_spec=CV(Tot_spec),mean_spec=mean(Tot_spec))
+
+CV_tot_stats=subdat2 %>% filter(Phase_df==2,Exper==1) %>%
+	group_by(simnum,Exper,Year_df) %>%
+	summarise(Tot_Bio=sum(Biomass)) %>%
+	summarise(CV_tot=CV(Tot_Bio),mean_tot=mean(Tot_Bio))
+
+gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Exper==1) %>%
+	group_by(simnum,Exper,species) %>%
+	mutate(Tot_spec=sum(Biomass),max_Z=max(Z),max_Mass=max(Mass)) %>%
+	filter(Tot_spec>0,isfish==1,lifestage==1)
+
+all_spec_stats=left_join(gen_spec_stats,CV_spec_stats)
+all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>% 
+	mutate(log_spec=log10(mean_spec),log_tot=log10(mean_tot),log_max_mass=log10(max_Mass)) %>%
+	filter(!(simnum==11 && species==30)) # Remove that outlier!!
+```
+
+```{r life_his_plotZ_clumped, fig.cap=cap}
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=log_tot)) + geom_point() + labs(x="Allometric Ratio",y="log of total biomass")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=max_Z,y=log_fish)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
+xk3=full_stats %>% ggplot(aes(x=max_Z,y=CV_tot)) + geom_point() + labs(x="Allometric Ratio",y="CV of total biomass")+geom_smooth(method = "lm")
+xk4=full_stats %>% ggplot(aes(x=max_Z,y=CV_fish)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+z=z+1;LH_Zclump=z
+cap=paste("Figure",LH_Zclump,"The mean and CV of fish and total biomass with respect to the largest fish species' allometric ratio. The lines shows the fit of a linear model.")
+```
+
+Figure `r LH_Zclump` shows the effect of the largest fish's allometric ratios on the biomass. The CV of biomass is invariant with allometric ratio. There seems to be a trend of more extreme CV values in total biomass for a larger allometric ratio, but we might not have enough data. Total biomass seems to be relatively unaffected by allometric ratio. Fish biomass increases with a larger allometric ratio, although this might just be because individuals need less food since their per unit mass metabolic rate is lower. 
+
+```{r life_his_plotM_clumped, fig.cap=cap}
+xk1=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=log_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
+xk3=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
+xk4=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=CV_fish)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+z=z+1;LH_Mclump=z
+cap=paste("Figure",LH_Mclump,"The mean and CV of fish and total biomass with respect to the largest fish species' asymptotic body mass. The lines shows the fit of a linear model.")
+```
+
+Figure `r LH_Mclump` shows the fish and total ecosystem biomass as a function of the asymptotic body mass of the largest fish species. It also shows the CV of the fish and total biomass after the ecosystem has stabilized. The only apparent trend appears to be that the CV of fish biomass increases with a larger asymptotic individual body mass. 
+
+```{r life_his_plot_indiv, fig.cap=cap}
+xk1=all_spec_stats %>% ggplot(aes(x=max_Z,y=CV_spec)) + geom_point() + labs(x="Allometric Ratio",y="CV of fish biomass")+geom_smooth(method = "lm")
+xk2=all_spec_stats %>% ggplot(aes(x=max_Z,y=log_spec)) + geom_point() + labs(x="Allometric Ratio",y="log of fish biomass")+geom_smooth(method = "lm")
+xk3=all_spec_stats %>% ggplot(aes(x=orig_T,y=CV_spec)) + geom_point() + labs(x="Trophic Level",y="CV of fish biomass")+geom_smooth(method = "lm")
+xk4=all_spec_stats %>% ggplot(aes(x=orig_T,y=log_spec)) + geom_point() + labs(x="Trophic Level",y="log of fish biomass")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+z=z+1;LH_ind=z
+cap=paste("Figure",LH_ind,"The CV and mean of fish biomass is plotted against the life history traits of adult allometric ratio and trophic level. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits. The lines shows the fit of a linear model.")
+```
+
+[note, not to be published: this last figure seems to repeat some earlier plots, namely CV/allometric ratio, but it's really entirely new - these plots have more data points because instead of going by the largest fish species allometric ratio/asymptotic body mass, it includes pseudoreplicates for each web so every species is plotted against its CV/mean]
+
+Figure `r LH_ind` shows the correlation between each fish species life history trait against its mean and CV biomass. The main trend here seems to be that the CV of a fish's biomass tends to increase with its trophic level, so the higher up a fish is in the food chain, the more it will experience large population fluctuations. This may be because each consecutive step in the food chain adds variance to the biomass.
+
+```{r life_his_Winf_indiv, fig.cap=cap}
+xk1=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of total biomass")+geom_smooth(method = "lm")
+xk2=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=log_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="log of fish biomass")+geom_smooth(method = "lm")
+xk3=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_tot)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of total biomass")+geom_smooth(method = "lm")
+xk4=all_spec_stats %>% ggplot(aes(x=log_max_mass,y=CV_spec)) + geom_point() + labs(x="log of fish asymptotic body mass",y="CV of fish biomass")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,xk3,xk4,cols=2)
+
+z=z+1;Winf_ind=z
+cap=paste("Figure",Winf_ind,"The CV and mean of fish and total biomass is plotted against the asymptotic body mass of individual fish species. These are plotted on a species level basis, so rather than using the largest fish species's traits to predict total fish biomass, we look at the relationship between a species' biomass and its life history traits. The lines shows the fit of a linear model.")
+```
+
+The asymptotic body mass of individual fish species does not have a strong effect on the total biomass (fig `r Winf_ind`). Fish biomass seems to decrease for larger fish species (fig `r Winf_ind`), which seemingly contradicts our earlier result from figure `r LH_Mclump`. The difference between these two figures is that figure `r LH_Mclump` plots the total fish biomass against the asymptotic body size of the largest fish in the ecosystem, while figure `r Winf_ind` plots it on a species level basis. So maybe the smaller fish species are the fish that increase the biomass. So they would increase the total fish biomass in figure `r LH_Mclump` without getting the credit for it. The CV of fish biomass increases for larger fish species (fig `r Winf_ind`).
+
+```{r life_his_fish_ratio, fig.cap=cap}
+xk1=full_stats %>% ggplot(aes(x=max_Z,y=FT_ratio)) + geom_point() + labs(x="Allometric Ratio",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
+xk2=full_stats %>% ggplot(aes(x=log_max_fish_mass,y=FT_ratio)) + geom_point() + labs(x="log of fish mass",y="Fish to total biomass ratio")+geom_smooth(method = "lm")
+
+multiplot(xk1,xk2,cols=2)
+
+z=z+1;LH_Fratio=z
+cap=paste("Figure",LH_Fratio,"The Fish to total biomass ratio with respect to the allometric ratio and log of the fish mass for the largest adult fish species. The lines shows the fit of a linear model.")
+```
+
+Figure `r LH_Fratio` shows the fish to total species biomass ratio as a function of the two main life history traits: allometric ratio and adult fish aysmptotic body mass.
+
+
+```{r}
+#THIS WAS AN ATTEMPT TO FIGURE OUT IF SOME LIFESTAGES SURVIVE DISPROPORTIONATELY WELL
+sure=dat %>% filter(Exper==2,Phase_df==2,isfish==1) %>%
+	group_by(simnum,Exper,Nodes_df) %>%
+	summarise(node_mean=mean(Biomass))
+
+#sure2=sure %>% filter(Exper==2,Phase_df==2,isfish==1) %>%
+#	group_by(simnum,Exper,species) %>%
+#	summarise(fish_mean=mean(Biomass))
+
+aight=dat %>% filter(Exper==2,Year_df==max(Year_df),isfish==1) %>%
+	left_join(.,sure) 
+
+sure2=aight %>% group_by(simnum,Exper,species) %>%
+	summarise(fish_mean=sum(node_mean))
+
+aight2=aight %>% left_join(.,sure2) %>%
+	mutate(prop_stage=node_mean/fish_mean) %>%
+	mutate(prop_stage2=ifelse(is.na(prop_stage),0,prop_stage))
+
+boxplot(node_mean~lifestage,aight2)
+boxplot(prop_stage2~lifestage,aight2)
+boxplot(prop_stage~lifestage,aight2)
+
+aight2 %>% group_by(lifestage) %>% summarise(mean(prop_stage,na.rm=T))
+
+```
+
+
+
+
+
+
+
