@@ -1,6 +1,7 @@
 #//////////////////////////////////////////////////////////////////////////
 #----Appendix Analysis----
 # Created by Stephanie Bland
+# Thesis Version June 25 2018
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 #memory.limit(70000)
@@ -22,23 +23,23 @@ setwd(paste0("~/",location,"/",run_name))
 #setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
-#dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+dat=read.table(paste0("clean_",run_name,".txt"),header=F)
 # Load Data in chunks
-file_in    <- file(paste0("clean_",run_name,".txt"),"r")
-chunk_size <- 100000 # choose the best size for you
-x=c()
-repeat{
-	myLines <- readLines(file_in, n=chunk_size)
-	if (length(myLines) == 0) break
-	myLines=do.call(rbind,strsplit(myLines,' ',fixed=T))
-	x=rbind(x,myLines)
-}
-
-# Convert to a dataframe
-dat <- setNames(
-		as.data.frame(lapply(1:ncol(x), function(i) {
-			type.convert(x[,i])}), stringsAsFactors = FALSE), 
-		paste0('v', 1:ncol(x)))
+	#file_in    <- file(paste0("clean_",run_name,".txt"),"r")
+	#chunk_size <- 100000 # choose the best size for you
+	#x=c()
+	#repeat{
+	#	myLines <- readLines(file_in, n=chunk_size)
+	#	if (length(myLines) == 0) break
+	#	myLines=do.call(rbind,strsplit(myLines,' ',fixed=T))
+	#	x=rbind(x,myLines)
+	#}
+	#
+	## Convert to a dataframe
+	#dat <- setNames(
+	#		as.data.frame(lapply(1:ncol(x), function(i) {
+	#			type.convert(x[,i])}), stringsAsFactors = FALSE), 
+	#		paste0('v', 1:ncol(x)))
 
 # Load the column names
 colnames(dat)=as.matrix(read.table(paste0("colnames_clean_",run_name,".txt")))
