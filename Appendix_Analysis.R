@@ -1,10 +1,10 @@
 #//////////////////////////////////////////////////////////////////////////
 #----Appendix Analysis----
 # Created by Stephanie Bland
-# Thesis Version June 25 2018
+# Prepping Publication Version
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-#memory.limit(70000)
+memory.limit(70000)
 #library(ggbiplot)
 library(tidyverse)
 library(stringr)
@@ -13,17 +13,19 @@ start_fig=5
 z=0
 
 ## ----load_data-----------------------------------------------------------
-DATE="2017Nov28"
-Version="0"
-location="/GIT/Analysis"#For Running on my Mac
-#location="C:/Users/Stephanie/Desktop"#For Running on Windows
+DATE="2018May03"
+Version="1"
+#location="/GIT/Analysis"#For Running on my Mac
+location="C:/Users/Stephanie/Desktop"#For Running on Windows
 #location=""#For Clusters
 run_name=paste0(DATE,"_",Version)
-setwd(paste0("~/",location,"/",run_name))
-#setwd(paste0("",location,"/",run_name))
+#setwd(paste0("~/",location,"/",run_name))
+setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
 dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+# Replace NA values (mistake -> they go to 0)
+dat[dat$simnum==2401 & dat$Nodes_df==21 & dat$Year_df>max(dat$Year_df)-6 & dat$Model==2 & is.na(dat$Biomass),"Biomass"]=0
 # Load Data in chunks
 	#file_in    <- file(paste0("clean_",run_name,".txt"),"r")
 	#chunk_size <- 100000 # choose the best size for you
@@ -51,7 +53,7 @@ exper_name=c("Original Web","Extended Web","Leslie & History")
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
 
 ## ----SAVE RESULTS IN NEW FOLDER------------------------------------------
-setwd(paste0("",location,"/",run_name,"/RESULTS"))
+setwd(paste0("",location,"/",run_name,"/RESULTS_Publication2018Aug1"))
 
 ## ----DefineMultiplot-----------------------------------------------------
 # From https://stackoverflow.com/a/24387436
@@ -131,81 +133,10 @@ subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 	ungroup() %>%
 	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
 	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual body mass") + theme_bw() + theme(text = element_text(size = 14))
+	ggplot(aes(x=lifestage, y=log10(Mass), linetype=simnum)) + geom_line(aes(group=species)) + labs(x="Fish life stage",y="log of individual body mass", linetype="Simulation") + theme_bw() + theme(text = element_text(size = 14))
 
 z=z+1;VBmult=z
 cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
-dev.off()
-
-## ----Von-Bert-Multi2, fig.cap=cap----------------------------------------
-VB_orig_fish=subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
-	group_by(simnum,species) %>%
-	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
-	ungroup() %>%
-	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
-	#select(simnum,species,Biomass, tot_fish_biom,Mass)
-	ggplot(aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum)) + labs(x="Fish life stage",y="log of individual\n body mass") + theme_bw() + theme(legend.key.height=unit(0.5,"line"))
-
-# Caution: The clunky formatting here is because we need to plot ALL life stages if a single life stage survives. This way you won't end up with a partial line between two life stages
-VB_end_fish=subdat1 %>% filter(simnum<20,Year_df==max(Year_df),isfish==1) %>%
-	group_by(Model,simnum,species) %>%
-	mutate(tot_fish_biom=sum(Biomass)) %>% # Make sure you only grab surviving species, but make sure you grab ALL nodes
-	filter(tot_fish_biom>0) %>% # Can't filter by Biomass>0 because some life stages go extinct and you end up with incomplete curves
-	ungroup() %>%
-	mutate(species=factor(as.integer(species)+(39*simnum)),lifestage=as.integer(lifestage),simnum=as.factor(simnum)) %>% 
-	group_by(Model) %>%
-	do(g=ggplot(.,aes(x=lifestage, y=log10(Mass))) + geom_line(aes(group=species, colour=simnum))  + labs(x="Fish life stage",y="log of individual\n body mass") + theme_bw() + theme(legend.key.height=unit(0.5,"line")))
-
-## ----VB-Hist-------------------------------------------------------------
-VB_orig=dat %>% filter(Year_df==1,Model==1) %>%
-	group_by(simnum) %>%
-	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
-	filter(lifestage==4)
-VB_hist_orig = VB_orig %>% ggplot(.,aes(Z))+geom_histogram() + coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio") + theme_bw()
-
-VB_hist=subdat1 %>% filter(Year_df==max(Year_df),Biomass>0) %>%
-	group_by(Model,simnum) %>%
-	mutate(scaled_mass=10^5*Mass/max(Mass)) %>%
-	filter(lifestage==4)
-
-## ----VB_Exper_compare, fig.cap=cap,echo=FALSE----------------------------
-meh=VB_hist %>% group_by(Model) %>%
-	do(k=ggplot(.,aes(Z))+geom_histogram()+coord_cartesian(xlim=c(min(VB_orig$Z),max(VB_orig$Z))) + labs(x="Allometric Ratio") + theme_bw())
-
-postscript(paste0("Figure",2+start_fig,"_VB_Exper_compare.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(VB_orig_fish, VB_end_fish$g[[1]], VB_end_fish$g[[2]], VB_end_fish$g[[3]],
-		  VB_hist_orig, meh$k[[1]], meh$k[[2]], meh$k[[3]], cols=2)
-
-z=z+1;VB_Exper_compare=z
-cap=paste("Figure",VB_Exper_compare,"A histogram of the allometric ratios for all the surviving adult fish life stages.")
-dev.off()
-
-## ----Mass_Overlap, fig.cap=cap-------------------------------------------
-mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(lifestage)) %>%
-	select(simnum,species,lifestage,Mass) %>%
-	group_by(simnum) %>%
-	spread(key=lifestage,value=Mass) %>%
-	summarise(youngest_large=max(`1`),oldest_small=min(`4`)) %>%
-	mutate(range_overlap=youngest_large<oldest_small,size_ratio=oldest_small/youngest_large)
-percent_range_overlap=mass_overlap %>% summarise(100*sum(range_overlap)/n())
-
-postscript(paste0("S",2,"_AllometricOverlap.eps"),horiz=FALSE,width=8.5,height=11)
-hist(log10(mass_overlap$size_ratio),main="",xlab="Allometric ratio of the smallest fish adult\n to the youngest life stage of the largest fish (log10)")
-
-z=z+1;mass_overlap_cap=z
-cap=paste("Supplementary Figure",mass_overlap_cap,"A histogram of the logged allometric ratios between the oldest life stage of the smallest fish species and the youngest life stage of the largest fish species for any model.")
-dev.off()
-
-## ----TS_solo, fig.cap=cap------------------------------------------------
-postscript(paste0("Figure",3+start_fig,"_TS_solo.eps"),horiz=FALSE,width=8.5,height=11)
-subdat2 %>% filter(Model==3,simnum==unique(simnum)[4]) %>%
-	mutate(lifestage=as.factor(lifestage),species=as.factor(isfish*species)) %>%
-	group_by(Year_df,lifestage,species) %>%
-	mutate(Biomass=sum(Biomass)) %>% ungroup() %>% mutate(species=c("Other","Fish 1","Fish 2","Fish 3")[species]) %>%
-	ggplot(aes(x=Year_df,y=log10(Biomass))) + geom_line(aes(group=Nodes_df, colour=species,linetype=lifestage)) + labs(x="Year",y="Biomass (log 10)") + theme_bw() + labs(colour="Species", linetype='Life stage') + theme(text = element_text(size = 14))
-
-z=z+1;TSsolo=z
-cap=paste("Figure",TSsolo,"A typical time series for model 1. This shows the logged biomass at the end of each year cycle for each fish life stage along with the combined biomass of the rest of the ecosystem.")
 dev.off()
 
 ## ----freq_extant_fish, fig.cap=cap---------------------------------------
@@ -219,10 +150,10 @@ xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	mutate(Freq=n/sum(n))
 
 xkcd1=xkcd %>% 
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations") + theme_bw() + theme(text = element_text(size = 14))
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model, shape=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations") + theme_bw() + theme(text = element_text(size = 14)) + scale_shape_manual(values=c(0,16,2))
 xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
 	mutate(Num_extant=as.factor(Num_extant)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All")) + theme_bw() + theme(text = element_text(size = 14))
+	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model, shape=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All")) + theme_bw() + theme(text = element_text(size = 14)) + scale_shape_manual(values=c(0,16,2))
 postscript(paste0("Figure",5+start_fig,"_freq_extant_fish.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(xkcd1,xkcd2)
 
