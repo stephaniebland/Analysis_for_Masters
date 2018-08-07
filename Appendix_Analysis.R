@@ -24,8 +24,6 @@ setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
 dat=read.table(paste0("clean_",run_name,".txt"),header=F)
-# Replace NA values (mistake -> they go to 0)
-dat[dat$simnum==2401 & dat$Nodes_df==21 & dat$Year_df>max(dat$Year_df)-6 & dat$Model==2 & is.na(dat$Biomass),"Biomass"]=0
 # Load Data in chunks
 	#file_in    <- file(paste0("clean_",run_name,".txt"),"r")
 	#chunk_size <- 100000 # choose the best size for you
@@ -46,6 +44,8 @@ dat[dat$simnum==2401 & dat$Nodes_df==21 & dat$Year_df>max(dat$Year_df)-6 & dat$M
 # Load the column names
 colnames(dat)=as.matrix(read.table(paste0("colnames_clean_",run_name,".txt")))
 colnames(dat)[9]="Model"
+# Replace NA values (mistake -> they go to 0)
+dat[dat$simnum==2401 & dat$Nodes_df==21 & dat$Year_df>max(dat$Year_df)-6 & dat$Model==2 & is.na(dat$Biomass),"Biomass"]=0
 # The first step should be setting up better names, so the legends will automatically be named properly. This is to avoid having vague graphs with names like "model 1" and model 2" because people will definitely forget what that means.
 exper_name=c("Original Web","Extended Web","Leslie & History")
 # Make Processing faster, I think? - DONT USE THIS YET - IT WILL BREAK THINGS!
@@ -140,7 +140,7 @@ cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several 
 dev.off()
 
 ## ----freq_extant_fish, fig.cap=cap---------------------------------------
-xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
+freq_extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	group_by(Model,simnum,species) %>% 
 	summarise(extant=as.logical(sum(Biomass))) %>%
 	summarise(Num_extant=sum(extant)) %>%
@@ -149,13 +149,8 @@ xkcd=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	summarise(n=n()) %>% group_by(Model) %>%
 	mutate(Freq=n/sum(n))
 
-xkcd1=xkcd %>% 
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model, shape=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations") + theme_bw() + theme(text = element_text(size = 14)) + scale_shape_manual(values=c(0,16,2))
-xkcd2=xkcd %>% filter(Num_extant %in% range(Num_extant)) %>%
-	mutate(Num_extant=as.factor(Num_extant)) %>%
-	ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model, shape=Model), size=3)+ labs(x="Number of surviving fish species", y="Frequency of simulations")+ scale_x_discrete(labels=c("None","All")) + theme_bw() + theme(text = element_text(size = 14)) + scale_shape_manual(values=c(0,16,2))
 postscript(paste0("Figure",5+start_fig,"_freq_extant_fish.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(xkcd1,xkcd2)
+freq_extant_fish %>% ggplot(., aes(x=Num_extant, y=Freq)) + geom_point(aes(group=Model, color=Model, shape=Model), size=5, stroke=2)+ labs(x="Number of surviving fish species", y="Frequency of simulations") + theme_bw() + theme(text = element_text(size = 14)) + scale_shape_manual(values=c(2,0,20))
 
 z=z+1;freq_ex_fish=z
 cap=paste("Figure",freq_ex_fish,"The frequency of fish surviving in each model.")
