@@ -117,6 +117,7 @@ subdat_ls=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
 	summarise(any=sum(Tot_species),all=prod(Tot_species)) %>%
 	mutate_at(c("any","all"),as.logical)
 persist=subdat_ls %>% summarise_at(c("any","all"),mean)*100
+persist # Percent of webs that meet criteria 1 and 2.
 # Criteria 1: Probability of fish persisting in at least one of the models
 # Criteria 2: Probability of fish persisting in all of the models
 subdat1=dat %>% filter(simnum %in% (subdat_ls %>% filter(any==TRUE))$simnum)
@@ -138,6 +139,16 @@ subdat1 %>% filter(simnum<20,Model==3,Year_df==max(Year_df),isfish==1) %>%
 z=z+1;VBmult=z
 cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several simulated food webs. Each colour represents a different food web.")
 dev.off()
+
+## ----Mass_Overlap, fig.cap=cap-------------------------------------------
+mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(lifestage)) %>%
+	select(simnum,species,lifestage,Mass) %>%
+	group_by(simnum) %>%
+	spread(key=lifestage,value=Mass) %>%
+	summarise(youngest_large=max(`1`),oldest_small=min(`4`)) %>%
+	mutate(range_overlap=youngest_large<oldest_small,size_ratio=oldest_small/youngest_large)
+percent_range_overlap=mass_overlap %>% summarise(100*sum(range_overlap)/n())
+percent_range_overlap # Percentage of webs where the oldest life stage of the smallest fish is larger than the youngest life stage of the largest fish.
 
 ## ----freq_extant_fish, fig.cap=cap---------------------------------------
 freq_extant_fish=dat %>% filter(Year_df==max(Year_df),isfish==1) %>%
