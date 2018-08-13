@@ -171,24 +171,7 @@ dev.off()
 #----Setup Life History Correlations----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 # Change the Model being plotted with Test_Model (if you alter this you need to re-run everything below this line to properly update the graphs)
-Test_Model=3
-# First setup plots where you just find life his stats for largest surviving fish species and compare them to the tot fish biomass (all species combined) and total biomass
-sim_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
-	group_by(simnum,Model,species) %>% 
-	mutate(Tot_spec=sum(Biomass)) %>%
-	filter(Tot_spec>0) %>% # Important: Filter out extinct species first so you only get stats for surviving species
-	group_by(simnum,Model) %>% 
-	summarise(Tot_Bio=sum(Biomass),Tot_fish=sum(Biomass*isfish),max_Z=max(Z),max_Mass=max(Mass),max_fish_mass=max(Mass*isfish))
-
-CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
-	filter(Phase_df==2) %>%
-	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
-	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
-
-full_stats=left_join(sim_stats,CV_plot) %>% 
-	mutate(log_tot=log10(mean_tot),log_fish=log10(mean_fish),log_max_mass=log10(max_Mass),log_max_fish_mass=log10(max_fish_mass),FT_ratio=mean_fish/mean_tot)
-
-
+for (Test_Model in 1:3){
 # Also setup plots where you're looking at individual surviving fish species, and comparing their life history stats to that specific species' biomass.
 # Where it's by species W_infty against (that same species') final biomass and CV
 CV_spec_stats=subdat2 %>% filter(Phase_df==2,Model==Test_Model) %>%
@@ -209,7 +192,7 @@ gen_spec_stats=subdat2 %>% filter(Year_df==max(Year_df),Model==Test_Model) %>%
 all_spec_stats=left_join(gen_spec_stats,CV_spec_stats)
 all_spec_stats=left_join(all_spec_stats,CV_tot_stats) %>% 
 	mutate(log_spec=log10(mean_spec),log_tot=log10(mean_tot),log_max_mass=log10(max_Mass)) %>%
-	filter(!(simnum==11 && species==30)) # Remove that outlier!!
+	filter(!(simnum==11 && species==30), CV_spec<800, max_Mass<1e+10) # Remove outliers!!
 
 
 #//////////////////////////////////////////////////////////////////////////
@@ -285,47 +268,13 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 # Example use:
 #plot_relations(1,1,iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
 
-plot_relations(1,1,full_stats,quo(max_Z),quo(log10(mean_tot)),"Allometric Ratio","log of total biomass")
-plot_relations(1,2,full_stats,quo(max_Z),quo(log10(mean_fish)),"Allometric Ratio","log of fish biomass")
-plot_relations(1,3,full_stats,quo(max_Z),quo(CV_tot),"Allometric Ratio","CV of total biomass")
-plot_relations(1,4,full_stats,quo(max_Z),quo(CV_fish),"Allometric Ratio","CV of fish biomass")
-
-plot_relations(2,1,full_stats,quo(log10(max_fish_mass)),quo(mean_tot),"log of fish asymptotic body mass","total biomass") #updated
-plot_relations(2,2,full_stats,quo(log10(max_fish_mass)),quo(mean_fish),"log of fish asymptotic body mass","fish biomass") #updated
-plot_relations(2,3,full_stats,quo(log10(max_fish_mass)),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
-plot_relations(2,4,full_stats,quo(log10(max_fish_mass)),quo(CV_fish),"log of fish asymptotic body mass","CV of fish biomass")
-
-plot_relations(3,1,all_spec_stats,quo(max_Z),quo(CV_spec),"Allometric Ratio","CV of fish biomass")
-plot_relations(3,2,all_spec_stats,quo(max_Z),quo(mean_spec),"Allometric Ratio","fish biomass") #updated
-plot_relations(3,3,all_spec_stats,quo(orig_T),quo(CV_spec),"Trophic Level","CV of fish biomass")
-plot_relations(3,4,all_spec_stats,quo(orig_T),quo(mean_spec),"Trophic Level","fish biomass") #updated
-
-plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo(mean_tot),"log of fish asymptotic body mass","total biomass") #updated
-plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo(mean_spec),"log of fish asymptotic body mass","fish biomass") #updated
-plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo(CV_tot),"log of fish asymptotic body mass","CV of total biomass")
-plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo(CV_spec),"log of fish asymptotic body mass","CV of fish biomass")
-
-plot_relations(5,1,full_stats,quo(max_Z),quo(FT_ratio),"Allometric Ratio","Fish to total biomass ratio")
-plot_relations(5,2,full_stats,quo(log10(max_fish_mass)),quo(FT_ratio),"log of fish mass","Fish to total biomass ratio")
-
-postscript(paste0("Figure",6+start_fig,"_Model",Test_Model,"_row1_Allometric_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(plotlist=ls_graphs[[1]],cols=2)
-dev.off()
-
-postscript(paste0("Figure",7+start_fig,"_Model",Test_Model,"_row2_logmass_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(plotlist=ls_graphs[[2]],cols=2)
-dev.off()
-
-postscript(paste0("S",3,"_Model",Test_Model,"_row3_all_stats.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(plotlist=ls_graphs[[3]],cols=2)
-dev.off()
+plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo(log10(mean_tot)),"log of fish asymptotic body mass","log of mean total biomass") #updated
+plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo(log10(mean_spec)),"log of fish asymptotic body mass","log of mean fish biomass") #updated
+plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo(log10(CV_tot)),"log of fish asymptotic body mass","log CV of total biomass")
+plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo(log10(CV_spec)),"log of fish asymptotic body mass","log CV of fish biomass")
 
 postscript(paste0("Figure",8+start_fig,"_Model",Test_Model,"_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
-dev.off()
-
-postscript(paste0("S",4,"_Model",Test_Model,"_row5_full_stats.eps"),horiz=FALSE,width=8.5,height=11)
-multiplot(plotlist=ls_graphs[[5]][1:2],cols=2)
 dev.off()
 
 #//////////////////////////////////////////////////////////////////////////
@@ -336,6 +285,7 @@ write.csv(corr_test, file = "corr_test_Model",Test_Model,".csv",row.names=FALSE,
 sink("cor_val_printout_Model",Test_Model,".txt")
 print(cor_val_printout)
 sink()  # returns output to the console
+}
 
 #//////////////////////////////////////////////////////////////////////////
 #----CV Boxplot for Fish & Total Biomass across model types----
