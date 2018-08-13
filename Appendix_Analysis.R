@@ -280,8 +280,8 @@ dev.off()
 #//////////////////////////////////////////////////////////////////////////
 #----Save Model Output----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-write.csv(lm_test, file = "lm_test_Model",Test_Model,".csv",row.names=FALSE, na="",quote=T)
-write.csv(corr_test, file = "corr_test_Model",Test_Model,".csv",row.names=FALSE, na="",quote=T)
+write.csv(lm_test, file = paste0("lm_test_Model",Test_Model,".csv"),row.names=FALSE, na="",quote=T)
+write.csv(corr_test, file = paste0("corr_test_Model",Test_Model,".csv"),row.names=FALSE, na="",quote=T)
 sink(paste0("cor_val_printout_Model",Test_Model,".txt"))
 print(cor_val_printout)
 sink()  # returns output to the console
