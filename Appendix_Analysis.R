@@ -268,10 +268,10 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 # Example use:
 #plot_relations(1,1,iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
 
-plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo((mean_tot)),"log of fish asymptotic body mass","mean total biomass") #updated
-plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo((mean_spec)),"log of fish asymptotic body mass","mean fish biomass") #updated
-plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo((CV_tot)),"log of fish asymptotic body mass","CV of total biomass")
-plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo((CV_spec)),"log of fish asymptotic body mass","CV of fish biomass")
+plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo((mean_tot)),"log of fish asymptotic body mass",expression("mean total biomass"~(mu*g*C/L))) #updated
+plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo((mean_spec)),"log of fish asymptotic body mass",expression("mean fish biomass"~(mu*g*C/L))) #updated
+plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo((CV_tot)),"log of fish asymptotic body mass","CV of total biomass (%)")
+plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo((CV_spec)),"log of fish asymptotic body mass","CV of fish biomass (%)")
 
 postscript(paste0("Figure",8+start_fig,"_Model",Test_Model,"_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
@@ -293,9 +293,9 @@ sink()  # returns output to the console
 
 postscript(paste0("Figure",4+start_fig,"_CV_boxplot.eps"),horiz=FALSE,width=8.5,height=11)
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
-boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Ecosystem Biomass",ylim=c(0,100))
+boxplot(CV_tot~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation (%)",main="Total Ecosystem Biomass",ylim=c(0,100))
 
-boxplot(CV_fish~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation",main="Total Fish Biomass",ylim=c(0,100))
+boxplot(CV_fish~Model,CV_plot,xlab="Model Type",ylab="Coefficient of Variation (%)",main="Total Fish Biomass",ylim=c(0,100))
 dev.off()
 par(pardefault)
 
