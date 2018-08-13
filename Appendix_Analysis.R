@@ -268,10 +268,10 @@ plot_relations <- function(xk_fig,xk_plot,dat,xvar,yvar,xlab,ylab){
 # Example use:
 #plot_relations(1,1,iris,quo(Sepal.Length),quo(Sepal.Width),"Allometric Ratio","CV of total biomass")
 
-plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo(log10(mean_tot)),"log of fish asymptotic body mass","log of mean total biomass") #updated
-plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo(log10(mean_spec)),"log of fish asymptotic body mass","log of mean fish biomass") #updated
-plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo(log10(CV_tot)),"log of fish asymptotic body mass","log CV of total biomass")
-plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo(log10(CV_spec)),"log of fish asymptotic body mass","log CV of fish biomass")
+plot_relations(4,1,all_spec_stats,quo(log10(max_Mass)),quo((mean_tot)),"log of fish asymptotic body mass","mean total biomass") #updated
+plot_relations(4,2,all_spec_stats,quo(log10(max_Mass)),quo((mean_spec)),"log of fish asymptotic body mass","mean fish biomass") #updated
+plot_relations(4,3,all_spec_stats,quo(log10(max_Mass)),quo((CV_tot)),"log of fish asymptotic body mass","CV of total biomass")
+plot_relations(4,4,all_spec_stats,quo(log10(max_Mass)),quo((CV_spec)),"log of fish asymptotic body mass","CV of fish biomass")
 
 postscript(paste0("Figure",8+start_fig,"_Model",Test_Model,"_row4_all_stats2.eps"),horiz=FALSE,width=8.5,height=11)
 multiplot(plotlist=ls_graphs[[4]],cols=2)
