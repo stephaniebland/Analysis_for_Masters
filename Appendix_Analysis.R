@@ -23,7 +23,8 @@ run_name=paste0(DATE,"_",Version)
 setwd(paste0("",location,"/",run_name))
 pardefault <- par()
 #---- LOAD_DATA ----
-dat=read.table(paste0("clean_",run_name,".txt"),header=F)
+#dat=read.table(paste0("clean_",run_name,".txt"),header=F) #Load all data (won't work on most computers because data is too large)
+dat=read.table(paste0("clean_phase2_",run_name,".txt"),header=F) #Load the phase 2 subset
 # Load Data in chunks
 	#file_in    <- file(paste0("clean_",run_name,".txt"),"r")
 	#chunk_size <- 100000 # choose the best size for you
@@ -141,7 +142,7 @@ cap=paste("Figure",VBmult,"Von-Bertalanffy curves for surviving fish in several 
 dev.off()
 
 ## ----Mass_Overlap, fig.cap=cap-------------------------------------------
-mass_overlap=dat %>% filter(Year_df==1,Model==1,isfish==1,lifestage %in% range(lifestage)) %>%
+mass_overlap=dat %>% filter(Year_df==min(Year_df),Model==1,isfish==1,lifestage %in% range(lifestage)) %>%
 	select(simnum,species,lifestage,Mass) %>%
 	group_by(simnum) %>%
 	spread(key=lifestage,value=Mass) %>%
@@ -290,6 +291,10 @@ sink()  # returns output to the console
 #//////////////////////////////////////////////////////////////////////////
 #----CV Boxplot for Fish & Total Biomass across model types----
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+CV_plot=subdat2 %>% group_by(Model,simnum,Year_df) %>%
+	filter(Phase_df==2) %>%
+	summarise(Tot_bio=sum(Biomass),Tot_fish=sum(isfish*Biomass)) %>%
+	summarise(CV_tot=CV(Tot_bio),CV_fish=CV(Tot_fish),mean_tot=mean(Tot_bio),mean_fish=mean(Tot_fish))
 
 postscript(paste0("Figure",4+start_fig,"_CV_boxplot.eps"),horiz=FALSE,width=8.5,height=11)
 par(mfrow=c(2,1), mai = c(0.7, 1, 0.5, 0.1),mgp=c(2,1,0))
