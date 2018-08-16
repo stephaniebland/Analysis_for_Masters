@@ -54,7 +54,7 @@ exper_name=c("Original Web","Extended Web","Leslie & History")
 #	mutate_at(c("Phase_df","Nodes_df","Seed","Model","pred","prey","species","lifestage"),as.factor)
 
 ## ----SAVE RESULTS IN NEW FOLDER------------------------------------------
-setwd(paste0("",location,"/",run_name,"/RESULTS_Publication2018Aug1"))
+setwd(paste0("",location,"/",run_name,"/RESULTS_Publication"))
 
 ## ----DefineMultiplot-----------------------------------------------------
 # From https://stackoverflow.com/a/24387436
