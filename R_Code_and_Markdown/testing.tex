@@ -1,0 +1,266 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\title{Analysis Masters Summary}
+\author{Stephanie Bland, B00728385}
+%\usepackage[margin=1in]{geometry}
+\usepackage[margin=0.4in,top=0.8in,bottom=0.7in]{geometry}
+\newcommand{\CustomPackage}{"/Users/JurassicPark/Google Drive/GIT/LaTeX_Packages/"}
+\usepackage{\CustomPackage EquationVars}% \ExEquationVars gives an example of how it works
+\usepackage{\CustomPackage VariableDefinitions}
+\usepackage{\CustomPackage lazyeq}
+\usepackage{\CustomPackage EasyBrackets}
+\usepackage{\CustomPackage author_header}
+\usepackage{amsmath}
+\usepackage{\CustomPackage wrapRcode}
+\usepackage{\CustomPackage undertilde}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{booktabs}
+
+\date{\today}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\maketitle
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{lstlisting}[style=printcode]
+	read_chunk('Analysis.R')\end{lstlisting}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{lstlisting}[style=printcode]
+rm(list=ls())\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+setwd("/Users/JurassicPark/Google Drive/GIT/Analysis")\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(R.matlab)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(matrixStats)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(RColorBrewer)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(codyn)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(knitr)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(reshape2)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+library(dplyr)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+sim_data=readMat("Complete_1.mat")\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+names(sim_data)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+##   [1] "Adj.Rsq"          "AllCatch"        
+##   [3] "B"                "B0"              
+##   [5] "B.end"            "B.orig"          
+##   [7] "B.year.end"       "Bsd"             
+##   [9] "E"                "E0"              
+##  [11] "Effort"           "F50"             
+##  [13] "K"                "K.param"         
+##  [15] "L.year"           "Mass"            
+##  [17] "Mvec"             "N.stages"        
+##  [19] "N.years"          "R.squared"       
+##  [21] "S.0"              "T1"              
+##  [23] "T2"               "TrophLevel"      
+##  [25] "W.scalar"         "W.scaled"        
+##  [27] "Z"                "abort.sim"       
+##  [29] "aging.table"      "ans"             
+##  [31] "assim"            "basalsp"         
+##  [33] "c"                "ca"              
+##  [35] "calc.n.val"       "cannibal.invert" 
+##  [37] "catchrate"        "co"              
+##  [39] "connectance"      "cont.reprod"     
+##  [41] "day"              "delta.biomass"   
+##  [43] "effic"            "evolv.diet"      
+##  [45] "evolve"           "ext.thresh"      
+##  [47] "extended.n"       "extended.web"    
+##  [49] "f.a"              "f.m"             
+##  [51] "fecund.table"     "fish.gain.tot"   
+##  [53] "fishing.scenario" "full.sim"        
+##  [55] "full.t"           "func.resp"       
+##  [57] "harv"             "hmax"            
+##  [59] "i"                "int.growth"      
+##  [61] "is.split"         "isfish"          
+##  [63] "leslie"           "lifehis"         
+##  [65] "lifestage"        "lin.regr"        
+##  [67] "lstages.B0ratedR" "lstages.linked"  
+##  [69] "masscalc"         "max.assim"       
+##  [71] "meta"             "meta.N.stages"   
+##  [73] "meta.scale"       "mu"              
+##  [75] "n.years.in.phase" "nan.error"       
+##  [77] "nicheweb"         "nichewebsize"    
+##  [79] "num.years"        "orig"            
+##  [81] "p.a"              "p.b"             
+##  [83] "phase"            "prob.mat"        
+##  [85] "q"                "r.i.max"         
+##  [87] "r.i.mean"         "r.i.min"         
+##  [89] "r.i.std"          "reorder.by.size" 
+##  [91] "reprod"           "rescalemass"     
+##  [93] "shifted.web"      "simnum"          
+##  [95] "species"          "surv.fish"       
+##  [97] "surv.fish.stages" "surv.sp"         
+##  [99] "t"                "t.days"          
+## [101] "t.final"          "t.init"          
+## [103] "t.year"           "x"               
+## [105] "year.index"
+\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+attach(sim_data)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+#x11()\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+logB=log10(B)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+logB.year.end=log10(B.year.end)\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+B_saved=B\end{lstlisting}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{lstlisting}[style=printcode]
+#Plot everything in simplest manner possible\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+ts.plot(logB)#Plot everything\end{lstlisting}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/Sample_Plots-1} 
+\begin{kframe}\begin{lstlisting}[style=printcode]
+ts.plot(logB.year.end)#Plot year ends\end{lstlisting}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/Sample_Plots-2} 
+\begin{kframe}\begin{lstlisting}[style=printcode]
+#Plot Invertebrates first\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+type=t(species)*isfish\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in t(species): object 'species' not found}}\begin{lstlisting}[style=printcode]
+matplot(matrix(rep(day,sum(type==0)),ncol=sum(type==0)),logB[,type==0],type='l',col=1,lty=1)#Plot each invertebrate and autotroph separately\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in matrix(rep(day, sum(type == 0)), ncol = sum(type == 0)): object 'day' not found}}\begin{lstlisting}[style=printcode]
+matlines(matrix(rep(day,length(basalsp)),ncol=length(basalsp)),logB[,basalsp],type='l',col=2,lty=1)#Plot each autotroph separately\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in matrix(rep(day, length(basalsp)), ncol = length(basalsp)): object 'day' not found}}\begin{lstlisting}[style=printcode]
+ts.plot(rowSums(logB[,type==0]))#Plot all invertebrate biomass (summed)\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(x): object 'type' not found}}\begin{lstlisting}[style=printcode]
+invert_no_fish=isfish\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'isfish' not found}}\begin{lstlisting}[style=printcode]
+invert_no_fish[basalsp]=1\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in invert\_no\_fish[basalsp] = 1: object 'invert\_no\_fish' not found}}\begin{lstlisting}[style=printcode]
+ts.plot(cbind(rowSums(logB[,invert_no_fish==0]),rowSums(logB[,basalsp])),col=1:2,lty=1)#Plot all invertebrate biomass (summed)\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(x): object 'invert\_no\_fish' not found}}\begin{lstlisting}[style=printcode]
+darkcols <- brewer.pal(8, "Dark2")\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+color_i=0\end{lstlisting}
+\begin{lstlisting}[style=printcode]
+xkcd=species[isfish==1]\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'species' not found}}\begin{lstlisting}[style=printcode]
+xkcd=unique(xkcd)\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in unique(xkcd): object 'xkcd' not found}}\begin{lstlisting}[style=printcode]
+for (i in xkcd){
+  color_i=color_i+1
+  for (j in 1:max(lifestage)){
+    single_lifestage=(t(type==i)*lifestage==j)
+    #matlines(t(day),logB[,single_lifestage],type='l',col=darkcols[color_i],lty=1+j,lwd=2)
+  }
+  #matlines(t(day),rowSums(logB[,type==i]),type='l',col=darkcols[color_i],lwd=2)
+}\end{lstlisting}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'xkcd' not found}}\end{kframe}
+\end{knitrout}
+%<<Analysis,message=FALSE,cache=T>>=
+%@
+%<<Heteroscedastic,message=FALSE,cache=T>>=
+%@
+%<<lag_diff_plot,message=FALSE,cache=T>>=
+%@
+%<<Stabilty,message=FALSE,cache=T>>=
+%@
+%<<Plot_Von_bert_Curve,message=FALSE,cache=T>>=
+%@
+%<<Fish_Size_Distribution,message=FALSE,cache=T>>=
+%@
+%<<Phase_diagrams,message=FALSE,cache=T>>=
+%@
+
+
+
+
+\end{document}
+
+
+
+
+
+

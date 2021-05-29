@@ -3,12 +3,10 @@
 **.ttt
 **.lot
 **.log
-**.pdf
 **.gz
 **.lof
 **.fff
 **.aux
-**.tex
 cache
 *_cache/
 *_files/
